@@ -1,0 +1,96 @@
+name: ReefAPI
+description: >-
+  A unified web-data platform that fronts a catalog of ~183 live web-data 'engines' behind one JSON contract, one API
+  key, and one credit pool. Every call is POST https://api.reefapi.com/<api>/v1/<action> returning a uniform
+  {ok,data,meta,error} envelope. Includes a hosted MCP server for agent-native access.
+url: https://raw.githubusercontent.com/api-evangelist/reefapi/refs/heads/main/apis.yml
+created: '2026-08-30'
+modified: '2026-08-30'
+specificationVersion: '0.21'
+tags:
+  - web-data
+  - data-aggregation
+  - web-scraping
+  - e-commerce
+  - social-media
+  - real-estate
+  - jobs
+  - travel
+  - news
+  - finance
+  - reviews
+  - company-intelligence
+  - mcp
+  - agent-native
+  - rest
+  - openapi
+  - free-tier
+apis:
+  - name: ReefAPI REST API
+    description: >-
+      POST-based REST/JSON API fronting a catalog of web-data engines. Auth via x-api-key header; uniform
+      {ok,data,meta,error} response envelope with stable error codes. Declared OpenAPI contract and RFC 9727 API
+      Catalog.
+    humanURL: https://reefapi.com/docs
+    baseURL: https://api.reefapi.com
+    tags:
+      - web-data
+      - data-aggregation
+      - web-scraping
+      - e-commerce
+      - social-media
+      - real-estate
+      - jobs
+      - travel
+      - news
+      - finance
+      - reviews
+      - company-intelligence
+      - mcp
+      - agent-native
+      - rest
+      - openapi
+      - free-tier
+    properties:
+      - type: Documentation
+        url: https://reefapi.com/docs
+      - type: OpenAPI
+        url: https://api.reefapi.com/openapi.json
+  - name: ReefAPI MCP Server
+    description: >-
+      Hosted MCP server over streamable-HTTP with 5 discovery-first tools (search_engines, get_catalog,
+      get_engine_schema, get_action_schema, call_engine). Auth via Authorization: Bearer ak_live_ key. Compatible with
+      Claude Desktop, Claude Code, Cursor, Windsurf, and ChatGPT connectors.
+    humanURL: https://reefapi.com/mcp
+    baseURL: https://api.reefapi.com/mcp
+    tags:
+      - web-data
+      - data-aggregation
+      - web-scraping
+      - e-commerce
+      - social-media
+      - real-estate
+      - jobs
+      - travel
+      - news
+      - finance
+      - reviews
+      - company-intelligence
+      - mcp
+      - agent-native
+      - rest
+      - openapi
+      - free-tier
+    properties:
+      - type: MCPServer
+        url: https://api.reefapi.com/mcp
+      - type: Documentation
+        url: https://reefapi.com/mcp
+maintainers:
+  - FN: ReefAPI
+    url: https://reefapi.com/
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 90
+  at: '2026-08-30T16:50:12.945Z'
