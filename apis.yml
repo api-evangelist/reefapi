@@ -1,13 +1,49 @@
 name: ReefAPI
-description: >-
-  A unified web-data platform that fronts a catalog of ~183 live web-data 'engines' behind one JSON contract, one API
-  key, and one credit pool. Every call is POST https://api.reefapi.com/<api>/v1/<action> returning a uniform
-  {ok,data,meta,error} envelope. Includes a hosted MCP server for agent-native access.
+aid: reefapi
+description: 'ReefAPI is a unified web-data gateway that fronts 183 production data engines - Amazon, Zillow, Reddit, Trustpilot,
+  LinkedIn Jobs, Indeed, Google Maps, Booking.com, StockX, YouTube and more - behind ONE JSON contract, ONE API key and ONE
+  shared credit pool. Every one of its 1,528 operations is POST https://api.reefapi.com/{engine}/v1/{action} with an x-api-key
+  header, and every response - success or failure - is the same { ok, data, meta, error } envelope with a stable error code
+  and a machine-readable `retryable` flag. The company handles proxies, headless browsers, logins and anti-bot walls server-side,
+  so a caller gets parsed JSON from sites that block scrapers, with no per-site plan to buy and no scraper to maintain. Credits
+  never expire, failed or blocked calls cost zero, and a 1,000-credit free tier needs no card. The agent surface is unusually
+  complete: a live hosted MCP server at https://api.reefapi.com/mcp with five discovery-first tools whose manifest is anonymously
+  introspectable, an RFC 9727 /.well-known/api-catalog linkset, a published OpenAPI 3.0.3 on the API host root, llms.txt plus
+  a per-engine markdown twin at /docs/{engine}.md, and a robots.txt that explicitly allow-lists fifteen named AI crawlers.'
 url: https://raw.githubusercontent.com/api-evangelist/reefapi/refs/heads/main/apis.yml
 created: '2026-08-30'
-modified: '2026-08-30'
+modified: '2026-08-31'
 specificationVersion: '0.21'
 tags:
+- web-data
+- data-aggregation
+- web-scraping
+- serp
+- e-commerce
+- social-media
+- real-estate
+- jobs
+- travel
+- news
+- finance
+- reviews
+- company-intelligence
+- mcp
+- agent-native
+- rest
+- openapi
+- llms-txt
+- api-catalog
+- free-tier
+- credits
+- gateway
+apis:
+- name: ReefAPI REST API
+  description: POST-based REST/JSON API fronting a catalog of web-data engines. Auth via x-api-key header; uniform {ok,data,meta,error}
+    response envelope with stable error codes. Declared OpenAPI contract and RFC 9727 API Catalog.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
   - web-data
   - data-aggregation
   - web-scraping
@@ -25,72 +61,150 @@ tags:
   - rest
   - openapi
   - free-tier
-apis:
-  - name: ReefAPI REST API
-    description: >-
-      POST-based REST/JSON API fronting a catalog of web-data engines. Auth via x-api-key header; uniform
-      {ok,data,meta,error} response envelope with stable error codes. Declared OpenAPI contract and RFC 9727 API
-      Catalog.
-    humanURL: https://reefapi.com/docs
-    baseURL: https://api.reefapi.com
-    tags:
-      - web-data
-      - data-aggregation
-      - web-scraping
-      - e-commerce
-      - social-media
-      - real-estate
-      - jobs
-      - travel
-      - news
-      - finance
-      - reviews
-      - company-intelligence
-      - mcp
-      - agent-native
-      - rest
-      - openapi
-      - free-tier
-    properties:
-      - type: Documentation
-        url: https://reefapi.com/docs
-      - type: OpenAPI
-        url: https://api.reefapi.com/openapi.json
-  - name: ReefAPI MCP Server
-    description: >-
-      Hosted MCP server over streamable-HTTP with 5 discovery-first tools (search_engines, get_catalog,
-      get_engine_schema, get_action_schema, call_engine). Auth via Authorization: Bearer ak_live_ key. Compatible with
-      Claude Desktop, Claude Code, Cursor, Windsurf, and ChatGPT connectors.
-    humanURL: https://reefapi.com/mcp
-    baseURL: https://api.reefapi.com/mcp
-    tags:
-      - web-data
-      - data-aggregation
-      - web-scraping
-      - e-commerce
-      - social-media
-      - real-estate
-      - jobs
-      - travel
-      - news
-      - finance
-      - reviews
-      - company-intelligence
-      - mcp
-      - agent-native
-      - rest
-      - openapi
-      - free-tier
-    properties:
-      - type: MCPServer
-        url: https://api.reefapi.com/mcp
-      - type: Documentation
-        url: https://reefapi.com/mcp
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-openapi.json
+    description: OpenAPI 3.0.3, 1,528 operations across 183 engines. Harvested verbatim 2026-08-31 from https://api.reefapi.com/openapi.json
+      (HTTP 200, application/json, 1.25MB). info.title "ReefAPI", servers[] https://api.reefapi.com - ownership confirmed.
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: Overlay
+    url: overlays/reefapi-openapi-overlay.yaml
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- name: ReefAPI MCP Server
+  description: 'Hosted MCP server over streamable-HTTP with 5 discovery-first tools (search_engines, get_catalog, get_engine_schema,
+    get_action_schema, call_engine). Auth via Authorization: Bearer ak_live_ key. Compatible with Claude Desktop, Claude Code,
+    Cursor, Windsurf, and ChatGPT connectors.'
+  humanURL: https://reefapi.com/mcp
+  baseURL: https://api.reefapi.com/mcp
+  tags:
+  - web-data
+  - data-aggregation
+  - web-scraping
+  - e-commerce
+  - social-media
+  - real-estate
+  - jobs
+  - travel
+  - news
+  - finance
+  - reviews
+  - company-intelligence
+  - mcp
+  - agent-native
+  - rest
+  - openapi
+  - free-tier
+  properties:
+  - type: MCPServer
+    url: https://api.reefapi.com/mcp
+    description: 'LIVE remote MCP over streamable-HTTP. PROBED 2026-08-31: initialize returned protocolVersion 2025-06-18,
+      serverInfo {name reefapi, version 1.27.2}; tools/list returned 5 tools ANONYMOUSLY (no key). A plain GET returns 406
+      - it is JSON-RPC over POST with Accept "application/json, text/event-stream", and the mcp-session-id header from initialize
+      is required on subsequent calls.'
+  - type: MCPServer
+    url: mcp/reefapi-mcp.yml
+    description: Local manifest with the deployment block, probe notes and the verbatim tool set.
+  - type: ToolCrosswalk
+    url: mcp/reefapi-tool-crosswalk.yml
+  - type: Documentation
+    url: https://reefapi.com/mcp
+  - type: SourceCode
+    url: https://github.com/reefapi/reefapi-mcp
 maintainers:
-  - FN: ReefAPI
-    url: https://reefapi.com/
+- FN: ReefAPI
+  url: https://reefapi.com/
+  email: support@reefapi.com
 generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 90
   at: '2026-08-30T16:50:12.945Z'
+common:
+- type: DomainSecurity
+  url: security/reefapi-domain-security.yml
+- type: Authentication
+  url: authentication/reefapi-authentication.yml
+- type: WellKnown
+  url: well-known/reefapi-well-known.yml
+  description: RFC 9727 /.well-known/api-catalog served at api.reefapi.com (HTTP 200, application/linkset+json). All other
+    named well-known paths 404 on both hosts - recorded in the manifest.
+- type: APICatalog
+  url: well-known/reefapi-api-catalog.json
+- type: LLMsTxt
+  url: llms/reefapi-llms.txt
+  description: Fetched verbatim from https://reefapi.com/llms.txt (HTTP 200). A 520KB llms-full.txt also exists and is deliberately
+    not committed.
+- type: Packages
+  url: packages/reefapi-packages.yml
+  description: No client SDK on any registry (npm/PyPI/RubyGems all miss); the one first-party distributable is the MIT-licensed
+    reefapi-mcp server, v1.27.2, source-installed from GitHub.
+- type: Conformance
+  url: conformance/reefapi-conformance.yml
+- type: Lifecycle
+  url: lifecycle/reefapi-lifecycle.yml
+- type: StatusPage
+  url: https://reefapi.com/status
+  description: Provider-hosted canary-driven status page (HTTP 200) with a machine-readable JSON twin at https://api.reefapi.com/status,
+    advertised as the status link relation in the api-catalog linkset.
+- type: Sandbox
+  url: sandbox/reefapi-sandbox.yml
+  description: No test-mode key; the trial surface is the in-browser playground at https://reefapi.com/playground plus 1,000
+    free credits, keyless MCP discovery and zero-cost failed calls.
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Plans
+  url: plans/reefapi-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/reefapi-rate-limits.yml
+- type: Pricing
+  url: https://reefapi.com/pricing
+- type: SignUp
+  url: https://reefapi.com/signup
+- type: Login
+  url: https://reefapi.com/login
+- type: TermsOfService
+  url: https://reefapi.com/terms
+- type: PrivacyPolicy
+  url: https://reefapi.com/privacy
+- type: Support
+  url: https://reefapi.com/about
+  description: Contact form plus a published support email on the about page; /contact and /support both 404.
+- type: GitHubOrganization
+  url: https://github.com/reefapi
+- type: Console
+  url: https://reefapi.com/playground
+- type: GettingStarted
+  url: https://reefapi.com/guides
+image: https://reefapi.com/icon.svg
+x-enrichment:
+  date: '2026-08-31'
+  status: enriched
+  artifacts_added: 23
+  pass: local-v1
+x-coverage:
+  state: covered
+  reason: ''
+  detail: 'Full public surface: OpenAPI 3.0.3 with 1,528 operations on the API host root, a live anonymously-introspectable
+    MCP server, an RFC 9727 api-catalog and llms.txt - nothing was gated or unreadable.'
+  evidence:
+  - url: https://api.reefapi.com/openapi.json
+    status: 200
+  - url: https://api.reefapi.com/mcp
+    status: 200
+  - url: https://api.reefapi.com/.well-known/api-catalog
+    status: 200
+  - url: https://reefapi.com/llms.txt
+    status: 200
+  checked: '2026-08-31'

@@ -1,0 +1,51 @@
+generated: '2026-08-31'
+method: searched
+source: https://github.com/reefapi/reefapi-mcp + https://registry.modelcontextprotocol.io/v0/servers?search=reefapi
+name: ReefAPI
+slug: reefapi
+summary: >-
+  ReefAPI publishes NO first-party client SDK on any language registry. Searched npm
+  (registry.npmjs.org search "reefapi" -> 0 results), PyPI (reefapi / reef-api /
+  reefapi-python -> 404), RubyGems (404) and crates.io. The docs, llms.txt and
+  llms-full.txt contain zero occurrences of "SDK", "npm install" or "pip install" —
+  the published integration path is a raw HTTP POST with an `x-api-key` header, or
+  the hosted MCP server. The one first-party distributable is the open-source MCP
+  server, shipped as a GitHub source repository (no registry package).
+sdk_count: 0
+packages:
+- name: reefapi-mcp
+  official: true
+  kind: mcp-server
+  language: python
+  registry: github
+  repository: https://github.com/reefapi/reefapi-mcp
+  version: 1.27.2
+  published: '2026-08-29'
+  license: MIT
+  install: "git clone https://github.com/reefapi/reefapi-mcp && pip install -r requirements.txt && python server.py"
+  dependencies:
+  - mcp>=1.2.0
+  - httpx>=0.27
+  - uvicorn>=0.30
+  note: >-
+    Not published to PyPI — installed from source. `version` is read from the repo's
+    server.json (MCP server manifest, "version": "1.27.2"); `published` is the repo's
+    GitHub pushed_at (2026-08-29T11:32:33Z). The same version string is served live by
+    the hosted endpoint's initialize response (serverInfo.version 1.27.2), so the
+    source repo and the production server are in lockstep — a strong currency signal.
+registries_checked:
+- registry: npm
+  query: https://registry.npmjs.org/-/v1/search?text=reefapi
+  result: 0 packages
+- registry: pypi
+  query: https://pypi.org/pypi/reefapi/json
+  result: 404
+- registry: rubygems
+  query: https://rubygems.org/api/v1/gems/reefapi.json
+  result: 404
+- registry: crates.io
+  query: https://crates.io/api/v1/crates/reefapi
+  result: 403 (crawler blocked; no evidence of a crate)
+- registry: mcp-registry
+  query: https://registry.modelcontextprotocol.io/v0/servers?search=reefapi
+  result: "io.github.reefapi/reefapi-mcp published, status active, latest version 1.27.2"

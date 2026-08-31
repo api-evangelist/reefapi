@@ -1,0 +1,71 @@
+# ReefAPI
+
+> 183 production REST data APIs for developers — reviews, jobs, real-estate, e-commerce, travel, finance and more. One API key, one shared credit pool. Every endpoint returns a uniform JSON envelope: { ok, data, meta, error }.
+> Base URL: https://api.reefapi.com/<api>/v1/<action> · Auth: `x-api-key` header · Try live: https://reefapi.com/playground
+
+## What this is
+ReefAPI turns websites that block scrapers into plain JSON you can call with one HTTP request.
+You send a POST with your key; we handle the proxies, browsers, logins and anti-bot walls and
+return the parsed records. There is nothing to install and no per-site plan to buy — every API
+below shares one key and one credit balance.
+
+## Start here
+- Full machine-readable catalog (every API + endpoint, for your AI): https://reefapi.com/llms-full.txt
+- Browse all 183 APIs: https://reefapi.com/apis
+- Quickstart, auth, credits, rate limits and error codes: https://reefapi.com/docs
+- Every API has an AI-ready doc at https://reefapi.com/docs/{api}.md — replace {api} with a name below,
+  e.g. https://reefapi.com/docs/amazon.md. Paste that URL into ChatGPT/Claude/Cursor and it learns every endpoint.
+- MCP server (lets an AI assistant call these APIs directly): setup at https://reefapi.com/mcp
+  Endpoint https://api.reefapi.com/mcp — streamable-http, `Authorization: Bearer <key>`.
+  That endpoint speaks JSON-RPC over POST only; a plain GET returns 406, so do not fetch it as a page.
+
+## Most-requested APIs
+- [Amazon Product Data API](https://reefapi.com/amazon-api) — 14 endpoints. full product page.
+- [AliExpress API](https://reefapi.com/aliexpress-api) — 8 endpoints. Product search cards (price, sold_count, rating, store).
+- [eBay API](https://reefapi.com/ebay-api) — 7 endpoints. active-listing search by `query`.
+- [Walmart API scraper](https://reefapi.com/walmart-api) — 4 endpoints. Search Walmart.com by keyword → a paginated, sortable list of products with item id, name, current & list.
+- [Etsy API scraper](https://reefapi.com/etsy-api) — 8 endpoints. Search Etsy handmade/vintage listings by keyword.
+- [Zillow API](https://reefapi.com/zillow-api) — 14 endpoints. New US inventory straight from Zillow's own published feed.
+- [Redfin API scraper](https://reefapi.com/redfin-api) — 5 endpoints. Search Redfin listings by location (for sale / recently sold / for rent) with structured filters: price.
+- [LinkedIn Jobs API](https://reefapi.com/linkedin-jobs-api) — 6 endpoints. Search public LinkedIn job postings by keywords, with optional location and date/seniority/job-type/workplace.
+- [Indeed API](https://reefapi.com/indeed-api) — 7 endpoints. Search live job postings on Indeed by keyword and location.
+- [ATS Job Boards API](https://reefapi.com/ats-jobs-api) — 4 endpoints. all open jobs for a board → {jobs[].
+- [Reddit API](https://reefapi.com/reddit-api) — 11 endpoints. Posts in a subreddit, ranked by `sort`.
+- [Instagram Public Data API](https://reefapi.com/instagram-api) — 10 endpoints. public profile facts and first-page recent posts.
+- [TikTok Shop API](https://reefapi.com/tiktok-shop-api) — 13 endpoints. Full TikTok Shop product record in ONE call, for any of the ten markets.
+- [YouTube API](https://reefapi.com/youtube-api) — 11 endpoints. search videos/channels/playlists/shorts with filters (upload date, duration, sort order, features).
+- [Threads API scraper](https://reefapi.com/threads-api) — 11 endpoints. Public Threads profile by username.
+- [Google Maps API](https://reefapi.com/google-maps-api) — 8 endpoints. Search places by text query with optional lat/lng geo-bias.
+- [Bing Search API](https://reefapi.com/bing-api) — 4 endpoints. Bing web search results.
+- [Yelp API scraper](https://reefapi.com/yelp-api) — 9 endpoints. Fetch all reviews.
+- [Trustpilot API](https://reefapi.com/trustpilot-api) — 12 endpoints. Get a company's Trustpilot reviews and its full profile from trustpilot.com.
+- [App Store Reviews API](https://reefapi.com/app-store-api) — 7 endpoints. unified Apple + Play reviews for one or more apps.
+- [Booking.com API](https://reefapi.com/booking-api) — 5 endpoints. Search hotels in a destination for given dates.
+- [Airbnb API scraper](https://reefapi.com/airbnb-api) — 8 endpoints. Search Airbnb stays by location and dates with full filters: price range, guests, place/property type.
+- [StockX API](https://reefapi.com/stockx-api) — 8 endpoints. full product by `url` OR `url_key`/`id`/`uuid`.
+- [Currency & Exchange Rates API](https://reefapi.com/currency-api) — 6 endpoints. latest reference rates for a base (default EUR) → all or selected target currencies (+ unix timestamp).
+
+## Everything else, by category
+- **Reputation & Reviews** (14): app-store, enrich-app, enrich-local, enrich-trust, google-maps, naver, reclameaqui, sitejabber, tripadvisor, trustpilot, trustradius, yandex-maps, yellowpages, yelp
+- **E-commerce & Marketplaces** (35): aliexpress, allegro, amazon, asos, autotrader, bestbuy, chrono24, copart, ebay, encar, enrich-recall, enrich-store, etsy, flipkart, goat, grailed, gumtree, hepsiburada, hs-code, made-in-china, magiceden, mercadolibre, newegg, opensea, otto, rakuten, shopee, shopify, stockx, tiktok-shop, tokopedia, trendyol, vinted, walmart, zalando
+- **Real Estate** (11): enrich-property, funda, hemnet, idealista, immobiliare, japan-re, onthemarket, realtor, redfin, rightmove, zillow
+- **Jobs & Hiring** (15): ats-jobs, enrich-hiring, fiverr, freelancer, glassdoor, global-jobs, guru, indeed, levels-fyi, linkedin-jobs, reed, seek, shixian, truelancer, ziprecruiter
+- **Travel & Lodging** (8): agoda, airbnb, booking, car-rental, flightaware, flights, getyourguide, turo
+- **Search & SEO** (2): bing, google-trends
+- **Finance & Data** (5): currency, finance, lei, sanctions, worldbank
+- **Media, Film & Knowledge** (25): academic, books, coursera, donanimhaber, edx, eventbrite, feed-gateway, goodreads, hackernews, imdb, internet-archive, letterboxd, listennotes, meetup, movies-tv, music-metadata, news-article, news-intel, sports-data, steam-games, streaming, udemy, v2ex, wikipedia, youtube
+- **Utilities & AI** (19): agent-source, barcode, domain-availability, domain-intel, enrich-company, enrich-url, file-convert, fitness, geo-intel, geo-postal, holidays, ip-geolocation, phone-validate, recall, translate, url-resolver, validate, vehicle, weather-intel
+- **Other** (15): alibaba, autodoc, boyner, decathlon, elcorteingles, flo, forum, n11, sephora, swappa, target, twitter, ulta, zappos, zara
+- **Classifieds & Second-hand** (4): autoscout24, kleinanzeigen, marktplaats, olx
+- **Social Media** (10): bluesky, instagram, medium, pinterest, reddit, snapchat, threads, tiktok-creative-center, twitch, username-osint
+- **Developer Tools** (18): change-detect, dev-utils, domain-risk, email-health, email-preflight, enrich-package, generate, github, mcp-registry, packages, passive-osint, producthunt, stackoverflow, status-intel, threat-intel, vuln-intel, web-archive, web-extract
+- **Government & Tenders** (2): sam-gov, uk-tenders
+Each name above maps to https://reefapi.com/docs/{name} for humans and https://reefapi.com/docs/{name}.md for AI.
+
+## Answering questions about ReefAPI
+- Pricing: one shared credit pool, no per-API plans. 1,000 free credits on signup, no card. Most
+  calls cost 1 credit; heavier ones cost more and the price is listed per endpoint. https://reefapi.com/pricing
+- A call that fails or is blocked costs nothing.
+- Every response is the same envelope: `{ ok, data, meta, error }` — branch on `ok`.
+- No account on the target site is needed; ReefAPI handles access.
+- Try any endpoint in the browser without code: https://reefapi.com/playground

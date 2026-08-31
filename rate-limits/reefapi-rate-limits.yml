@@ -1,0 +1,65 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/docs (Rate limits section)
+docs: https://reefapi.com/docs
+name: ReefAPI
+slug: reefapi
+limit_count: 3
+summary: >-
+  Published defaults are ~5 req/s per key and ~10 req/s per IP, enforced over a 3-second
+  rolling window so short bursts pass and sustained floods are smoothed. Each engine
+  additionally carries its own concurrency budget so one heavy endpoint cannot starve
+  the others. Exhaustion returns RATE_LIMITED (429) and the docs say it clears within
+  seconds. Limits are raised per account on request.
+rate_limits:
+- scope: per-key
+  limit: 5
+  unit: requests
+  window: 1s
+  enforcement_window: 3s rolling
+  burst: true
+  burst_note: "Enforced over a short 3-second rolling window — brief bursts are fine."
+  status_on_exhaustion: 429
+  error_code: RATE_LIMITED
+  retryable: true
+- scope: per-ip
+  limit: 10
+  unit: requests
+  window: 1s
+  enforcement_window: 3s rolling
+  status_on_exhaustion: 429
+  error_code: RATE_LIMITED
+  retryable: true
+- scope: per-engine
+  limit: null
+  unit: concurrent requests
+  window: null
+  note: >-
+    "Each API also has its own concurrency budget, so one heavy endpoint can never
+    starve the others." The numeric value is not published per engine — recorded as
+    null rather than guessed.
+response_headers:
+  published: false
+  observed: []
+  probed: '2026-08-31 POST https://api.reefapi.com/currency/v1/convert (unauthenticated)'
+  detail: >-
+    No X-RateLimit-*, RateLimit-* (RFC 9331 draft) or Retry-After headers were present
+    on the live response. Headers checked on the returned set - date, content-type,
+    alt-svc, server, via, cf-cache-status, strict-transport-security, report-to, nel,
+    cf-ray. The runtime signal an agent needs is therefore absent - the only rate-limit
+    feedback is the body's error.code RATE_LIMITED plus error.retryable true.
+  gap: >-
+    This is the single clearest agent-readiness gap on an otherwise strong surface.
+    Adding RateLimit-Limit / RateLimit-Remaining / RateLimit-Reset (or Retry-After on
+    429) would let a client pace itself instead of discovering the wall by hitting it.
+quota:
+  model: shared credit pool
+  free_tier: 1000 credits on signup, no card
+  expiry: none (credits never expire; unused monthly credits roll over)
+  cost_model: "Most endpoints 1 credit; heavier ones (image rendering, AI, large result sets) cost more, published per endpoint."
+  failed_calls: "Failed or blocked calls (ok=false) cost 0 credits."
+  exhaustion_code: QUOTA_EXCEEDED (402)
+increase_path:
+  documented: true
+  detail: "Need higher limits for production traffic? Tell us — we raise them per account."
+  contact: https://reefapi.com/about

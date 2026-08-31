@@ -1,0 +1,85 @@
+generated: '2026-08-31'
+method: derived
+source: mcp/reefapi-mcp-tools.json (live tools/list, probed 2026-08-31) + openapi/reefapi-openapi.json
+name: ReefAPI
+slug: reefapi
+summary: >-
+  ReefAPI's MCP surface is a GENERIC PROJECTION of its REST surface, not a per-operation
+  mirror. One MCP tool — call_engine(engine, action, params) — is a universal dispatcher
+  onto all 1,528 REST operations (POST /<engine>/v1/<action>), so the crosswalk is
+  1 tool -> 1,528 operationIds rather than 1:1. The other four tools are DISCOVERY
+  primitives with no REST counterpart at all: ReefAPI publishes no /catalog, /engines
+  or /schema REST endpoint, so an HTTP client must read the OpenAPI or the docs while
+  an agent gets a live, queryable catalog. That asymmetry is the finding.
+surfaces:
+  openapi:
+    url: https://api.reefapi.com/openapi.json
+    file: openapi/reefapi-openapi.json
+    version: 3.0.3
+    operations: 1528
+    engines: 183
+    gated: false
+  mcp:
+    url: https://api.reefapi.com/mcp
+    transport: streamable-http
+    tools: 5
+    gated: false
+    note: tools/list is anonymously introspectable; only call_engine requires a key
+  graphql:
+    present: false
+    note: https://api.reefapi.com/graphql -> 404; zero "graphql" mentions in docs or llms-full.txt
+crosswalk:
+- tool: call_engine
+  category: execution
+  rest: ["*"]
+  rest_operation_count: 1528
+  binding: dispatcher
+  confidence: high
+  note: >-
+    params {engine, action, params} map directly onto the REST path template
+    POST /{engine}/v1/{action} with `params` as the JSON request body. The tool's real
+    inputSchema is therefore the union of every operation's requestBody schema, resolved
+    at call time from get_action_schema rather than declared statically. Example
+    verified against the spec: call_engine("amazon","product/detail",{asin}) ==
+    operationId amazon_product_detail (POST /amazon/v1/product/detail).
+mcp_only:
+- tool: search_engines
+  reason: >-
+    Semantic ranking over the 183-engine catalog. No REST operation exposes catalog
+    search — the closest human equivalent is the /apis browse page and the sidebar
+    search on reefapi.com/docs, neither of which is in the OpenAPI.
+- tool: get_catalog
+  reason: >-
+    Full engine roster grouped by category. Published for humans at
+    https://reefapi.com/apis and for LLMs in llms.txt, but there is no REST endpoint
+    for it — the OpenAPI has no /catalog or /engines path.
+- tool: get_engine_schema
+  reason: >-
+    Per-engine action index. Derivable from the OpenAPI by filtering paths on the
+    /{engine}/v1/ prefix, but not served as an operation.
+- tool: get_action_schema
+  reason: >-
+    Per-action parameter contract INCLUDING credit price, allowed_values enums,
+    defaults, min/max and example_params. The OpenAPI requestBody schemas are
+    thinner than this — every property is declared `type: string` with no
+    description, enum, default or example — so the MCP schema tool is strictly
+    richer than the published REST contract. Also mirrored per-engine as markdown
+    at https://reefapi.com/docs/{engine}.md.
+rest_only:
+- scope: all 1528 operations as individually addressable endpoints
+  reason: >-
+    Every REST operation has its own operationId and can be called directly over HTTP;
+    via MCP the same operations are only reachable through the call_engine dispatcher.
+    No REST capability is missing from MCP, but the addressing model differs.
+- operation_note: >-
+    Two REST-adjacent surfaces sit OUTSIDE the OpenAPI and outside MCP:
+    GET https://api.reefapi.com/status (JSON health rollup) and
+    GET https://api.reefapi.com/.well-known/api-catalog (RFC 9727 linkset).
+coverage:
+  mcp_tools: 5
+  mcp_tools_bound_to_rest: 1
+  mcp_only_tools: 4
+  rest_operations: 1528
+  rest_operations_reachable_via_mcp: 1528
+  rest_operations_with_no_tool: 0
+  binding_model: dispatcher

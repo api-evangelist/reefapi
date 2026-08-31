@@ -1,0 +1,75 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/playground + https://reefapi.com/docs + https://reefapi.com/pricing + live MCP probe 2026-08-31
+docs: https://reefapi.com/playground
+name: ReefAPI
+slug: reefapi
+summary: >-
+  ReefAPI has no test-vs-live key split and no fixture data. Its trial model is
+  different and, for this product class, better suited - a browser playground that runs
+  REAL calls with no setup, a 1,000-credit no-card free grant, keyless MCP discovery,
+  and a billing rule that makes failure free. There is no sandbox to drift out of sync
+  with production because there is no sandbox: you test against live data.
+modes:
+  test_mode: false
+  live_mode: true
+  key_prefixes:
+    live: ak_live_
+    test: null
+  note: >-
+    Only one key prefix is published (ak_live_). No ak_test_ / sk_test_ equivalent
+    appears in the docs, llms.txt or llms-full.txt.
+surfaces:
+- name: Playground
+  type: hosted-console
+  url: https://reefapi.com/playground
+  http_status: 200
+  auth_required: false
+  detail: >-
+    "Try any endpoint in the browser without code" - an in-browser console covering all
+    183 engines, reachable with no setup and no account per the docs and llms.txt.
+- name: Free credit grant
+  type: trial-quota
+  url: https://reefapi.com/signup
+  http_status: 200
+  amount: 1000 credits
+  card_required: false
+  expiry: none
+  detail: Credits never expire, so an evaluation can be paused and resumed.
+- name: Keyless MCP discovery
+  type: anonymous-introspection
+  url: https://api.reefapi.com/mcp
+  auth_required: false
+  verified: probed 2026-08-31
+  detail: >-
+    initialize, tools/list, prompts/list and resources/list all return 200 with no
+    Authorization header, and four of the five tools (search_engines, get_catalog,
+    get_engine_schema, get_action_schema) are documented and verified keyless. An agent
+    can explore the entire 183-engine surface, read every action's parameter contract
+    and its credit price, and build a correct call - all before a key exists.
+- name: Per-action example payloads
+  type: fixtures
+  url: https://reefapi.com/docs/{engine}.md
+  detail: >-
+    Every action publishes a ready-to-run example request body in its markdown doc and
+    in the MCP get_action_schema response (field `example_params`). Verified on
+    amazon.md - each endpoint carries an "Example request body" JSON block.
+failure_is_free:
+  documented: true
+  detail: >-
+    "You're charged only on a successful response - failed or blocked calls (anything
+    where ok is false) cost nothing." Published on the docs, the pricing page, llms.txt
+    and the MCP repo README. This is the practical substitute for a sandbox - a wrong
+    call during development costs zero.
+test_values:
+  published: false
+  note: >-
+    No magic test identifiers, test ASINs, test addresses or simulator values are
+    published. The docs' example bodies use REAL live identifiers (e.g. amazon
+    product/detail example asin B0DGHMNQ5Z), which resolve against the live source and
+    consume credits. Recorded as published-real rather than invented as fixtures.
+test_clocks: false
+webhook_simulator: false
+gaps:
+- "No test-mode key, so there is no way to exercise integration wiring without spending credits from the live pool."
+- "No published deterministic fixture response - an integration test against a live marketplace is inherently non-repeatable, and the provider offers no frozen record to assert against."

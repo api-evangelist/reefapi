@@ -1,0 +1,95 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/pricing
+docs: https://reefapi.com/pricing
+name: ReefAPI
+slug: reefapi
+plan_count: 6
+currency: USD
+billing_model: >-
+  Credit subscription, not per-API plans. One balance is shared across every engine and
+  the MCP server. Every tier includes the full 183-API catalog, the playground, the docs
+  and MCP — tiers differ ONLY in monthly credit grant. Unused credits roll over and never
+  expire. Payment is in crypto (USDT and other coins) today; card payments are stated as
+  coming soon, with RapidAPI offered as the card-paying alternative (RapidAPI lists only
+  a subset of engines, each with its own key).
+billing_periods:
+- period: monthly
+  discount: 0
+- period: quarterly
+  discount: 0.25
+- period: yearly
+  discount: 0.50
+plans:
+- name: Free
+  price: 0
+  currency: USD
+  period: once
+  included_credits: 1000
+  credit_expiry: none
+  card_required: false
+  features:
+  - All 183+ live data APIs
+  - Playground, docs & MCP for AI
+  - Failed or blocked calls are free
+- name: Pro
+  price: 15
+  price_yearly_effective: 7.5
+  price_billed_yearly: 90
+  currency: USD
+  period: month
+  included_credits: 10000
+  credit_period: month
+  credit_expiry: none
+  positioning: For solo builders & small projects.
+- name: Ultra
+  price: 50
+  price_yearly_effective: 25
+  price_billed_yearly: 300
+  currency: USD
+  period: month
+  included_credits: 50000
+  credit_period: month
+  credit_expiry: none
+  positioning: For growing apps in production.
+  popular: true
+- name: Mega
+  price: 100
+  price_yearly_effective: 50
+  price_billed_yearly: 600
+  currency: USD
+  period: month
+  included_credits: 125000
+  credit_period: month
+  credit_expiry: none
+  positioning: For high-volume data pipelines.
+- name: Enterprise
+  price: 200
+  price_yearly_effective: 100
+  price_billed_yearly: 1200
+  currency: USD
+  period: month
+  included_credits: 300000
+  credit_period: month
+  credit_expiry: none
+  positioning: For teams at scale.
+- name: Custom
+  price: null
+  currency: USD
+  period: null
+  included_credits: null
+  positioning: "Need higher volume, a private engine, or a source we don't list yet?"
+  contact: https://reefapi.com/about
+  note: Contact-us tier; no published price.
+overage:
+  model: none
+  detail: >-
+    No overage rate is published. Credits are prepaid via the monthly grant and roll
+    over; running out returns QUOTA_EXCEEDED (402) rather than billing overage. Upgrade
+    is instant; downgrade/stop takes effect at renewal.
+per_call_pricing:
+  model: credits per call
+  baseline: 1 credit
+  heavier: "Image rendering, AI and large result sets cost more; the per-endpoint credit price is published on each API's docs page and returned by the MCP get_action_schema tool."
+  failed_calls: 0 credits
+refunds_policy: https://reefapi.com/refunds

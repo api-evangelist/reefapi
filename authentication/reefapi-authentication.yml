@@ -1,0 +1,69 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/docs (Authentication section) + https://reefapi.com/mcp + openapi/reefapi-openapi.json + live 401 probe 2026-08-31
+docs: https://reefapi.com/docs
+name: ReefAPI
+slug: reefapi
+summary:
+  model: single-credential, no OAuth, no scopes
+  types:
+  - apiKey
+  - http-bearer
+  api_key_in:
+  - header
+  oauth2: false
+  openid_connect: false
+  mtls: false
+  note: >-
+    One key covers the entire 183-engine catalog and the MCP server — there is no
+    per-engine credential, no scope surface and no token exchange. The same key is
+    presented two different ways depending on the surface, which is the one thing an
+    integrator has to get right.
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  surface: REST
+  applies_to: all 1528 operations (declared as a global `security` requirement in the OpenAPI)
+  sources:
+  - openapi/reefapi-openapi.json
+  - https://reefapi.com/docs
+- name: BearerKey
+  type: http
+  scheme: bearer
+  header: Authorization
+  surface: MCP (https://api.reefapi.com/mcp)
+  applies_to: the call_engine tool only
+  sources:
+  - https://reefapi.com/mcp
+  - https://reefapi.com/llms.txt
+  note: >-
+    The MCP server takes the SAME ReefAPI key but as 'Authorization: Bearer <key>',
+    not as x-api-key. Not declared in the OpenAPI (the MCP endpoint is outside the spec).
+key_management:
+  issued_from: https://reefapi.com/signup (dashboard)
+  prefix: ak_live_
+  display_policy: full key shown once at creation
+  rotation_documented: false
+  guidance: "Keep it server-side; never ship it to a browser. (docs, Authentication section)"
+anonymous_access:
+  rest: false
+  mcp_discovery: true
+  detail: >-
+    PROBED 2026-08-31. The MCP methods initialize, tools/list, prompts/list and
+    resources/list all return 200 with no Authorization header. Four of the five tools
+    (search_engines, get_catalog, get_engine_schema, get_action_schema) are documented
+    and verified keyless. Only call_engine authenticates and spends credits. The
+    OpenAPI itself (https://api.reefapi.com/openapi.json) and the RFC 9727 api-catalog
+    are also anonymous.
+failure_behavior:
+  status: 401
+  code: AUTH_FAILED
+  envelope: '{"ok":false,"meta":{...},"error":{"code":"AUTH_FAILED","message":"auth: no_key","retryable":false}}'
+  observed: '2026-08-31 POST https://api.reefapi.com/currency/v1/convert with no key'
+  note: The 401 body is the standard success envelope with ok=false — error semantics are uniform with the happy path.
+gaps:
+- "No /.well-known/openid-configuration, /.well-known/oauth-authorization-server or /.well-known/oauth-protected-resource on either host (all 404) — the MCP server is key-auth, not OAuth-protected, so RFC 9728 protected-resource metadata does not apply."
+- "No documented key-rotation or key-expiry policy."
+- "No IP allow-listing, per-key scope restriction or read-only key variant is documented."

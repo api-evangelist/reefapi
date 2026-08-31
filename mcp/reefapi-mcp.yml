@@ -1,0 +1,90 @@
+generated: '2026-08-31'
+method: probed
+source: https://api.reefapi.com/mcp (JSON-RPC initialize + tools/list, 2026-08-31) + https://reefapi.com/mcp + https://github.com/reefapi/reefapi-mcp
+name: ReefAPI MCP Server
+slug: reefapi
+status: live
+deployment:
+  mode: both
+  endpoint: https://api.reefapi.com/mcp
+  install: "git clone https://github.com/reefapi/reefapi-mcp && pip install -r requirements.txt && python server.py"
+  package: https://github.com/reefapi/reefapi-mcp
+  auth: api-key
+  verified: probed
+transport: streamable-http
+protocol_version: '2025-06-18'
+server_info:
+  name: reefapi
+  version: 1.27.2
+registry:
+  name: Official MCP Registry
+  id: io.github.reefapi/reefapi-mcp
+  url: https://registry.modelcontextprotocol.io/v0/servers?search=reefapi
+  status: active
+  published: '2026-06-23'
+  manifest: https://raw.githubusercontent.com/reefapi/reefapi-mcp/main/server.json
+authentication:
+  scheme: http-bearer
+  header: 'Authorization: Bearer <ReefAPI key>'
+  key_prefix: ak_live_
+  anonymous_discovery: true
+  note: >-
+    PROBED 2026-08-31. `initialize`, `tools/list`, `prompts/list` and `resources/list`
+    all answer 200 with NO Authorization header — the full tool manifest with input
+    schemas is anonymously introspectable. Only `call_engine` spends credits and
+    requires a key. This is unusual and materially agent-friendly: an agent can
+    discover the entire 183-engine surface before a key exists.
+probe_notes:
+- "A plain GET on /mcp returns 406 — it is JSON-RPC over POST only."
+- "POST without a session returns -32600 'Bad Request: Missing session ID'; the server issues an mcp-session-id header on initialize and requires it on subsequent calls."
+- "Accept header must be 'application/json, text/event-stream'; responses come back as SSE event: message frames."
+capabilities:
+  tools:
+    listChanged: false
+  prompts:
+    listChanged: false
+    count: 0
+  resources:
+    subscribe: false
+    listChanged: false
+    count: 0
+tool_count: 5
+tools:
+- name: search_engines
+  keyless: true
+  inputs: [query]
+  required: []
+  description: Rank the engine catalog against English keywords or a short natural-language use-case and return the best-matching engines with their actions.
+- name: get_catalog
+  keyless: true
+  inputs: []
+  required: []
+  description: The full ReefAPI catalog — every engine with a one-line title, grouped by category.
+- name: get_engine_schema
+  keyless: true
+  inputs: [engine]
+  required: [engine]
+  description: Compact overview of one engine — every action with description, required params and return shape.
+- name: get_action_schema
+  keyless: true
+  inputs: [engine, action]
+  required: [engine, action]
+  description: Full input contract for one engine action — every parameter (type, required, description, allowed_values, default, example, min/max), what it returns, pricing, and ready-to-run example_params.
+- name: call_engine
+  keyless: false
+  inputs: [engine, action, params]
+  required: [engine, action]
+  description: Execute POST /<engine>/v1/<action> with `params`; returns the uniform { ok, data, meta, error } envelope. The only credit-spending tool.
+design_note: >-
+  Deliberate discovery-first architecture: five generic tools instead of one tool per
+  API, because emitting 1,528 tools would blow past the ~30-50-tool ceiling where
+  agents stop selecting correctly. The provider states this explicitly in the repo
+  README. The raw tool manifest as returned by the live server is saved verbatim at
+  mcp/reefapi-mcp-tools.json.
+clients_documented:
+- Claude Desktop
+- Claude Code
+- Cursor
+- Windsurf
+- ChatGPT connectors
+raw_manifest: mcp/reefapi-mcp-tools.json

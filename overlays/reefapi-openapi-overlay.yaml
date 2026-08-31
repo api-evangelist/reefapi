@@ -1,0 +1,109 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay for ReefAPI
+  version: 1.0.0
+x-provenance:
+  generated: '2026-08-31'
+  method: generated
+  source: openapi/reefapi-openapi.json (harvested verbatim from https://api.reefapi.com/openapi.json 2026-08-31)
+  extends: openapi/reefapi-openapi.json
+  note: >-
+    Non-destructive. This overlay records what API Evangelist established about the
+    contract during enrichment; the harvested spec is never mutated. Everything below is
+    either a fact fetched from the provider's own docs, a live probe result, or an
+    honest statement of an absence. Nothing is invented — in particular, no parameter
+    enum, description or example is added here, because the provider publishes those
+    only in prose and adding them would risk transcribing them wrongly across 1,528
+    operations.
+actions:
+- target: $.info
+  description: Record provenance, the real contact surface and the license of the contract.
+  update:
+    contact:
+      name: ReefAPI
+      url: https://reefapi.com/about
+    termsOfService: https://reefapi.com/terms
+    x-provider: ReefAPI
+    x-docs: https://reefapi.com/docs
+    x-llms-txt: https://reefapi.com/llms.txt
+    x-api-catalog: https://api.reefapi.com/.well-known/api-catalog
+    x-mcp-server: https://api.reefapi.com/mcp
+    x-status-page: https://reefapi.com/status
+    x-status-api: https://api.reefapi.com/status
+    x-engine-count: 183
+    x-operation-count: 1528
+- target: $
+  description: >-
+    Declare the "Other" tag. It is applied to 57 operations (alibaba, autodoc, boyner,
+    decathlon, elcorteingles, flo, forum, n11, sephora, swappa, target, twitter, ulta,
+    zappos, zara) but is absent from the spec's tags[] block, so a generator that
+    validates declared tags will flag those operations.
+  update:
+    x-undeclared-tags:
+    - name: Other
+      operations: 57
+      note: Present on operations, missing from tags[]. Reported as a contract defect, not patched into the original.
+- target: $.tags
+  description: The 13 declared tags carry a name only, with no description. Recorded as a documentation gap.
+  update:
+    x-tag-descriptions-missing: 13
+- target: $.components.schemas.Envelope
+  description: >-
+    Document the meta block's fields. The provider describes them in a prose `description`
+    string on the meta property rather than as declared sub-properties, so no consumer can
+    read them structurally.
+  update:
+    x-meta-fields:
+    - name: api
+      description: Engine slug that served the call.
+    - name: endpoint
+      description: Action that served the call.
+    - name: mode
+      description: Observed value "live" — ReefAPI does not serve cached responses.
+    - name: latency_ms
+      description: Server-side latency for the upstream fetch.
+    - name: record_count
+      description: Number of records in data.
+    - name: completeness_pct
+      description: How complete the extraction was against the upstream page. Agents should read this before acting on a partial result.
+    - name: bytes
+      description: Payload size.
+    - name: cache_hit
+      description: Whether a cache was used. Observed false.
+    - name: credits
+      description: Credits this call consumed. Zero when ok is false.
+    x-envelope-note: >-
+      The `data` property is declared with a description and NO type, properties or
+      oneOf, for all 1,528 operations. Response payloads are therefore not machine
+      readable from this contract. They ARE documented, per engine, at
+      https://reefapi.com/docs/{engine}.md and via the MCP get_action_schema tool.
+- target: $.paths.*.post.responses
+  description: >-
+    Record the eight documented error codes that the contract does not declare. Every
+    operation declares only 200, 401 and 429; the docs publish 400, 402, 404, 500, 502,
+    503 and 504 as well. Recorded as an extension rather than injected as response
+    objects, because inventing response bodies into a harvested contract is out of bounds.
+  update:
+    x-undeclared-status-codes: [400, 402, 404, 500, 502, 503, 504]
+    x-error-catalog: errors/reefapi-problem-types.yml
+- target: $.components.securitySchemes.ApiKeyAuth
+  description: Record the second, undeclared credential presentation used by the MCP surface.
+  update:
+    x-key-prefix: ak_live_
+    x-issued-at: https://reefapi.com/signup
+    x-mcp-presentation: 'Authorization: Bearer <same key>'
+    x-mcp-note: The MCP endpoint takes the same key as a bearer token, not as x-api-key. It sits outside this spec.
+x-enrichment-findings:
+  strengths:
+  - OpenAPI served at the API host root, discoverable via an RFC 9727 api-catalog linkset.
+  - One reusable Envelope schema referenced by all 1,528 operations — genuinely uniform.
+  - Every operation has a unique operationId, a non-empty summary and at least one tag.
+  - securityScheme defined AND applied globally.
+  - Request bodies carry a working `example` object on every operation.
+  gaps:
+  - Response payloads entirely untyped (one schema, `data` with no type) — no useful client can be generated.
+  - Request properties all `type: string` with no description, enum, default or example, even where the docs publish 19-value enums.
+  - Only 200/401/429 declared; eight further documented codes absent from the contract.
+  - The `Other` tag is used but not declared; no tag has a description.
+  - No servers[] variables, no info.contact, no info.license, no info.termsOfService in the harvested spec.
+  - The gateway's own catalog (engines, actions, credit prices) has no REST operation — MCP and markdown only.

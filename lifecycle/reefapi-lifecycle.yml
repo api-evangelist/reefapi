@@ -1,0 +1,85 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/status + https://reefapi.com/docs + https://api.reefapi.com/status + openapi/reefapi-openapi.json
+name: ReefAPI
+slug: reefapi
+versioning:
+  scheme: path-segment
+  current: v1
+  pattern: /{engine}/v1/{action}
+  spec_version: 1.0.0
+  spec_format: OpenAPI 3.0.3
+  policy_published: false
+  note: >-
+    Every one of the 183 engines is on v1 today. No document states what happens at v2,
+    how long v1 is supported, or whether versions run in parallel.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: 0
+  evidence: >-
+    Zero operations carry `deprecated: true` in openapi/reefapi-openapi.json. Zero
+    occurrences of "deprecat" in the docs, llms.txt or llms-full.txt. No Sunset or
+    Deprecation response headers observed on a live call (2026-08-31).
+  gap: >-
+    An engine is a wrapper around a third-party site, so engines can and will be
+    retired when a source dies — the DISABLED (503) error code exists precisely for
+    "endpoint temporarily turned off". There is no published policy for how that is
+    announced or how long a retiring engine is kept alive.
+status_page:
+  present: true
+  url: https://reefapi.com/status
+  http_status: 200
+  machine_readable: true
+  api: https://api.reefapi.com/status
+  api_content_type: application/json
+  api_shape: '{ generated_at, summary: { operational, degraded, down, total }, engines: [] }'
+  third_party_host: false
+  advertised_in: /.well-known/api-catalog (status link relation)
+  method: canary
+  detail: >-
+    Provider-hosted, not Statuspage/Instatus. The page states it is driven by an
+    internal canary running real capability checks against each live upstream every
+    cycle, and that it shows only confirmed customer-impacting outages rather than
+    transient noise. A JSON twin at https://api.reefapi.com/status makes it agent-readable,
+    which is rarer than the status page itself.
+  observation_2026_08_31: >-
+    The JSON endpoint returned all-zero counters and an empty engines[] array
+    (summary.total 0), and the HTML page rendered "All monitored systems operational ·
+    0 monitored". Recorded as observed - the surface is live and machine-readable, but
+    on this probe it published no per-engine rows, so a consumer cannot currently see
+    which of the 183 engines is being watched.
+sla:
+  published: false
+  uptime_target: null
+  note: No SLA, uptime commitment or credit-back term is published on the pricing, terms or status pages.
+changelog:
+  present: false
+  probed:
+  - url: https://reefapi.com/changelog
+    status: 404
+  note: >-
+    No dated changelog is published. The catalog demonstrably changes fast — the about
+    page says "we ship new APIs every week", the MCP server description drifted from
+    150+ to 160+ to 180+ to 185+ across README, server.json and the registry, and the
+    engine count differs between llms.txt (183) and the GitHub org bio (185) — but
+    there is no record a consumer can diff. No changelog/ artifact was written rather
+    than fabricating one.
+support:
+  channels:
+  - type: contact-form
+    url: https://reefapi.com/about
+  - type: email
+    note: Published on the about page behind Cloudflare email obfuscation; not transcribed here.
+  documented_response: "Real people, fast replies (about page)."
+roadmap:
+  published: false
+  probed:
+  - url: https://reefapi.com/roadmap
+    status: 404
+terms:
+  terms_of_service: https://reefapi.com/terms
+  privacy_policy: https://reefapi.com/privacy
+  refunds: https://reefapi.com/refunds

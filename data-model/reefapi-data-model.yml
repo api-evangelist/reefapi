@@ -1,0 +1,121 @@
+generated: '2026-08-31'
+method: derived
+source: openapi/reefapi-openapi.json + mcp/reefapi-mcp-tools.json + https://reefapi.com/docs/amazon.md
+name: ReefAPI
+slug: reefapi
+summary: >-
+  ReefAPI's data model is deliberately two-layer and only the OUTER layer is typed. The
+  outer layer is a single reusable envelope shared by all 1,528 operations; the inner
+  layer - the actual records (products, listings, reviews, jobs, papers) - is declared
+  as an untyped `data` property and lives instead in per-engine prose. The entity graph
+  below is therefore the GATEWAY model (Engine -> Action -> Envelope), not a business
+  entity graph, because the provider does not publish one in machine-readable form.
+schema_count_in_spec: 1
+entities:
+- name: Envelope
+  kind: schema
+  spec_ref: '#/components/schemas/Envelope'
+  required: [ok]
+  properties:
+  - name: ok
+    type: boolean
+    role: discriminator
+  - name: data
+    type: any
+    role: payload
+    note: "Declared with a description only - \"Action result (shape varies per action)\" - and no type, no properties and no oneOf. This is the single largest contract gap."
+  - name: meta
+    type: object
+    role: telemetry
+    documented_fields: [api, endpoint, mode, latency_ms, record_count, completeness_pct, bytes, cache_hit, credits]
+    note: Described in prose on the schema; the individual fields are not declared as properties.
+  - name: error
+    type: object
+    nullable: true
+    role: failure
+    properties: [code, message, retryable]
+  reuse: 1528 operations reference this one schema
+- name: Engine
+  kind: conceptual
+  count: 183
+  identifier: first path segment (/{engine}/v1/...)
+  addressable_via:
+  - MCP get_engine_schema(engine)
+  - MCP get_catalog()
+  - https://reefapi.com/docs/{engine}
+  - https://reefapi.com/docs/{engine}.md
+  attributes: [slug, title, category, action_count, credit_price_per_action]
+  note: Not modelled in the OpenAPI - reconstructed from path prefixes and the published catalog.
+- name: Action
+  kind: conceptual
+  count: 1528
+  identifier: third path segment (/{engine}/v1/{action})
+  operation_id_pattern: '{engine}_{action} with hyphens and slashes normalised to underscores'
+  addressable_via:
+  - MCP get_action_schema(engine, action)
+  - OpenAPI operationId
+  attributes: [name, description, required_params, optional_params, returns, credits, example_params]
+- name: Category
+  kind: conceptual
+  count: 14
+  values: [Reputation & Reviews, E-commerce & Marketplaces, Real Estate, Jobs & Hiring, Travel & Lodging, Search & SEO, Finance & Data, Media Film & Knowledge, Utilities & AI, Other, Classifieds & Second-hand, Social Media, Developer Tools, Government & Tenders]
+  note: >-
+    13 are declared in the OpenAPI tags[] block; "Other" is used by 57 operations but is
+    NOT declared - an undeclared-tag defect recorded in the overlay.
+relationships:
+- from: Category
+  to: Engine
+  cardinality: has_many
+  via: OpenAPI tag on each operation
+- from: Engine
+  to: Action
+  cardinality: has_many
+  via: path prefix /{engine}/v1/
+- from: Action
+  to: Envelope
+  cardinality: has_one
+  via: responses.200.content.application/json.schema $ref
+- from: Envelope
+  to: Error
+  cardinality: has_one
+  via: error property, nullable
+  note: See errors/reefapi-problem-types.yml for the 11-code registry.
+operations_per_category:
+  Media, Film & Knowledge: 274
+  E-commerce & Marketplaces: 264
+  Developer Tools: 263
+  Utilities & AI: 163
+  Social Media: 117
+  Finance & Data: 103
+  Reputation & Reviews: 76
+  Jobs & Hiring: 69
+  Other: 57
+  Real Estate: 57
+  Travel & Lodging: 43
+  Classifieds & Second-hand: 29
+  Search & SEO: 8
+  Government & Tenders: 5
+payload_documentation:
+  machine_readable: false
+  human_readable: true
+  agent_readable: true
+  detail: >-
+    The response record shapes ARE documented, just not in the spec. Each engine
+    publishes a markdown twin at https://reefapi.com/docs/{engine}.md that names every
+    returned field in a prose "Returns:" line (verified on amazon.md - product{asin,
+    title, price, currency, rating, brand, features[], images[], variations, tech_specs,
+    aplus, compare_similar[], coupon, campaign, gtin, upc, ean, isbn, barcodes[]} plus
+    reviews[]{...} plus review_insights{...}). The MCP get_action_schema tool returns
+    the same information structured. So an agent CAN learn the payload; a code generator
+    reading only the OpenAPI cannot.
+id_prefixes:
+  present: false
+  note: >-
+    No ReefAPI-issued object identifiers exist - the gateway returns the upstream
+    source's own identifiers (Amazon ASIN, Zillow zpid, Reddit id, OpenAlex entity ids).
+    The one ReefAPI-issued identifier observed is the API key prefix ak_live_.
+gaps:
+- "components.schemas holds ONE schema for 1,528 operations. Response payloads are untyped, so no client can be generated with meaningful return types."
+- "Request properties are all `type: string` with no description, enum, default or example, even where the docs publish 19-value enums."
+- "The `Other` tag is applied to 57 operations but not declared in tags[]."
+- "The gateway's own catalog (engines, actions, categories, credit prices) is served over MCP and markdown but has no REST endpoint and no schema."

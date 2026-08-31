@@ -1,0 +1,139 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/docs + https://reefapi.com/docs/amazon.md + openapi/reefapi-openapi.json + live probes 2026-08-31
+docs: https://reefapi.com/docs
+name: ReefAPI
+slug: reefapi
+summary: >-
+  ReefAPI's whole value proposition is convention: 183 heterogeneous upstream sources
+  normalised behind ONE request shape, ONE auth header, ONE response envelope and ONE
+  error code space. Every operation is POST /{engine}/v1/{action} with a JSON body — no
+  GETs, no path parameters, no per-engine base URL. The uniformity is real and verified
+  across all 1,528 operations in the spec.
+request:
+  style: RPC-over-HTTP (POST-only)
+  template: POST https://api.reefapi.com/{engine}/v1/{action}
+  method: POST
+  methods_used: [POST]
+  content_type: application/json
+  params_location: JSON request body (never query string, never path)
+  path_parameters: 0
+  query_parameters: 0
+  verified: "All 1,528 operations in openapi/reefapi-openapi.json are POST with a requestBody; none declare `parameters`."
+authentication:
+  rest: "x-api-key: <key>"
+  mcp: "Authorization: Bearer <key>"
+  applied: "global `security: [{ApiKeyAuth: []}]` in the OpenAPI"
+  see: authentication/reefapi-authentication.yml
+versioning:
+  style: path segment
+  current: v1
+  location: /{engine}/v1/{action}
+  spec_version: info.version 1.0.0 (OpenAPI 3.0.3)
+  media_type_versioning: false
+  header_versioning: false
+  note: The version segment is per-engine in the path but is uniformly v1 across all 183 engines today.
+response_envelope:
+  shape: '{ ok, data, meta, error }'
+  uniform: true
+  applies_to: success AND failure, all engines
+  discriminator: ok (boolean)
+  data: "Action result; shape varies per action and is NOT modelled in the OpenAPI (declared as an untyped `data` property on components.schemas.Envelope)."
+  meta:
+    fields: [api, endpoint, mode, latency_ms, record_count, completeness_pct, bytes, cache_hit, credits]
+    note: >-
+      `completeness_pct` and `record_count` are an unusual and genuinely useful pair for
+      an agent — they let a caller judge whether a partial extraction is good enough
+      without inspecting the payload. `credits` reports what the call actually cost.
+  error:
+    fields: [code, message, retryable]
+    see: errors/reefapi-problem-types.yml
+pagination:
+  style: mixed, per-engine (not normalised)
+  params_observed:
+    page: 327
+    limit: 272
+    cursor: 96
+    per_page: 63
+    max_results: 55
+    offset: 37
+    page_size: 30
+    count: 29
+    start: 22
+  response_fields: not declared in the spec (the `data` payload is untyped)
+  note: >-
+    THE ONE PLACE THE UNIFORMITY BREAKS. Paging is whatever the upstream source uses —
+    an agent moving between engines cannot assume `page`, and there is no shared
+    next-cursor field in `meta`. Nine distinct paging parameter names appear across the
+    catalog. The per-action schema (get_action_schema / docs/{engine}.md) is the only
+    reliable way to learn which one an action takes.
+field_expansion:
+  supported: false
+  note: No sparse-fieldset or expand parameter convention; some engines take include_* booleans (e.g. academic_search include_abstract).
+metadata:
+  user_metadata: false
+  note: No customer-supplied metadata field on requests.
+request_id_tracing:
+  header: none observed
+  body_field: none
+  note: >-
+    PROBED 2026-08-31 — no X-Request-Id, X-Correlation-Id or Cf-Request-Id echoed in the
+    response headers or the meta block. There is no published way to quote a single call
+    back to support. A real gap for production debugging.
+idempotency:
+  supported: false
+  keys: false
+  header: null
+  evidence: >-
+    Zero occurrences of "idempot" in the docs, llms.txt or the 520KB llms-full.txt, and
+    no Idempotency-Key parameter anywhere in the 1,528-operation spec.
+  assessment: na
+  rationale: >-
+    NOT A DEFECT HERE. Every operation is a READ of an upstream source expressed as a
+    POST; nothing is created, so a duplicate call returns the same data and costs an
+    extra credit at worst. Idempotency keys have no work to do on a read-only surface.
+    Recorded `na` rather than absent so the denominator, not the score, carries it.
+rate_limit_signaling:
+  headers: none
+  body: error.code RATE_LIMITED + error.retryable true
+  see: rate-limits/reefapi-rate-limits.yml
+caching:
+  model: live-only
+  detail: "\"Every call fetches live data — we don't serve stale cached responses.\" meta.cache_hit reports whether a cache was used (observed false)."
+  http_caching: "cf-cache-status DYNAMIC on the API host; no Cache-Control or ETag published."
+dry_run_mode:
+  supported: false
+  assessment: na
+  rationale: >-
+    Read-only surface with a discovery-first schema layer instead. get_action_schema
+    returns ready-to-run `example_params` and a credit price BEFORE the call, and a
+    failed call costs zero credits, which covers most of what a dry run is for.
+reversibility:
+  assessment: na
+  grade: na
+  write_surface: false
+  rationale: >-
+    ReefAPI has NO write surface to reverse. All 1,528 operations retrieve data from an
+    upstream source; POST is used as the transport verb (params travel in a JSON body),
+    not as a create verb. Nothing is persisted on the caller's behalf, no resource is
+    created, mutated or deleted, and there is no order, booking, message or payment to
+    cancel. The 13 operationIds containing write-shaped words (bluesky_post_detail,
+    reddit_post_comments, threads_post, producthunt_post, stackoverflow_post,
+    instagram_post_info, domain_intel_reverse_dns, finance_v1_stock_net_share_purchase_activity …)
+    were each checked - every one reads a "post" or "reverse DNS" or "share purchase
+    activity" record, none of them writes one.
+  reversal_operations: []
+  windows: []
+  note: >-
+    The only consequential side effect of a call is a CREDIT DEBIT, and the provider has
+    made that self-limiting rather than reversible - a call that fails or is blocked
+    (ok=false) costs zero, so an agent's mistakes are free. There is no published refund
+    or credit-reversal API; account-level refunds are a human process documented at
+    https://reefapi.com/refunds. Deliberately NOT recorded as a reversal window, because
+    the docs state no window and inventing one would be worse than the honest gap.
+cross_references:
+  errors: errors/reefapi-problem-types.yml
+  lifecycle: lifecycle/reefapi-lifecycle.yml
+  authentication: authentication/reefapi-authentication.yml
+  rate_limits: rate-limits/reefapi-rate-limits.yml
+  data_model: data-model/reefapi-data-model.yml

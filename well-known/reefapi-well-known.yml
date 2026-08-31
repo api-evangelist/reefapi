@@ -1,0 +1,80 @@
+generated: '2026-08-31'
+method: probed
+source: direct HTTPS GET of each named /.well-known/ path on every apis.yml baseURL host and the docs host
+name: ReefAPI
+slug: reefapi
+summary: >-
+  api.reefapi.com serves a real RFC 9727 API catalog document (application/linkset+json)
+  pointing at the OpenAPI service-desc, the human service-doc and a machine-readable
+  status endpoint. Every other named well-known path 404s on both hosts. The marketing
+  host reefapi.com answers all /.well-known/* with its Next.js 404 HTML page (status 404,
+  not a soft-200), so there are no false positives there.
+hosts:
+- host: api.reefapi.com
+  documents:
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: application/linkset+json
+    file: well-known/reefapi-api-catalog.json
+    note: RFC 9727 linkset; anchor https://api.reefapi.com, service-desc -> /openapi.json, service-doc -> https://reefapi.com/docs, status -> https://api.reefapi.com/status
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+- host: reefapi.com
+  documents:
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+adjacent_discovery:
+- url: https://reefapi.com/llms.txt
+  status: 200
+  content_type: text/plain
+  file: llms/reefapi-llms.txt
+- url: https://reefapi.com/llms-full.txt
+  status: 200
+  content_type: text/plain
+  note: 520KB verbatim catalog dump; deliberately NOT committed (gitignored *-llms-full.txt)
+- url: https://reefapi.com/robots.txt
+  status: 200
+  note: >-
+    Explicitly allow-lists 15 named AI crawlers (GPTBot, OAI-SearchBot, ChatGPT-User,
+    ClaudeBot, anthropic-ai, Claude-User, Claude-SearchBot, PerplexityBot,
+    Perplexity-User, Google-Extended, Applebot-Extended, Amazonbot, CCBot,
+    meta-externalagent) with Allow: / and a single Disallow: /ops. No agent is
+    served anything different from a human.
+- url: https://api.reefapi.com/status
+  status: 200
+  content_type: application/json
+  note: machine-readable status endpoint {generated_at, summary{operational,degraded,down,total}, engines[]}

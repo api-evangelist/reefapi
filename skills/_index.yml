@@ -1,0 +1,27 @@
+generated: '2026-08-31'
+method: generated
+source: openapi/reefapi-openapi.json + mcp/reefapi-mcp-tools.json + https://reefapi.com/docs
+name: ReefAPI
+slug: reefapi
+note: >-
+  Every operationId and MCP tool name referenced in these skills was verified against
+  openapi/reefapi-openapi.json (1,528 operations) or the live tools/list manifest probed
+  2026-08-31. No operation, parameter, credit price or enum value was invented. ReefAPI
+  publishes no AGENTS.md or first-party skill pack of its own (searched the docs, the
+  GitHub org and llms-full.txt), so these are generated, not harvested.
+skills:
+- name: reefapi-engine-discovery
+  file: skills/reefapi-engine-discovery.md
+  surface: MCP
+  summary: Discovery-first engine and action selection across 183 engines, with the keyless discovery flow and the retry/backoff rules.
+  operations: [search_engines, get_catalog, get_engine_schema, get_action_schema, call_engine]
+- name: reefapi-product-intelligence
+  file: skills/reefapi-product-intelligence.md
+  surface: REST
+  summary: Full commercial picture of one retail product — detail, buy-box and offers, merged multi-marketplace reviews, related set and batch pricing.
+  operations: [amazon_search, amazon_product_detail, amazon_product_offers, amazon_product_reviews, amazon_product_related, amazon_products_batch, amazon_gtin_to_asin, amazon_bestsellers]
+- name: reefapi-market-research-sweep
+  file: skills/reefapi-market-research-sweep.md
+  surface: REST
+  summary: Cross-source reputation and demand sweep on one company across Trustpilot, Google Maps, Reddit, Indeed and LinkedIn Jobs, with reconciliation rules.
+  operations: [trustpilot_company_search, trustpilot_company_reviews, google_maps_place_search, google_maps_place_reviews, reddit_search, reddit_post_comments, indeed_company, indeed_company_reviews, indeed_company_salaries, linkedin_jobs_jobs_by_company]

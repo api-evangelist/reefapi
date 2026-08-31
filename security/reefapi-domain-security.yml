@@ -1,0 +1,30 @@
+generated: '2026-08-31'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: reefapi.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  3 01:42:48 2026 GMT
+  hsts: true
+  hsts_max_age: 15552000
+- host: api.reefapi.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  3 01:42:48 2026 GMT
+  hsts: true
+  hsts_max_age: 15552000
+  hsts_include_subdomains: true
+  hsts_note: >-
+    Re-probed 2026-08-31. The automated pass recorded hsts null because
+    GET https://api.reefapi.com/ returns 404 (the API is POST-only, path-scoped);
+    the 404 response nevertheless carries
+    'strict-transport-security: max-age=15552000; includeSubDomains',
+    as does a POST to a real operation. HSTS is served.
+domains:
+- domain: reefapi.com
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none

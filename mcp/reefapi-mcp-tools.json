@@ -1,0 +1,138 @@
+{
+  "tools": [
+    {
+      "name": "search_engines",
+      "description": "Find the right ReefAPI engine for a task \u2014 pass ENGLISH keywords or a short natural-language\n    use-case (\"detect a website's tech stack\", \"company reviews\", \"check a package for vulnerabilities\",\n    \"is this domain available\"). The catalog is in English: if the end-user asked in another language,\n    translate their INTENT into English keywords first (you are an LLM \u2014 do this inline). Ranks engines by\n    how well the query matches each engine's name/title/category/ACTION descriptions (stem-matched, so\n    plurals/word-forms still hit). Empty query = list all. Returns name/title/category/actions + match\n    score. Call this FIRST, then get_engine_schema(engine) to pick an action. This is a fast keyword\n    pre-filter \u2014 if the right engine isn't in the results (or you want to be sure), call get_catalog and\n    pick from the full list YOURSELF (you semantically match any language/phrasing better than keywords).",
+      "inputSchema": {
+        "properties": {
+          "query": {
+            "default": "",
+            "description": "English keywords or a short use-case, e.g. 'company reviews', 'detect a website's tech stack', or 'is this domain available'. Translate non-English intent to English first. Empty = list all engines.",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "title": "search_enginesArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Search ReefAPI engines",
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_engine_schema",
+      "description": "COMPACT overview of ONE engine: every action with its description, required params and what it\n    returns \u2014 but NOT the full param detail (kept lean so a 90-action engine stays token-cheap). Call\n    this after search_engines to pick the right ACTION, then get_action_schema(engine, action) for that\n    action's full params before call_engine.",
+      "inputSchema": {
+        "properties": {
+          "engine": {
+            "description": "The engine's name (the `engine`/`name` field from search_engines or get_catalog, e.g. 'zillow', 'amazon'). Returns each action with its description, required params, and what it returns.",
+            "title": "Engine",
+            "type": "string"
+          }
+        },
+        "required": [
+          "engine"
+        ],
+        "title": "get_engine_schemaArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Engine schema",
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_action_schema",
+      "description": "FULL detail for ONE engine action: every parameter (type, required, description, allowed_values\n    dropdown, default, example, min/max), what it returns, pricing, and a ready-to-run example_params.\n    Call this right before call_engine so you send valid params \u2014 invalid enum values are rejected with\n    the allowed list.",
+      "inputSchema": {
+        "properties": {
+          "engine": {
+            "description": "The engine's name (e.g. 'zillow'), as returned by search_engines or get_catalog.",
+            "title": "Engine",
+            "type": "string"
+          },
+          "action": {
+            "description": "The action's name on that engine (from get_engine_schema, e.g. 'search'). Returns the full param detail (type, required, allowed_values, default, example, min/max), what it returns, pricing, and ready-to-run example_params.",
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "engine",
+          "action"
+        ],
+        "title": "get_action_schemaArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Action schema",
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "call_engine",
+      "description": "Call a ReefAPI engine action \u2014 POST /<engine>/v1/<action> with `params`. Returns the uniform\n    { ok, data, meta, error } envelope. Get param names from get_engine_schema first. Needs YOUR\n    ReefAPI key (the local server reads REEFAPI_KEY; the hosted server reads the `Authorization:\n    Bearer ak_live_...` header you configure on the connection). Get a key at https://reefapi.com.\n    Failed calls cost no credits.",
+      "inputSchema": {
+        "properties": {
+          "engine": {
+            "description": "The engine's name to call (e.g. 'zillow'), as returned by search_engines or get_catalog.",
+            "title": "Engine",
+            "type": "string"
+          },
+          "action": {
+            "description": "The action to run on that engine (e.g. 'search'), as listed by get_engine_schema.",
+            "title": "Action",
+            "type": "string"
+          },
+          "params": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The action's parameters as a JSON object, e.g. {'query': 'NYC'}. Get the valid param names and values from get_action_schema first. Omit or pass null for actions that take none.",
+            "title": "Params"
+          }
+        },
+        "required": [
+          "engine",
+          "action"
+        ],
+        "title": "call_engineArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Call a ReefAPI engine",
+        "readOnlyHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_catalog",
+      "description": "The FULL ReefAPI catalog \u2014 EVERY engine with its one-line title, grouped by category. This is the\n    whole menu (\u2248 a few thousand tokens); SCAN IT AND PICK THE BEST ENGINE YOURSELF. You are an LLM, so\n    you match the user's intent semantically \u2014 across ANY language, typo, or phrasing \u2014 far better than a\n    keyword search can. Use this whenever search_engines didn't surface the right engine (or to be sure\n    you didn't miss a better one). After you pick: get_engine_schema(engine) -> get_action_schema -> call_engine.",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_catalogArguments",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "ReefAPI catalog",
+        "readOnlyHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+generated: '2026-08-31'
+method: searched
+source: https://reefapi.com/docs (Errors section) + openapi/reefapi-openapi.json (components.schemas.Envelope, 401/429 responses) + live 401 probe 2026-08-31
+docs: https://reefapi.com/docs
+name: ReefAPI
+slug: reefapi
+format: vendor-envelope
+rfc9457: false
+content_type: application/json
+summary: >-
+  ReefAPI does NOT use RFC 9457 problem+json. It uses a single uniform response envelope
+  for both success and failure — { ok, data, meta, error } — where failure sets ok=false
+  and populates error{code, message, retryable}. The `retryable` boolean is the notable
+  part: it is a machine-readable retry hint published per error, which is exactly what an
+  autonomous agent needs and which most vendor envelopes omit. The catalog of 11 stable
+  codes is published in the docs; the OpenAPI itself declares only 401 and 429 on every
+  operation, so the docs are the richer source.
+envelope:
+  shape: '{ "ok": boolean, "data": any, "meta": object, "error": { "code": string, "message": string, "retryable": boolean } | null }'
+  discriminator: ok
+  error_field: error
+  code_field: error.code
+  message_field: error.message
+  retry_field: error.retryable
+  schema_ref: '#/components/schemas/Envelope'
+  meta_fields: [api, endpoint, mode, latency_ms, record_count, completeness_pct, bytes, cache_hit, credits]
+billing_note: "A call whose `ok` is false costs zero credits — published on the pricing page, the docs and llms.txt."
+problem_types:
+- code: MISSING_PARAM
+  status: 400
+  title: A required parameter was omitted
+  retryable: false
+  remediation: Read the action's required params from get_action_schema (MCP) or the engine's docs page, then resend.
+- code: INVALID_PARAM
+  status: 400
+  title: A parameter was malformed
+  retryable: false
+  remediation: Check type and allowed_values for the parameter; the per-action schema publishes enums, defaults and min/max.
+- code: NOT_FOUND
+  status: 404
+  title: The requested resource doesn't exist
+  retryable: false
+- code: AUTH_FAILED
+  status: 401
+  title: Missing or invalid x-api-key
+  retryable: false
+  remediation: Send x-api-key on REST, or Authorization Bearer on MCP. Observed message on a keyless call - "auth - no_key".
+  declared_in_openapi: true
+- code: QUOTA_EXCEEDED
+  status: 402
+  title: Out of credits
+  retryable: false
+  remediation: Top up the shared credit balance; credits never expire and roll over.
+- code: RATE_LIMITED
+  status: 429
+  title: Too many requests
+  retryable: true
+  remediation: Back off briefly and retry; the docs state it clears within seconds (3-second rolling window).
+  declared_in_openapi: true
+- code: DISABLED
+  status: 503
+  title: Endpoint temporarily turned off
+  retryable: false
+- code: TARGET_BLOCKED
+  status: 502
+  title: Upstream anti-bot wall
+  retryable: true
+  note: Usually retryable. Specific to the web-data domain - the upstream site blocked the fetch, not ReefAPI.
+- code: UPSTREAM_TIMEOUT
+  status: 504
+  title: Upstream took too long
+  retryable: true
+- code: PARSE_ERROR
+  status: 502
+  title: Upstream changed shape
+  retryable: false
+  note: The target site's markup changed; ReefAPI repairs the engine. This is the honest failure mode of a scraping-backed API and the provider names it explicitly.
+- code: INTERNAL
+  status: 500
+  title: Unexpected error on our side
+  retryable: false
+openapi_declared_responses:
+  '200': 1528
+  '401': 1528
+  '429': 1528
+gaps:
+- "The OpenAPI declares only 200/401/429 per operation — the other eight documented codes (400/402/404/500/502/503/504) appear in the docs but not in the machine-readable contract, so a generated client will not model them."
+- "No Retry-After header or RateLimit-* headers are returned on 429 (verified on a live unauthenticated call), so the retry hint is in the body only."
+- "Error responses are not typed in the spec: the 401 and 429 responses carry a description but no content schema, even though the body is the same Envelope."
