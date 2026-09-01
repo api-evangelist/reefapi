@@ -15,6 +15,29 @@ created: '2026-08-30'
 modified: '2026-08-31'
 specificationVersion: '0.21'
 tags:
+- Web Data
+- Data Aggregation
+- Web Scraping
+- SERP
+- E-Commerce
+- Social-Media
+- Real-Estate
+- Job
+- Travel
+- News
+- Finance
+- Reviews
+- Company Intelligence
+- MCP
+- agent-native
+- REST
+- OpenAPI
+- llms-txt
+- API Catalog
+- Free Tier
+- Credits
+- Gateway
+tags_raw:
 - web-data
 - data-aggregation
 - web-scraping
@@ -44,6 +67,24 @@ apis:
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
   tags:
+  - Web Data
+  - Data Aggregation
+  - Web Scraping
+  - E-Commerce
+  - Social-Media
+  - Real-Estate
+  - Job
+  - Travel
+  - News
+  - Finance
+  - Reviews
+  - Company Intelligence
+  - MCP
+  - agent-native
+  - REST
+  - OpenAPI
+  - Free Tier
+  tags_raw:
   - web-data
   - data-aggregation
   - web-scraping
@@ -89,6 +130,24 @@ apis:
   humanURL: https://reefapi.com/mcp
   baseURL: https://api.reefapi.com/mcp
   tags:
+  - Web Data
+  - Data Aggregation
+  - Web Scraping
+  - E-Commerce
+  - Social-Media
+  - Real-Estate
+  - Job
+  - Travel
+  - News
+  - Finance
+  - Reviews
+  - Company Intelligence
+  - MCP
+  - agent-native
+  - REST
+  - OpenAPI
+  - Free Tier
+  tags_raw:
   - web-data
   - data-aggregation
   - web-scraping
@@ -132,6 +191,9 @@ generated:
   confidence: 90
   at: '2026-08-30T16:50:12.945Z'
 common:
+- type: License
+  name: MIT
+  url: https://github.com/reefapi/reefapi-mcp/blob/main/LICENSE
 - type: DomainSecurity
   url: security/reefapi-domain-security.yml
 - type: Authentication
