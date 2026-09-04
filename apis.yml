@@ -11,6 +11,23 @@ description: 'ReefAPI is a unified web-data gateway that fronts 183 production d
   introspectable, an RFC 9727 /.well-known/api-catalog linkset, a published OpenAPI 3.0.3 on the API host root, llms.txt plus
   a per-engine markdown twin at /docs/{engine}.md, and a robots.txt that explicitly allow-lists fifteen named AI crawlers.'
 url: https://raw.githubusercontent.com/api-evangelist/reefapi/refs/heads/main/apis.yml
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  probe_state: covered
+  source:
+  - plans
+  - authentication
+  - rate-limits
+  - security
+  - sandbox
+  generated: '2026-09-03'
+  method: derived
 created: '2026-08-30'
 modified: '2026-08-31'
 specificationVersion: '0.21'
