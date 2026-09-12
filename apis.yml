@@ -208,6 +208,8 @@ generated:
   confidence: 90
   at: '2026-08-30T16:50:12.945Z'
 common:
+- type: Website
+  url: https://www.reefapi.com/
 - type: License
   name: MIT
   url: https://github.com/reefapi/reefapi-mcp/blob/main/LICENSE
