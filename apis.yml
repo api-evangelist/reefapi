@@ -78,72 +78,11 @@ tags_raw:
 - credits
 - gateway
 apis:
-- name: ReefAPI REST API
-  description: POST-based REST/JSON API fronting a catalog of web-data engines. Auth via x-api-key header; uniform {ok,data,meta,error}
-    response envelope with stable error codes. Declared OpenAPI contract and RFC 9727 API Catalog.
-  humanURL: https://reefapi.com/docs
-  baseURL: https://api.reefapi.com
-  tags:
-  - Web Data
-  - Data Aggregation
-  - Web Scraping
-  - E-Commerce
-  - Social-Media
-  - Real-Estate
-  - Job
-  - Travel
-  - News
-  - Finance
-  - Reviews
-  - Company Intelligence
-  - MCP
-  - agent-native
-  - REST
-  - OpenAPI
-  - Free Tier
-  tags_raw:
-  - web-data
-  - data-aggregation
-  - web-scraping
-  - e-commerce
-  - social-media
-  - real-estate
-  - jobs
-  - travel
-  - news
-  - finance
-  - reviews
-  - company-intelligence
-  - mcp
-  - agent-native
-  - rest
-  - openapi
-  - free-tier
-  properties:
-  - type: OpenAPI
-    url: openapi/reefapi-openapi.json
-    description: OpenAPI 3.0.3, 1,528 operations across 183 engines. Harvested verbatim 2026-08-31 from https://api.reefapi.com/openapi.json
-      (HTTP 200, application/json, 1.25MB). info.title "ReefAPI", servers[] https://api.reefapi.com - ownership confirmed.
-  - type: Documentation
-    url: https://reefapi.com/docs
-  - type: DeveloperPortal
-    url: https://reefapi.com/docs
-  - type: APIReference
-    url: https://reefapi.com/apis
-  - type: Quickstart
-    url: https://reefapi.com/docs#quickstart
-  - type: Overlay
-    url: overlays/reefapi-openapi-overlay.yaml
-  - type: DataModel
-    url: data-model/reefapi-data-model.yml
-  - type: ErrorCatalog
-    url: errors/reefapi-problem-types.yml
-  - type: Conventions
-    url: conventions/reefapi-conventions.yml
 - name: ReefAPI MCP Server
-  description: 'Hosted MCP server over streamable-HTTP with 5 discovery-first tools (search_engines, get_catalog, get_engine_schema,
-    get_action_schema, call_engine). Auth via Authorization: Bearer ak_live_ key. Compatible with Claude Desktop, Claude Code,
-    Cursor, Windsurf, and ChatGPT connectors.'
+  description: >-
+    Hosted MCP server over streamable-HTTP with 5 discovery-first tools (search_engines, get_catalog,
+    get_engine_schema, get_action_schema, call_engine). Auth via Authorization: Bearer ak_live_ key. Compatible
+    with Claude Desktop, Claude Code, Cursor, Windsurf, and ChatGPT connectors.
   humanURL: https://reefapi.com/mcp
   baseURL: https://api.reefapi.com/mcp
   tags:
@@ -185,10 +124,11 @@ apis:
   properties:
   - type: MCPServer
     url: https://api.reefapi.com/mcp
-    description: 'LIVE remote MCP over streamable-HTTP. PROBED 2026-08-31: initialize returned protocolVersion 2025-06-18,
-      serverInfo {name reefapi, version 1.27.2}; tools/list returned 5 tools ANONYMOUSLY (no key). A plain GET returns 406
-      - it is JSON-RPC over POST with Accept "application/json, text/event-stream", and the mcp-session-id header from initialize
-      is required on subsequent calls.'
+    description: >-
+      LIVE remote MCP over streamable-HTTP. PROBED 2026-08-31: initialize returned protocolVersion 2025-06-18,
+      serverInfo {name reefapi, version 1.27.2}; tools/list returned 5 tools ANONYMOUSLY (no key). A plain
+      GET returns 406 - it is JSON-RPC over POST with Accept "application/json, text/event-stream", and
+      the mcp-session-id header from initialize is required on subsequent calls.
   - type: MCPServer
     url: mcp/reefapi-mcp.yml
     description: Local manifest with the deployment block, probe notes and the verbatim tool set.
@@ -198,6 +138,345 @@ apis:
     url: https://reefapi.com/mcp
   - type: SourceCode
     url: https://github.com/reefapi/reefapi-mcp
+- aid: reefapi:reefapi-classifieds-second-hand-api
+  name: ReefAPI Classifieds & Second-hand API
+  description: >-
+    The Classifieds & Second-hand API from ReefAPI — 29 operation(s) for classifieds & second-hand.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Classifieds & Second-hand
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-classifieds-second-hand-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-developer-tools-api
+  name: ReefAPI Developer Tools API
+  description: The Developer Tools API from ReefAPI — 263 operation(s) for developer tools.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Developer Tools
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-developer-tools-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-e-commerce-marketplaces-api
+  name: ReefAPI E-commerce & Marketplaces API
+  description: >-
+    The E-commerce & Marketplaces API from ReefAPI — 264 operation(s) for e-commerce & marketplaces.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - E-commerce & Marketplaces
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-e-commerce-marketplaces-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-finance-data-api
+  name: ReefAPI Finance & Data API
+  description: The Finance & Data API from ReefAPI — 103 operation(s) for finance & data.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Finance & Data
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-finance-data-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-government-tenders-api
+  name: ReefAPI Government & Tenders API
+  description: The Government & Tenders API from ReefAPI — 5 operation(s) for government & tenders.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Government & Tenders
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-government-tenders-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-jobs-hiring-api
+  name: ReefAPI Jobs & Hiring API
+  description: The Jobs & Hiring API from ReefAPI — 69 operation(s) for jobs & hiring.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Jobs & Hiring
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-jobs-hiring-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-media-film-knowledge-api
+  name: ReefAPI Media, Film & Knowledge API
+  description: >-
+    The Media, Film & Knowledge API from ReefAPI — 274 operation(s) for media, film & knowledge.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Media, Film & Knowledge
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-media-film-knowledge-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-other-api
+  name: ReefAPI Other API
+  description: The Other API from ReefAPI — 57 operation(s) for other.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Other
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-other-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-real-estate-api
+  name: ReefAPI Real Estate API
+  description: The Real Estate API from ReefAPI — 57 operation(s) for real estate.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Real Estate
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-real-estate-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-reputation-reviews-api
+  name: ReefAPI Reputation & Reviews API
+  description: The Reputation & Reviews API from ReefAPI — 76 operation(s) for reputation & reviews.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Reputation & Reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-reputation-reviews-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-search-seo-api
+  name: ReefAPI Search & SEO API
+  description: The Search & SEO API from ReefAPI — 8 operation(s) for search & seo.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Search & SEO
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-search-seo-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-social-media-api
+  name: ReefAPI Social Media API
+  description: The Social Media API from ReefAPI — 117 operation(s) for social media.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Social Media
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-social-media-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-travel-lodging-api
+  name: ReefAPI Travel & Lodging API
+  description: The Travel & Lodging API from ReefAPI — 43 operation(s) for travel & lodging.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Travel & Lodging
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-travel-lodging-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
+- aid: reefapi:reefapi-utilities-ai-api
+  name: ReefAPI Utilities & AI API
+  description: The Utilities & AI API from ReefAPI — 163 operation(s) for utilities & ai.
+  humanURL: https://reefapi.com/docs
+  baseURL: https://api.reefapi.com
+  tags:
+  - Utilities & AI
+  properties:
+  - type: OpenAPI
+    url: openapi/reefapi-utilities-ai-api-openapi.yml
+  - type: Documentation
+    url: https://reefapi.com/docs
+  - type: DeveloperPortal
+    url: https://reefapi.com/docs
+  - type: APIReference
+    url: https://reefapi.com/apis
+  - type: Quickstart
+    url: https://reefapi.com/docs#quickstart
+  - type: DataModel
+    url: data-model/reefapi-data-model.yml
+  - type: ErrorCatalog
+    url: errors/reefapi-problem-types.yml
+  - type: Conventions
+    url: conventions/reefapi-conventions.yml
 maintainers:
 - FN: ReefAPI
   url: https://reefapi.com/
@@ -208,6 +487,8 @@ generated:
   confidence: 90
   at: '2026-08-30T16:50:12.945Z'
 common:
+- type: Overlay
+  url: overlays/reefapi-openapi-overlay.yaml
 - type: Website
   url: https://www.reefapi.com/
 - type: License
