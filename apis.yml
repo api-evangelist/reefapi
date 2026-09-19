@@ -52,8 +52,8 @@ tags:
 - llms-txt
 - API Catalog
 - Free Tier
-- Credits
-- Gateway
+- Credit
+- Gateways
 tags_raw:
 - web-data
 - data-aggregation
@@ -314,7 +314,8 @@ apis:
   description: The Other API from ReefAPI — 57 operation(s) for other.
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
-  tags:
+  tags: []
+  tags_raw:
   - Other
   properties:
   - type: OpenAPI
@@ -339,6 +340,8 @@ apis:
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
   tags:
+  - Real-Estate
+  tags_raw:
   - Real Estate
   properties:
   - type: OpenAPI
@@ -411,6 +414,8 @@ apis:
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
   tags:
+  - Social-Media
+  tags_raw:
   - Social Media
   properties:
   - type: OpenAPI
