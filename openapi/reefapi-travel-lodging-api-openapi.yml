@@ -1,0 +1,1722 @@
+openapi: 3.2.0
+info:
+  title: Reef Travel & Lodging API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Travel & Lodging
+paths:
+  /agoda/v1/destinations:
+    post:
+      operationId: agoda_destinations
+      summary: Resolve a free-text place ('Bangkok', 'Tokyo', 'Maldives', an airport or a…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                language:
+                  type: string
+              required:
+              - query
+            example:
+              query: Bangkok
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agoda/v1/city_browse:
+    post:
+      operationId: agoda_city_browse
+      summary: Browse a city's popular hotels and accommodation themes.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: string
+                language:
+                  type: string
+              required:
+              - city_id
+            example:
+              city_id: 9395
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agoda/v1/detail:
+    post:
+      operationId: agoda_detail
+      summary: 'Full hotel record by hotel_id (or hotel URL): name, accommodation type, star…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hotel_id:
+                  type: string
+                url:
+                  type: string
+                language:
+                  type: string
+            example:
+              hotel_id: 294217
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agoda/v1/reviews:
+    post:
+      operationId: agoda_reviews
+      summary: 'Paginated guest reviews for one hotel (70 per page): star rating, title…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hotel_id:
+                  type: string
+                url:
+                  type: string
+                page:
+                  type: string
+                sort_by:
+                  type: string
+                language:
+                  type: string
+            example:
+              hotel_id: 294217
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/stays.search:
+    post:
+      operationId: airbnb_stays.search
+      summary: 'Search Airbnb stays by location and dates with full filters: price range…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                checkin:
+                  type: string
+                checkout:
+                  type: string
+                adults:
+                  type: string
+                children:
+                  type: string
+                infants:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                room_type:
+                  type: string
+                property_type:
+                  type: string
+                min_bedrooms:
+                  type: string
+                min_beds:
+                  type: string
+                min_bathrooms:
+                  type: string
+                amenities:
+                  type: string
+                host_languages:
+                  type: string
+                instant_book:
+                  type: string
+                superhost:
+                  type: string
+                free_cancellation:
+                  type: string
+                pets_allowed:
+                  type: string
+                cursor:
+                  type: string
+                currency:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - query
+            example:
+              query: Istanbul, Turkey
+              checkin: '2026-09-21'
+              checkout: '2026-09-26'
+              adults: 2
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/stays.detail:
+    post:
+      operationId: airbnb_stays.detail
+      summary: 'Full listing details: title, property/room type, guest capacity, the six…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                currency:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - listing_id
+            example:
+              listing_id: '1408102095235129361'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/host.profile:
+    post:
+      operationId: airbnb_host.profile
+      summary: 'Host profile for a listing: host name, Superhost/verified status, overall host…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+              required:
+              - listing_id
+            example:
+              listing_id: '1408102095235129361'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/stays.reviews:
+    post:
+      operationId: airbnb_stays.reviews
+      summary: Listing reviews, paginated via offset/limit
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                offset:
+                  type: string
+                limit:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - listing_id
+            example:
+              listing_id: '1408102095235129361'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/stays.availability_calendar:
+    post:
+      operationId: airbnb_stays.availability_calendar
+      summary: 'Availability calendar for a listing (up to 12 months ahead): per-day…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+              required:
+              - listing_id
+            example:
+              listing_id: '1408102095235129361'
+              month_count: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/properties.search:
+    post:
+      operationId: airbnb_properties.search
+      summary: Alias of stays.search
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                checkin:
+                  type: string
+                checkout:
+                  type: string
+                adults:
+                  type: string
+                cursor:
+                  type: string
+                currency:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - query
+            example:
+              query: Istanbul, Turkey
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/properties.detail:
+    post:
+      operationId: airbnb_properties.detail
+      summary: Alias of stays.detail
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                currency:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - listing_id
+            example:
+              listing_id: '1408102095235129361'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /airbnb/v1/autocomplete:
+    post:
+      operationId: airbnb_autocomplete
+      summary: Location autocomplete suggestions (raw passthrough)
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /booking/v1/hotels/search:
+    post:
+      operationId: booking_hotels_search
+      summary: Search hotels in a destination for given dates (25 hotels per page, with…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                dest_id:
+                  type: string
+                dest_type:
+                  type: string
+                checkin:
+                  type: string
+                checkout:
+                  type: string
+                adults:
+                  type: string
+                rooms:
+                  type: string
+                children_ages:
+                  type: string
+                currency:
+                  type: string
+                page:
+                  type: string
+                sort_by:
+                  type: string
+                min_price:
+                  type: string
+                max_price:
+                  type: string
+                min_rating:
+                  type: string
+                stars:
+                  type: string
+                free_cancellation:
+                  type: string
+                breakfast_included:
+                  type: string
+                amenities:
+                  type: string
+                include_facets:
+                  type: string
+                include_raw:
+                  type: string
+            example:
+              dest_id: '-755070'
+              dest_type: city
+              checkin: '2026-09-21'
+              checkout: '2026-09-23'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /booking/v1/hotels/detail:
+    post:
+      operationId: booking_hotels_detail
+      summary: 'Full hotel record: summary, rating breakdown, facilities, room types…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page_name:
+                  type: string
+                country_code:
+                  type: string
+                hotel_url:
+                  type: string
+                checkin:
+                  type: string
+                checkout:
+                  type: string
+                adults:
+                  type: string
+                rooms:
+                  type: string
+                currency:
+                  type: string
+            example:
+              page_name: celine-taxim
+              country_code: tr
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /booking/v1/hotels/availability:
+    post:
+      operationId: booking_hotels_availability
+      summary: Visible room blocks (room, occupancy, price, cancellation policy, meal plan)…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                dest_id:
+                  type: string
+                dest_type:
+                  type: string
+                checkin:
+                  type: string
+                checkout:
+                  type: string
+                hotel_id:
+                  type: string
+                adults:
+                  type: string
+                rooms:
+                  type: string
+                children_ages:
+                  type: string
+                currency:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /booking/v1/hotels/reviews:
+    post:
+      operationId: booking_hotels_reviews
+      summary: Paginated, deduped guest reviews for one hotel (score, title, pros/cons text…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page_name:
+                  type: string
+                country_code:
+                  type: string
+                hotel_id:
+                  type: string
+                hotel_url:
+                  type: string
+                max_reviews:
+                  type: string
+                sort_by:
+                  type: string
+                keyword:
+                  type: string
+                review_page_size:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /booking/v1/destinations/autocomplete:
+    post:
+      operationId: booking_destinations_autocomplete
+      summary: Resolve a free-text place ('Paris', 'Maldives', 'JFK') into the destination IDs…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+            example:
+              query: Paris
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /car-rental/v1/cars/search:
+    post:
+      operationId: car_rental_cars_search
+      summary: aggregated rental-car offers for a location + dates →…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                place_id:
+                  type: string
+                city_id:
+                  type: string
+                country_id:
+                  type: string
+                pickup_date:
+                  type: string
+                dropoff_date:
+                  type: string
+                pickup_time:
+                  type: string
+                dropoff_time:
+                  type: string
+                currency:
+                  type: string
+                residence_country:
+                  type: string
+                driver_age:
+                  type: string
+                drop_query:
+                  type: string
+                drop_place_id:
+                  type: string
+                drop_city_id:
+                  type: string
+                drop_country_id:
+                  type: string
+                max_offers:
+                  type: string
+                include_facets:
+                  type: string
+                prefer_airport:
+                  type: string
+                category:
+                  type: string
+                supplier:
+                  type: string
+                transmission:
+                  type: string
+                min_seats:
+                  type: string
+                max_price:
+                  type: string
+                min_supplier_rating:
+                  type: string
+                free_cancellation_only:
+                  type: string
+                unlimited_mileage_only:
+                  type: string
+                sort:
+                  type: string
+                include_supplier_summary:
+                  type: string
+            example:
+              query: Madrid Airport
+              currency: EUR
+              pickup_date: '2026-10-15'
+              dropoff_date: '2026-10-18'
+              max_offers: 40
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /car-rental/v1/cars/autocomplete:
+    post:
+      operationId: car_rental_cars_autocomplete
+      summary: resolve a location string (`query`) → place/city/country IDs (for cars/search)
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /car-rental/v1/cars/reviews:
+    post:
+      operationId: car_rental_cars_reviews
+      summary: DiscoverCars customer reviews for a location → reviews[]{rating(0-10), text…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                location_url:
+                  type: string
+                country_only:
+                  type: string
+                min_rating:
+                  type: string
+                with_text_only:
+                  type: string
+                max_reviews:
+                  type: string
+            example:
+              query: Madrid
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flightaware/v1/flight_status:
+    post:
+      operationId: flightaware_flight_status
+      summary: Live status for one flight by ident or flight number.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ident:
+                  type: string
+              required:
+              - ident
+            example:
+              ident: UAL100
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flightaware/v1/live_position:
+    post:
+      operationId: flightaware_live_position
+      summary: 'Live ADS-B track for one airborne flight: current position plus the full…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ident:
+                  type: string
+              required:
+              - ident
+            example:
+              ident: UAL100
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flightaware/v1/airport_board:
+    post:
+      operationId: flightaware_airport_board
+      summary: 'Live activity board for an airport: the arrivals, departures, en-route or…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                airport:
+                  type: string
+                board:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - airport
+            example:
+              airport: KJFK
+              board: arrivals
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flights/v1/search_flights:
+    post:
+      operationId: flights_search_flights
+      summary: Search flights from origin to destination for a given date.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  type: string
+                destination:
+                  type: string
+                depart_date:
+                  type: string
+                return_date:
+                  type: string
+                depart_date_end:
+                  type: string
+                return_date_end:
+                  type: string
+                adults:
+                  type: string
+                children:
+                  type: string
+                infants:
+                  type: string
+                cabin_class:
+                  type: string
+                currency:
+                  type: string
+                max_stops:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - origin
+              - destination
+              - depart_date
+            example:
+              origin: London
+              destination: New York
+              depart_date: '2026-09-29'
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flights/v1/search_places:
+    post:
+      operationId: flights_search_places
+      summary: Resolve a city or airport name to location IDs used in flight search — useful…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flights/v1/airport_info:
+    post:
+      operationId: flights_airport_info
+      summary: Look up airports and cities by name or IATA code.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: Heathrow
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flights/v1/price_graph:
+    post:
+      operationId: flights_price_graph
+      summary: Find the cheapest day to fly.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  type: string
+                destination:
+                  type: string
+                depart_date:
+                  type: string
+                depart_date_end:
+                  type: string
+                nights_min:
+                  type: string
+                nights_max:
+                  type: string
+                adults:
+                  type: string
+                children:
+                  type: string
+                infants:
+                  type: string
+                cabin_class:
+                  type: string
+                currency:
+                  type: string
+              required:
+              - origin
+              - destination
+              - depart_date
+            example:
+              origin: London
+              destination: New York
+              depart_date: '2026-09-29'
+              depart_date_end: '2026-10-06'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flights/v1/seat_info:
+    post:
+      operationId: flights_seat_info
+      summary: 'Get the seat specs and amenities for a specific flight: seat pitch, width and…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                carrier:
+                  type: string
+                flight_number:
+                  type: string
+                source:
+                  type: string
+                destination:
+                  type: string
+                date:
+                  type: string
+                cabin_class:
+                  type: string
+              required:
+              - carrier
+              - flight_number
+              - source
+              - destination
+              - date
+            example:
+              carrier: BA
+              flight_number: '177'
+              source: LHR
+              destination: JFK
+              date: '2026-09-29'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /getyourguide/v1/search:
+    post:
+      operationId: getyourguide_search
+      summary: Search GetYourGuide for tours & activities by free-text keyword or destination…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                currency:
+                  type: string
+                language:
+                  type: string
+              required:
+              - query
+            example:
+              query: Rome colosseum
+              currency: EUR
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /getyourguide/v1/browse:
+    post:
+      operationId: getyourguide_browse
+      summary: Browse the top tours & activities for a destination's landing page.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                location_id:
+                  type: string
+                city:
+                  type: string
+                destination:
+                  type: string
+                url:
+                  type: string
+                currency:
+                  type: string
+                language:
+                  type: string
+            example:
+              slug: paris-l16
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /getyourguide/v1/detail:
+    post:
+      operationId: getyourguide_detail
+      summary: 'Full record for one tour/activity: title, description, the company that…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                slug:
+                  type: string
+                currency:
+                  type: string
+                language:
+                  type: string
+            example:
+              url: https://www.getyourguide.com/rome-l33/colosseum-roman-forum-palatine-hill-guided-tour-t195566/
+              currency: EUR
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /getyourguide/v1/reviews:
+    post:
+      operationId: getyourguide_reviews
+      summary: The most-recent public traveler reviews for one activity (rating, text, author…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                slug:
+                  type: string
+                language:
+                  type: string
+            example:
+              url: https://www.getyourguide.com/rome-l33/colosseum-roman-forum-palatine-hill-guided-tour-t195566/
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /getyourguide/v1/destinations:
+    post:
+      operationId: getyourguide_destinations
+      summary: 'Destination metadata for a GetYourGuide location: id, name, type, country, the…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                location_id:
+                  type: string
+                city:
+                  type: string
+                destination:
+                  type: string
+                url:
+                  type: string
+                language:
+                  type: string
+            example:
+              slug: paris-l16
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/search:
+    post:
+      operationId: turo_search
+      summary: Search Turo for rentable cars at a location and date range.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                start_time:
+                  type: string
+                end_time:
+                  type: string
+                country:
+                  type: string
+                make:
+                  type: string
+                model:
+                  type: string
+                vehicle_type:
+                  type: string
+                max_price:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - location
+            example:
+              location: Miami, FL, USA
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/vehicle.detail:
+    post:
+      operationId: turo_vehicle.detail
+      summary: 'Full detail for one Turo car: make/model/year/trim, transmission, seats, doors…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicle_id:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                start_time:
+                  type: string
+                end_time:
+                  type: string
+              required:
+              - vehicle_id
+            example:
+              vehicle_id: '3613768'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/vehicle.features:
+    post:
+      operationId: turo_vehicle.features
+      summary: Specs + the full categorized feature list for one car (transmission, seats…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicle_id:
+                  type: string
+              required:
+              - vehicle_id
+            example:
+              vehicle_id: '3613768'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/vehicle.pricing:
+    post:
+      operationId: turo_vehicle.pricing
+      summary: 'Daily price calendar for one car across a date window: per-day price + day of…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicle_id:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+              required:
+              - vehicle_id
+            example:
+              vehicle_id: '3613768'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/vehicle.similar:
+    post:
+      operationId: turo_vehicle.similar
+      summary: Cars similar to a given make/model near a location and dates — a…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                location:
+                  type: string
+                model:
+                  type: string
+                vehicle_id:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                start_time:
+                  type: string
+                end_time:
+                  type: string
+                country:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - make
+              - location
+            example:
+              make: Tesla
+              model: Model 3
+              location: Miami, FL, USA
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/host.profile:
+    post:
+      operationId: turo_host.profile
+      summary: 'Full Turo host (driver) profile: first name, All-Star/Pro status, member-since…'
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host_id:
+                  type: string
+              required:
+              - host_id
+            example:
+              host_id: '33962137'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/host.cars:
+    post:
+      operationId: turo_host.cars
+      summary: Every car a Turo host has listed, paginated — make/model/year, daily price…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host_id:
+                  type: string
+                page:
+                  type: string
+              required:
+              - host_id
+            example:
+              host_id: '33962137'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/host.reviews:
+    post:
+      operationId: turo_host.reviews
+      summary: Reviews left for a Turo host by their guests, paginated — star rating, the…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host_id:
+                  type: string
+                page:
+                  type: string
+                per_page:
+                  type: string
+              required:
+              - host_id
+            example:
+              host_id: '33962137'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/location.autocomplete:
+    post:
+      operationId: turo_location.autocomplete
+      summary: Resolve a free-text place into Turo search locations (cities and airports) with…
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+              required:
+              - location
+            example:
+              location: Los Angeles
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /turo/v1/makes:
+    post:
+      operationId: turo_makes
+      summary: The full list of car makes Turo supports in a market (e.g.
+      tags:
+      - Travel & Lodging
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+            example:
+              country: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

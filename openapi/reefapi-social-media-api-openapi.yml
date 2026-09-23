@@ -1,0 +1,3928 @@
+openapi: 3.2.0
+info:
+  title: Reef Social Media API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Social Media
+paths:
+  /bluesky/v1/profile:
+    post:
+      operationId: bluesky_profile
+      summary: 'actor profile: did/handle/displayName/desc/followers/follows/posts…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                actors:
+                  type: string
+            example:
+              actor: bsky.app
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/author_feed:
+    post:
+      operationId: bluesky_author_feed
+      summary: an actor's posts (full record+embed+counts), cursor-paginated…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                filter:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+              limit: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/search_actors:
+    post:
+      operationId: bluesky_search_actors
+      summary: search users by name/handle/bio (cursor); typeahead=true for fast suggest
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+                typeahead:
+                  type: string
+              required:
+              - q
+            example:
+              q: news
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/thread:
+    post:
+      operationId: bluesky_thread
+      summary: a post + its reply tree (recursive) + parent
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                depth:
+                  type: string
+                parent_height:
+                  type: string
+              required:
+              - uri
+            example:
+              uri: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l
+              depth: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/post_detail:
+    post:
+      operationId: bluesky_post_detail
+      summary: hydrate one or more posts by at:// URI (<=25)…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uris:
+                  type: string
+              required:
+              - uris
+            example:
+              uris:
+              - at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/likes:
+    post:
+      operationId: bluesky_likes
+      summary: actors who liked a post (cursor); cid auto-used if given
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                cid:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - uri
+            example:
+              uri: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l
+              cid: bafyreicnt42y6vo6pfpvyro234ac4o6ijug6adwwrh7awflgrqlt4zibxq
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/reposts:
+    post:
+      operationId: bluesky_reposts
+      summary: actors who reposted a post (cursor)
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                cid:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - uri
+            example:
+              uri: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l
+              cid: bafyreicnt42y6vo6pfpvyro234ac4o6ijug6adwwrh7awflgrqlt4zibxq
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/followers:
+    post:
+      operationId: bluesky_followers
+      summary: actors following the subject (cursor)
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+              limit: 50
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/follows:
+    post:
+      operationId: bluesky_follows
+      summary: actors the subject follows (cursor)
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/quotes:
+    post:
+      operationId: bluesky_quotes
+      summary: Accounts/posts that QUOTE a given post (quote-posts), cursor-paginated.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                cid:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - uri
+            example:
+              uri: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l
+              cid: bafyreicnt42y6vo6pfpvyro234ac4o6ijug6adwwrh7awflgrqlt4zibxq
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/suggested_follows:
+    post:
+      operationId: bluesky_suggested_follows
+      summary: Accounts suggested from a given account — Bluesky's 'who to follow next' /…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/lists:
+    post:
+      operationId: bluesky_lists
+      summary: The curated/moderation lists an account CREATED (user-curated lists +…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: nytimes.com
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/list:
+    post:
+      operationId: bluesky_list
+      summary: A single list's metadata plus its MEMBERS (the accounts on the list), members…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - list
+            example:
+              list: at://did:plc:eclio37ymobqex2ncko63h4r/app.bsky.graph.list/3lbl2hyzmfy2u
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/list_feed:
+    post:
+      operationId: bluesky_list_feed
+      summary: The feed of posts authored by the members of a list (a list used as a custom…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - list
+            example:
+              list: at://did:plc:eclio37ymobqex2ncko63h4r/app.bsky.graph.list/3lbl2hyzmfy2u
+              limit: 15
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/actor_feeds:
+    post:
+      operationId: bluesky_actor_feeds
+      summary: The custom feed generators an account CREATED (its published feeds)…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/feed_generator:
+    post:
+      operationId: bluesky_feed_generator
+      summary: One custom feed generator's metadata plus its live online/valid status (is the…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feed:
+                  type: string
+              required:
+              - feed
+            example:
+              feed: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/popular_feeds:
+    post:
+      operationId: bluesky_popular_feeds
+      summary: Discover popular custom feed generators — pass `q` to search feeds by…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+            example:
+              q: news
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/get_feed:
+    post:
+      operationId: bluesky_get_feed
+      summary: The posts served BY a custom feed generator (e.g.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feed:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - feed
+            example:
+              feed: at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/starter_packs:
+    post:
+      operationId: bluesky_starter_packs
+      summary: The starter packs an account CREATED (shareable onboarding bundles of accounts…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - actor
+            example:
+              actor: bsky.app
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/starter_pack:
+    post:
+      operationId: bluesky_starter_pack
+      summary: 'One starter pack''s full detail: its underlying list, sample member profiles and…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                starter_pack:
+                  type: string
+              required:
+              - starter_pack
+            example:
+              starter_pack: at://did:plc:ragtjsm2j2vknwkz3zp4oxrd/app.bsky.graph.starterpack/3m4j33zq7sz2m
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/search_posts:
+    post:
+      operationId: bluesky_search_posts
+      summary: Search Bluesky posts by keyword or hashtag — filter by sort order, date range…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+                since:
+                  type: string
+                until:
+                  type: string
+                author:
+                  type: string
+                mentions:
+                  type: string
+                lang:
+                  type: string
+                domain:
+                  type: string
+                url:
+                  type: string
+                tag:
+                  type: string
+              required:
+              - q
+            example:
+              q: bluesky
+              sort: top
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/get_actor_likes:
+    post:
+      operationId: bluesky_get_actor_likes
+      summary: posts an actor liked (authed; the AppView serves the authenticated account's…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+            example:
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bluesky/v1/timeline:
+    post:
+      operationId: bluesky_timeline
+      summary: the authenticated account's home timeline (authed)
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+                cursor:
+                  type: string
+                algorithm:
+                  type: string
+            example:
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/profile:
+    post:
+      operationId: instagram_profile
+      summary: public profile facts and first-page recent posts
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/posts:
+    post:
+      operationId: instagram_posts
+      summary: public profile grid posts, newest first, with max_id pagination
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+                max_id:
+                  type: string
+                cursor:
+                  type: string
+                rich:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/reels:
+    post:
+      operationId: instagram_reels
+      summary: public profile reels tab, newest first, with max_id pagination
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+                max_id:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/similar_accounts:
+    post:
+      operationId: instagram_similar_accounts
+      summary: public related profiles from web_profile_info
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/search:
+    post:
+      operationId: instagram_search
+      summary: topsearch blended public users, hashtags, and places
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/users_search:
+    post:
+      operationId: instagram_users_search
+      summary: public user lookup by handle (exact / near-exact match)
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/hashtag_search:
+    post:
+      operationId: instagram_hashtag_search
+      summary: topsearch public hashtags only
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/post_info:
+    post:
+      operationId: instagram_post_info
+      summary: maximally-complete public post/reel detail by shortcode (URL) or media_id
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shortcode:
+                  type: string
+                media_id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/post_comments:
+    post:
+      operationId: instagram_post_comments
+      summary: public comments for a post/reel by shortcode (URL) or media_id, with CURSOR…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shortcode:
+                  type: string
+                media_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /instagram/v1/audio_media:
+    post:
+      operationId: instagram_audio_media
+      summary: public reels feed that use a given audio/music track, with pagination
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                audio_id:
+                  type: string
+                limit:
+                  type: string
+                max_id:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - audio_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/user:
+    post:
+      operationId: medium_user
+      summary: Public Medium user profile by username
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+              required:
+              - user
+            example:
+              user: dhh
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/user_id:
+    post:
+      operationId: medium_user_id
+      summary: Resolve username to Medium userId
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+              required:
+              - user
+            example:
+              user: dhh
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/user_articles:
+    post:
+      operationId: medium_user_articles
+      summary: An author's published articles, newest first, with deep pagination
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - user
+            example:
+              user: dhh
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/user_top_articles:
+    post:
+      operationId: medium_user_top_articles
+      summary: User articles sorted by clap count from profile references
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - user
+            example:
+              user: dhh
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/article:
+    post:
+      operationId: medium_article
+      summary: Article metadata by url or id
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/article_content:
+    post:
+      operationId: medium_article_content
+      summary: Article plain-text body from bodyModel paragraphs
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/article_html:
+    post:
+      operationId: medium_article_html
+      summary: Article HTML body from bodyModel paragraphs
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/article_markdown:
+    post:
+      operationId: medium_article_markdown
+      summary: Article markdown body from bodyModel paragraphs
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/article_responses:
+    post:
+      operationId: medium_article_responses
+      summary: Public responses/comments for an article
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/publication:
+    post:
+      operationId: medium_publication
+      summary: Publication/collection metadata by slug
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+              required:
+              - slug
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/publication_id:
+    post:
+      operationId: medium_publication_id
+      summary: Resolve publication slug to collection id
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+              required:
+              - slug
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/publication_articles:
+    post:
+      operationId: medium_publication_articles
+      summary: A publication's articles, newest first, with deep pagination
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - slug
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/tag:
+    post:
+      operationId: medium_tag
+      summary: Latest posts for a topic tag (the tag/topic feed)
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - tag
+            example:
+              tag: python
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/search_users:
+    post:
+      operationId: medium_search_users
+      summary: Look up an author by exact username.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+              required:
+              - q
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/search_publications:
+    post:
+      operationId: medium_search_publications
+      summary: Look up a publication by exact slug.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+              required:
+              - q
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/search_tags:
+    post:
+      operationId: medium_search_tags
+      summary: Check whether a topic tag exists and is active on Medium (resolves q as a tag…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+              required:
+              - q
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/followers:
+    post:
+      operationId: medium_followers
+      summary: An author's followers (paginated). Identify the author by 'user' or 'user_id'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/following:
+    post:
+      operationId: medium_following
+      summary: The authors a user follows (paginated). Identify the user by 'user' or 'user_id'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/list:
+    post:
+      operationId: medium_list
+      summary: Reading list metadata and articles from public list page HTML.
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                url:
+                  type: string
+                user:
+                  type: string
+                username:
+                  type: string
+                slug:
+                  type: string
+                limit:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /medium/v1/search_articles:
+    post:
+      operationId: medium_search_articles
+      summary: Search Medium articles by keyword — returns matching articles with title, URL…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - q
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/search_pins:
+    post:
+      operationId: pinterest_search_pins
+      summary: Search Pinterest pins by keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+              required:
+              - query
+            example:
+              query: minimalist home office
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/search_videos:
+    post:
+      operationId: pinterest_search_videos
+      summary: Search Pinterest video pins (Idea Pins / video) by keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+              required:
+              - query
+            example:
+              query: minimalist home office
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/search_users:
+    post:
+      operationId: pinterest_search_users
+      summary: Search Pinterest users/creators by keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+              required:
+              - query
+            example:
+              query: minimalist home office
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/search_boards:
+    post:
+      operationId: pinterest_search_boards
+      summary: Search Pinterest boards by keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+              required:
+              - query
+            example:
+              query: minimalist home office
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/suggestions:
+    post:
+      operationId: pinterest_suggestions
+      summary: Autocomplete / typeahead search suggestions for a partial query — the dropdown…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: minimalist home office
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/pin:
+    post:
+      operationId: pinterest_pin
+      summary: 'Full detail for one pin: title, description, image, video, outbound…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin_id:
+                  type: string
+                pin_url:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/pin_comments:
+    post:
+      operationId: pinterest_pin_comments
+      summary: 'Public comments & ''Tried it'' notes on a pin: text, like/helpful counts…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin_id:
+                  type: string
+                pin_url:
+                  type: string
+                id:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/related_pins:
+    post:
+      operationId: pinterest_related_pins
+      summary: '''More like this'' pins related to a source pin. Provide pin_id or pin_url'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pin_id:
+                  type: string
+                pin_url:
+                  type: string
+                id:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/profile:
+    post:
+      operationId: pinterest_profile
+      summary: 'Public profile for a username: name, bio, follower/following/board/pin counts…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/user_boards:
+    post:
+      operationId: pinterest_user_boards
+      summary: 'Public boards owned by a username: name, url, description, pin-count, cover…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/user_pins:
+    post:
+      operationId: pinterest_user_pins
+      summary: Pins created by a username (their feed). Paginate with meta.bookmark
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+              required:
+              - username
+            example:
+              username: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/board:
+    post:
+      operationId: pinterest_board
+      summary: 'Board metadata: name, description, pin & follower & section counts, cover…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                board_url:
+                  type: string
+                username:
+                  type: string
+                board:
+                  type: string
+                board_slug:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /pinterest/v1/board_pins:
+    post:
+      operationId: pinterest_board_pins
+      summary: Pins inside a board.
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                board_url:
+                  type: string
+                username:
+                  type: string
+                board:
+                  type: string
+                board_slug:
+                  type: string
+                limit:
+                  type: string
+                bookmark:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/subreddit_posts:
+    post:
+      operationId: reddit_subreddit_posts
+      summary: Posts in a subreddit, ranked by `sort`.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subreddit:
+                  type: string
+                sub:
+                  type: string
+                sort:
+                  type: string
+                time:
+                  type: string
+                limit:
+                  type: string
+                after:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                flair:
+                  type: string
+                source:
+                  type: string
+              required:
+              - subreddit
+            example:
+              subreddit: python
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/multi_subreddit_posts:
+    post:
+      operationId: reddit_multi_subreddit_posts
+      summary: ONE merged newest-first feed across a whole watchlist of subreddits — pass up…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subreddits:
+                  type: string
+                subs:
+                  type: string
+                subreddit:
+                  type: string
+                sub:
+                  type: string
+                sort:
+                  type: string
+                time:
+                  type: string
+                limit:
+                  type: string
+                since_utc:
+                  type: string
+                max_pages:
+                  type: string
+                after:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - subreddits
+            example:
+              subreddits: python,rust,golang
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/post_comments:
+    post:
+      operationId: reddit_post_comments
+      summary: Threaded comments for a post. Returns author/body/score per comment
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                id:
+                  type: string
+                url:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                depth:
+                  type: string
+                source:
+                  type: string
+              required:
+              - post_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/search:
+    post:
+      operationId: reddit_search
+      summary: Search posts, comments, or users by `q` and/or `subreddit`/`author`.
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                query:
+                  type: string
+                subreddit:
+                  type: string
+                sub:
+                  type: string
+                author:
+                  type: string
+                type:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                flair:
+                  type: string
+                after:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                after_utc:
+                  type: string
+                before_utc:
+                  type: string
+                source:
+                  type: string
+            example:
+              subreddit: python
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/user:
+    post:
+      operationId: reddit_user
+      summary: User profile or content.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user:
+                  type: string
+                name:
+                  type: string
+                kind:
+                  type: string
+                limit:
+                  type: string
+                after:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                sort:
+                  type: string
+                source:
+                  type: string
+              required:
+              - username
+            example:
+              username: spez
+              kind: about
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/subreddit_about:
+    post:
+      operationId: reddit_subreddit_about
+      summary: 'Subreddit metadata: subscribers, description, created date, etc'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subreddit:
+                  type: string
+                sub:
+                  type: string
+                source:
+                  type: string
+              required:
+              - subreddit
+            example:
+              subreddit: python
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/communities:
+    post:
+      operationId: reddit_communities
+      summary: Search subreddits by name/keyword — find communities matching a term, with each…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - q
+            example:
+              q: python
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/trending:
+    post:
+      operationId: reddit_trending
+      summary: Site-wide discovery — hot/popular posts from r/popular or r/all (what's…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scope:
+                  type: string
+                kind:
+                  type: string
+                sort:
+                  type: string
+                time:
+                  type: string
+                limit:
+                  type: string
+                flair:
+                  type: string
+                after:
+                  type: string
+                page:
+                  type: string
+                source:
+                  type: string
+            example:
+              scope: popular
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/user_search:
+    post:
+      operationId: reddit_user_search
+      summary: Find Reddit users by name/keyword — people search.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                query:
+                  type: string
+                username:
+                  type: string
+                limit:
+                  type: string
+                after:
+                  type: string
+                source:
+                  type: string
+              required:
+              - q
+            example:
+              q: python
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/load_more_comments:
+    post:
+      operationId: reddit_load_more_comments
+      summary: Expand the collapsed 'more comments' nodes from a post_comments call — pass…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                more_ids:
+                  type: string
+                link_id:
+                  type: string
+                id:
+                  type: string
+                url:
+                  type: string
+                comment_ids:
+                  type: string
+                limit:
+                  type: string
+                sort:
+                  type: string
+                source:
+                  type: string
+              required:
+              - post_id
+              - more_ids
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reddit/v1/subreddit_extras:
+    post:
+      operationId: reddit_subreddit_extras
+      summary: 'Public subreddit extras: the community''s rules and its wiki page index/content.'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subreddit:
+                  type: string
+                sub:
+                  type: string
+                include:
+                  type: string
+                wiki_page:
+                  type: string
+                source:
+                  type: string
+              required:
+              - subreddit
+            example:
+              subreddit: python
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/profile:
+    post:
+      operationId: snapchat_profile
+      summary: 'Full public Snapchat profile by username: display name, snapcode, subscriber…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: kyliejenner
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/story:
+    post:
+      operationId: snapchat_story
+      summary: The account's current public story — the live snaps (image/video media URLs…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: kyliejenner
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/highlights:
+    post:
+      operationId: snapchat_highlights
+      summary: The account's saved public highlight stories (curated highlights + Spotlight…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: kyliejenner
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/lenses:
+    post:
+      operationId: snapchat_lenses
+      summary: 'The creator''s own public AR lenses listed on their profile: name, preview…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: kyliejenner
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/spotlight:
+    post:
+      operationId: snapchat_spotlight
+      summary: The public trending Spotlight feed — ~25 popular Spotlight videos with…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/spotlight_detail:
+    post:
+      operationId: snapchat_spotlight_detail
+      summary: Full metadata for one public Spotlight video by its story id (from a spotlight…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                story_id:
+                  type: string
+              required:
+              - story_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/lens_directory:
+    post:
+      operationId: snapchat_lens_directory
+      summary: 'Snapchat''s public top/trending AR lens directory: the featured lenses plus the…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /snapchat/v1/lens_detail:
+    post:
+      operationId: snapchat_lens_detail
+      summary: Detail for one public AR lens by its scannable UUID (from a lens result's…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+              required:
+              - uuid
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/profile:
+    post:
+      operationId: threads_profile
+      summary: Public Threads profile by username — name, bio, bio links, follower count…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+            example:
+              username: zuck
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/posts:
+    post:
+      operationId: threads_posts
+      summary: Public posts from a Threads profile (most-recent first).
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - username
+            example:
+              username: natgeo
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/replies:
+    post:
+      operationId: threads_replies
+      summary: Public replies from a Threads profile (the Replies tab).
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - username
+            example:
+              username: zuck
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/reposts:
+    post:
+      operationId: threads_reposts
+      summary: Posts a Threads user has reposted — the Reposts tab on their profile.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - username
+            example:
+              username: natgeo
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/post:
+    post:
+      operationId: threads_post
+      summary: Maximally-complete public post detail.
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                username:
+                  type: string
+                code:
+                  type: string
+                post_id:
+                  type: string
+            example:
+              username: natgeo
+              code: DZ2pt10Eanh
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/post_replies:
+    post:
+      operationId: threads_post_replies
+      summary: The reply conversation for a public post (thread_items).
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                url:
+                  type: string
+                username:
+                  type: string
+                code:
+                  type: string
+                limit:
+                  type: string
+            example:
+              username: natgeo
+              code: DZ2pt10Eanh
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/search:
+    post:
+      operationId: threads_search
+      summary: Search public Threads posts by keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - q
+            example:
+              q: reef
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/user_search:
+    post:
+      operationId: threads_user_search
+      summary: Look up the public Threads account whose handle matches a query (exact /…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                query:
+                  type: string
+              required:
+              - q
+            example:
+              q: natgeo
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/followers:
+    post:
+      operationId: threads_followers
+      summary: 'Account-gated: the followers list requires a logged-in Threads session and is…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/following:
+    post:
+      operationId: threads_following
+      summary: 'Account-gated: the following list requires a logged-in Threads session and is…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /threads/v1/likes:
+    post:
+      operationId: threads_likes
+      summary: 'Account-gated: the list of accounts that liked a post (who-liked) is not…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                username:
+                  type: string
+                code:
+                  type: string
+                post_id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/top_ads:
+    post:
+      operationId: tiktok_creative_center_top_ads
+      summary: Top-performing TikTok ads for a market, filterable by region, period, industry…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: string
+                period:
+                  type: string
+                order_by:
+                  type: string
+                industry:
+                  type: string
+                objective:
+                  type: string
+                ad_language:
+                  type: string
+                limit:
+                  type: string
+                page:
+                  type: string
+            example:
+              region: US
+              period: '30'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/ad_detail:
+    post:
+      operationId: tiktok_creative_center_ad_detail
+      summary: 'Full creative record for one ad: title, brand, CTR, spend, likes, comments…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ad_id:
+                  type: string
+              required:
+              - ad_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/search_ads:
+    post:
+      operationId: tiktok_creative_center_search_ads
+      summary: Keyword search across TikTok's Top-Ads index (region/period scoped), returning…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                region:
+                  type: string
+                period:
+                  type: string
+                limit:
+                  type: string
+                page:
+                  type: string
+              required:
+              - keyword
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/ad_filters:
+    post:
+      operationId: tiktok_creative_center_ad_filters
+      summary: 'The live filter taxonomy used by top_ads: full country (81), industry (258)…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/query_suggestions:
+    post:
+      operationId: tiktok_creative_center_query_suggestions
+      summary: Suggested Top-Ads search terms surfaced by TikTok's Creative Center search box.
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/trend_reports:
+    post:
+      operationId: tiktok_creative_center_trend_reports
+      summary: Creative-Center trend reports & creative-guidance articles (official TikTok…
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article_type:
+                  type: string
+                limit:
+                  type: string
+                page:
+                  type: string
+            example:
+              article_type: trends
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tiktok-creative-center/v1/locations:
+    post:
+      operationId: tiktok_creative_center_locations
+      summary: 'Supported markets for the `region` filter: ISO code + human country name (e.g.'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/channel:
+    post:
+      operationId: twitch_channel
+      summary: 'Full channel/user profile by login: id, display name, description, created-at…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+              required:
+              - login
+            example:
+              login: shroud
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/stream:
+    post:
+      operationId: twitch_stream
+      summary: 'Live status of a channel: whether it is live right now and, if so, the stream…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+              required:
+              - login
+            example:
+              login: shroud
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/videos:
+    post:
+      operationId: twitch_videos
+      summary: A channel's past broadcasts / VODs (most recent first), up to 100 in one page…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                limit:
+                  type: string
+                type:
+                  type: string
+                sort:
+                  type: string
+              required:
+              - login
+            example:
+              login: pokimane
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/clips:
+    post:
+      operationId: twitch_clips
+      summary: 'Top clips of a channel, ranked by views, up to 100 in one page: id, slug…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                limit:
+                  type: string
+                period:
+                  type: string
+              required:
+              - login
+            example:
+              login: xqc
+              limit: 5
+              period: ALL_TIME
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/search_channels:
+    post:
+      operationId: twitch_search_channels
+      summary: Search Twitch channels by name/keyword.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: ninja
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/search_categories:
+    post:
+      operationId: twitch_search_categories
+      summary: Search Twitch games/categories by name.
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: valorant
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/top_games:
+    post:
+      operationId: twitch_top_games
+      summary: 'The top games/categories on Twitch right now, ranked by live viewers: id, name…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+            example:
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/top_streams:
+    post:
+      operationId: twitch_top_streams
+      summary: 'The top live streams on Twitch right now, ranked by viewers: stream id, title…'
+      tags:
+      - Social Media
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+            example:
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/game:
+    post:
+      operationId: twitch_game
+      summary: 'Game/category detail by name plus its top live streams: category id, display…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - name
+            example:
+              name: VALORANT
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/schedule:
+    post:
+      operationId: twitch_schedule
+      summary: 'A channel''s stream schedule: the next upcoming stream (start, title, category)…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+              required:
+              - login
+            example:
+              login: lirik
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/game_clips:
+    post:
+      operationId: twitch_game_clips
+      summary: Top clips for a whole game/category (site-wide, across all channels), ranked by…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                limit:
+                  type: string
+                period:
+                  type: string
+              required:
+              - name
+            example:
+              name: VALORANT
+              limit: 5
+              period: ALL_TIME
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/game_videos:
+    post:
+      operationId: twitch_game_videos
+      summary: Top past broadcasts / VODs for a whole game/category (site-wide, across all…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                limit:
+                  type: string
+                sort:
+                  type: string
+              required:
+              - name
+            example:
+              name: Just Chatting
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitch/v1/team:
+    post:
+      operationId: twitch_team
+      summary: 'A Twitch team profile by name plus its member channels: team id, name, display…'
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - name
+            example:
+              name: tsm
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /username-osint/v1/username:
+    post:
+      operationId: username_osint_username
+      summary: Find every public account for a username across 3000+ sites (powered by the…
+      tags:
+      - Social Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                top:
+                  type: string
+                tags:
+                  type: string
+                sites:
+                  type: string
+                deep:
+                  type: string
+              required:
+              - username
+            example:
+              username: torvalds
+              top: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

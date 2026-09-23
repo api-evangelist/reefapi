@@ -1,0 +1,3341 @@
+openapi: 3.2.0
+info:
+  title: Reef Finance & Data API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Finance & Data
+paths:
+  /currency/v1/latest:
+    post:
+      operationId: currency_latest
+      summary: latest reference rates for a base (default EUR) → all or selected target…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                base:
+                  type: string
+                symbols:
+                  type: string
+            example:
+              base: EUR
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /currency/v1/convert:
+    post:
+      operationId: currency_convert
+      summary: convert an amount from→to at the latest rate (or a given historical date)…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                amount:
+                  type: string
+                date:
+                  type: string
+              required:
+              - from
+              - to
+            example:
+              from: USD
+              to: EUR
+              amount: 100
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /currency/v1/historical:
+    post:
+      operationId: currency_historical
+      summary: reference rates on a past date (YYYY-MM-DD; weekend/holiday → last working day)…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                base:
+                  type: string
+                symbols:
+                  type: string
+              required:
+              - date
+            example:
+              date: '2020-07-01'
+              base: USD
+              symbols: EUR,GBP
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /currency/v1/timeseries:
+    post:
+      operationId: currency_timeseries
+      summary: rates over a date range (working days) for a base → selected/all targets…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                base:
+                  type: string
+                symbols:
+                  type: string
+              required:
+              - start
+              - end
+            example:
+              start: '2024-01-02'
+              end: '2024-01-05'
+              base: EUR
+              symbols: USD
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /currency/v1/fluctuation:
+    post:
+      operationId: currency_fluctuation
+      summary: 'per-currency change over a date range: {CUR:{start_rate,end_rate,change,change_p…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                base:
+                  type: string
+                symbols:
+                  type: string
+              required:
+              - start
+              - end
+            example:
+              start: '2024-01-02'
+              end: '2024-01-31'
+              base: EUR
+              symbols: USD
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /currency/v1/currencies:
+    post:
+      operationId: currency_currencies
+      summary: the current ECB reference currency set (code → name)
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/quote:
+    post:
+      operationId: finance_quote
+      summary: single or multi-symbol quote
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                symbols:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/chart:
+    post:
+      operationId: finance_chart
+      summary: OHLCV chart data
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                range:
+                  type: string
+                interval:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/search:
+    post:
+      operationId: finance_search
+      summary: symbol search
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                quotesCount:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/fundamentals:
+    post:
+      operationId: finance_fundamentals
+      summary: quoteSummary modules
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                modules:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/analyst:
+    post:
+      operationId: finance_analyst
+      summary: recommendations, upgrades/downgrades, price targets
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/holders:
+    post:
+      operationId: finance_holders
+      summary: insider/institution/fund ownership and holder activity
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/news:
+    post:
+      operationId: finance_news
+      summary: Yahoo Finance news search
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                count:
+                  type: string
+                symbol:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/options:
+    post:
+      operationId: finance_options
+      summary: option chain
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                date:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar:
+    post:
+      operationId: finance_calendar
+      summary: earnings/calendar quoteSummary modules
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/events:
+    post:
+      operationId: finance_events
+      summary: dividends and splits from chart events
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/screener_predefined:
+    post:
+      operationId: finance_screener_predefined
+      summary: Yahoo saved screeners
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scrIds:
+                  type: string
+                count:
+                  type: string
+                start:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/screener:
+    post:
+      operationId: finance_screener
+      summary: Yahoo custom screener POST
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criteria:
+                  type: string
+                size:
+                  type: string
+                offset:
+                  type: string
+                sortField:
+                  type: string
+                sortType:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/market_summary:
+    post:
+      operationId: finance_market_summary
+      summary: market summary indices
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/trending:
+    post:
+      operationId: finance_trending
+      summary: trending symbols
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: string
+                count:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/lookup:
+    post:
+      operationId: finance_lookup
+      summary: Yahoo symbol universe lookup
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                count:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/technicals:
+    post:
+      operationId: finance_technicals
+      summary: local technical indicators from chart OHLCV
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                range:
+                  type: string
+                interval:
+                  type: string
+                periods:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+              range: 6mo
+              interval: 1d
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/economic:
+    post:
+      operationId: finance_economic
+      summary: FRED economic series via official API
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                series:
+                  type: string
+                fred_api_key:
+                  type: string
+                limit:
+                  type: string
+                sort_order:
+                  type: string
+              required:
+              - series
+              - fred_api_key
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/market/tickers:
+    post:
+      operationId: finance_v1_market_tickers
+      summary: public NASDAQ/NYSE/AMEX ticker universe
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+            example:
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/search:
+    post:
+      operationId: finance_v1_search
+      summary: RapidAPI-compatible alias for search
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/market/quotes:
+    post:
+      operationId: finance_v1_market_quotes
+      summary: RapidAPI-compatible alias for quote
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                symbols:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbols:
+              - AAPL
+              - MSFT
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/history:
+    post:
+      operationId: finance_v1_stock_history
+      summary: RapidAPI-compatible alias for chart
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+              range: 1mo
+              interval: 1d
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v2/stock/history:
+    post:
+      operationId: finance_v2_stock_history
+      summary: RapidAPI-compatible alias for chart
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+              range: 1mo
+              interval: 1d
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/market/screener:
+    post:
+      operationId: finance_v1_market_screener
+      summary: RapidAPI-compatible alias for screener
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criteria:
+                  type: string
+                scrIds:
+                  type: string
+            example:
+              scrIds: most_actives
+              count: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/modules:
+    post:
+      operationId: finance_v1_stock_modules
+      summary: RapidAPI-compatible alias for quoteSummary modules
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/market/news:
+    post:
+      operationId: finance_v1_market_news
+      summary: RapidAPI-compatible alias for news
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                symbol:
+                  type: string
+              required:
+              - query
+            example:
+              symbol: AAPL
+              count: 5
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v2/market/news:
+    post:
+      operationId: finance_v2_market_news
+      summary: RapidAPI-compatible alias for news
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                symbol:
+                  type: string
+              required:
+              - query
+            example:
+              symbol: AAPL
+              count: 5
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/options:
+    post:
+      operationId: finance_v1_options
+      summary: RapidAPI-compatible alias for options
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/most-active:
+    post:
+      operationId: finance_v1_most_active
+      summary: options most-active contracts derived from Yahoo option chains
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                symbols:
+                  type: string
+                count:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/unusual-options-activity:
+    post:
+      operationId: finance_v1_unusual_options_activity
+      summary: unusual options activity derived from Yahoo option chain volume/open-interest
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                symbols:
+                  type: string
+                count:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/earnings:
+    post:
+      operationId: finance_calendar_earnings
+      summary: symbol earnings calendar via quoteSummary
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/earnings_market:
+    post:
+      operationId: finance_calendar_earnings_market
+      summary: market-wide upcoming earnings calendar (all symbols) via Yahoo visualization
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                date:
+                  type: string
+                count:
+                  type: string
+                offset:
+                  type: string
+                region:
+                  type: string
+                lang:
+                  type: string
+            example:
+              count: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/dividends:
+    post:
+      operationId: finance_calendar_dividends
+      summary: symbol dividends via chart events
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/economic_events:
+    post:
+      operationId: finance_calendar_economic_events
+      summary: global economic events via Yahoo visualization calendar
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                count:
+                  type: string
+                offset:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/public_offerings:
+    post:
+      operationId: finance_calendar_public_offerings
+      summary: public offerings derived from Yahoo IPO calendar deal types
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                count:
+                  type: string
+                offset:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/ipo:
+    post:
+      operationId: finance_calendar_ipo
+      summary: IPO calendar via Yahoo visualization calendar
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: string
+                end:
+                  type: string
+                count:
+                  type: string
+                offset:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/stock-splits:
+    post:
+      operationId: finance_calendar_stock_splits
+      summary: symbol stock splits via chart events
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/calendar/count:
+    post:
+      operationId: finance_calendar_count
+      summary: count of calendar events in a window (economic/ipo)
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                calendar_type:
+                  type: string
+                type:
+                  type: string
+                start:
+                  type: string
+                end:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/futures:
+    post:
+      operationId: finance_futures
+      summary: 'futures chain: related contract months via Yahoo futuresChain'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: ES=F
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/insights:
+    post:
+      operationId: finance_insights
+      summary: 'trading insights: technical events, key technicals, valuation, recommendation…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                reportsCount:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/research:
+    post:
+      operationId: finance_research
+      summary: 'what analysts are saying: research-report metadata via Yahoo insights'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+                reportsCount:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/fund/fees:
+    post:
+      operationId: finance_fund_fees
+      summary: ETF/mutual-fund fees and expenses via Yahoo fundProfile
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: SPY
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/fund/holdings:
+    post:
+      operationId: finance_fund_holdings
+      summary: ETF/mutual-fund top holdings, sector weightings, asset allocation via Yahoo…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: SPY
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/recommendations:
+    post:
+      operationId: finance_recommendations
+      summary: peer/similar symbols via Yahoo recommendationsbysymbol
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/news/details:
+    post:
+      operationId: finance_news_details
+      summary: full news article content by uuid via Yahoo caas
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+              required:
+              - uuid
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/screener/fields:
+    post:
+      operationId: finance_screener_fields
+      summary: queryable screener field catalog (filters) via Yahoo screeners
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+            example:
+              type: equity
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/market/tickers-by-type:
+    post:
+      operationId: finance_market_tickers_by_type
+      summary: symbol lookup filtered by quote type (equity/etf/mutualfund/future/index/currenc…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                type:
+                  type: string
+                count:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/profile:
+    post:
+      operationId: finance_v1_stock_profile
+      summary: quoteSummary alias for assetProfile,summaryProfile
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/statistics:
+    post:
+      operationId: finance_v1_stock_statistics
+      summary: quoteSummary alias for defaultKeyStatistics
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/financial-data:
+    post:
+      operationId: finance_v1_stock_financial_data
+      summary: quoteSummary alias for financialData
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/sec-filings:
+    post:
+      operationId: finance_v1_stock_sec_filings
+      summary: quoteSummary alias for secFilings,assetProfile
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/earnings:
+    post:
+      operationId: finance_v1_stock_earnings
+      summary: quoteSummary alias for earnings,earningsTrend,earningsHistory
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/calendar-events:
+    post:
+      operationId: finance_v1_stock_calendar_events
+      summary: quoteSummary alias for calendarEvents
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/insider-holders:
+    post:
+      operationId: finance_v1_stock_insider_holders
+      summary: quoteSummary alias for insiderHolders
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/balance-sheet:
+    post:
+      operationId: finance_v1_stock_balance_sheet
+      summary: quoteSummary alias for balanceSheetHistory
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v2/stock/balance-sheet:
+    post:
+      operationId: finance_v2_stock_balance_sheet
+      summary: quoteSummary alias for balanceSheetHistory,balanceSheetHistoryQuarterly
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/institution-ownership:
+    post:
+      operationId: finance_v1_stock_institution_ownership
+      summary: quoteSummary alias for institutionOwnership
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/insider-transactions:
+    post:
+      operationId: finance_v1_stock_insider_transactions
+      summary: quoteSummary alias for insiderTransactions
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/index-trend:
+    post:
+      operationId: finance_v1_stock_index_trend
+      summary: quoteSummary alias for indexTrend
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/income-statement:
+    post:
+      operationId: finance_v1_stock_income_statement
+      summary: quoteSummary alias for incomeStatementHistory,incomeStatementHistoryQuarterly
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/cashflow-statement:
+    post:
+      operationId: finance_v1_stock_cashflow_statement
+      summary: quoteSummary alias for cashflowStatementHistory,cashflowStatementHistoryQuarterl…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/recommendation-trend:
+    post:
+      operationId: finance_v1_stock_recommendation_trend
+      summary: quoteSummary alias for recommendationTrend
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/net-share-purchase-activity:
+    post:
+      operationId: finance_v1_stock_net_share_purchase_activity
+      summary: quoteSummary alias for netSharePurchaseActivity
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/stock/upgrade-downgrade-history:
+    post:
+      operationId: finance_v1_stock_upgrade_downgrade_history
+      summary: quoteSummary alias for upgradeDowngradeHistory
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/insider-trades:
+    post:
+      operationId: finance_v1_insider_trades
+      summary: quoteSummary alias for insiderTransactions,insiderHolders,netSharePurchaseActivi…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/indicators/sma:
+    post:
+      operationId: finance_v1_indicators_sma
+      summary: local SMA indicator from chart OHLCV
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/indicators/rsi:
+    post:
+      operationId: finance_v1_indicators_rsi
+      summary: local RSI indicator from chart OHLCV
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/indicators/macd:
+    post:
+      operationId: finance_v1_indicators_macd
+      summary: local MACD indicator from chart OHLCV
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/v1/indicators/adx:
+    post:
+      operationId: finance_v1_indicators_adx
+      summary: local ADX indicator from chart OHLCV
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/get-futures-chain:
+    post:
+      operationId: finance_stock_get_futures_chain
+      summary: apidojo-compatible alias for futures
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/get-insights:
+    post:
+      operationId: finance_stock_get_insights
+      summary: apidojo-compatible alias for insights
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/v3/get-insights:
+    post:
+      operationId: finance_stock_v3_get_insights
+      summary: apidojo-compatible alias for insights
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/get-what-analysts-are-saying:
+    post:
+      operationId: finance_stock_get_what_analysts_are_saying
+      summary: apidojo-compatible alias for research
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/get-fees-and-expenses:
+    post:
+      operationId: finance_stock_get_fees_and_expenses
+      summary: apidojo-compatible alias for fund/fees
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/get-top-holdings:
+    post:
+      operationId: finance_stock_get_top_holdings
+      summary: apidojo-compatible alias for fund/holdings
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/stock/v2/get-recommendations:
+    post:
+      operationId: finance_stock_v2_get_recommendations
+      summary: apidojo-compatible alias for recommendations
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  type: string
+              required:
+              - symbol
+            example:
+              symbol: AAPL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/news/v2/get-details:
+    post:
+      operationId: finance_news_v2_get_details
+      summary: apidojo-compatible alias for news/details
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+              required:
+              - uuid
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/screeners/get-filters:
+    post:
+      operationId: finance_screeners_get_filters
+      summary: apidojo-compatible alias for screener/fields
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /finance/v1/market/get-tickers-by-quote-type:
+    post:
+      operationId: finance_market_get_tickers_by_quote_type
+      summary: apidojo-compatible alias for market/tickers-by-type
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/lookup:
+    post:
+      operationId: lei_lookup
+      summary: 'One LEI → the full verified legal-entity record (Level-1 who-is-who): legal…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lei:
+                  type: string
+                resolve_codes:
+                  type: string
+                history:
+                  type: string
+              required:
+              - lei
+            example:
+              lei: HWUPKR0MPOU8FGXBT394
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/search:
+    post:
+      operationId: lei_search
+      summary: Company name → ranked candidate entities with match_confidence for…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                scope:
+                  type: string
+                country:
+                  type: string
+                status:
+                  type: string
+                entity_status:
+                  type: string
+                jurisdiction:
+                  type: string
+                limit:
+                  type: string
+                page:
+                  type: string
+                min_confidence:
+                  type: string
+                typo:
+                  type: string
+              required:
+              - name
+            example:
+              name: Apple Inc
+              country: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/autocomplete:
+    post:
+      operationId: lei_autocomplete
+      summary: Type-ahead suggestions for a partial company name (GLEIF autocompletions…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+            example:
+              name: apple
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/relationships:
+    post:
+      operationId: lei_relationships
+      summary: 'One LEI → Level-2 corporate hierarchy: direct & ultimate parent (entity OR the…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lei:
+                  type: string
+                children_limit:
+                  type: string
+                detail:
+                  type: string
+              required:
+              - lei
+            example:
+              lei: 5493006MHB84DD0ZWV18
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/map:
+    post:
+      operationId: lei_map
+      summary: 'Identifier mapping: ISIN / BIC / MIC / QCC / S&P-Global-ID → LEI record(s), or…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                value:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - type
+              - value
+            example:
+              type: isin
+              value: US0378331005
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/reference:
+    post:
+      operationId: lei_reference
+      summary: 'GLEIF reference collections: ISO-20275 legal forms, registration authorities…'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+                code:
+                  type: string
+                limit:
+                  type: string
+                page:
+                  type: string
+              required:
+              - kind
+            example:
+              kind: legal-forms
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /lei/v1/batch:
+    post:
+      operationId: lei_batch
+      summary: Up to 50 mixed lookup/search items in one call.
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: string
+              required:
+              - items
+            example:
+              items:
+              - type: lookup
+                lei: HWUPKR0MPOU8FGXBT394
+              - type: search
+                name: Deutsche Bank
+                country: DE
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sanctions/v1/screen:
+    post:
+      operationId: sanctions_screen
+      summary: Screen ONE name against the official sanctions lists → status (match |…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                country:
+                  type: string
+                dob:
+                  type: string
+                threshold:
+                  type: string
+                limit:
+                  type: string
+                sources:
+                  type: string
+              required:
+              - name
+            example:
+              name: Ismail Haniya
+              type: person
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sanctions/v1/batch:
+    post:
+      operationId: sanctions_batch
+      summary: Screen up to 100 names in one call (in-memory → cheap).
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                names:
+                  type: string
+                type:
+                  type: string
+                country:
+                  type: string
+                threshold:
+                  type: string
+                limit:
+                  type: string
+                sources:
+                  type: string
+              required:
+              - names
+            example:
+              names:
+              - Ismail Haniya
+              - Bank of Kunlun
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sanctions/v1/entity:
+    post:
+      operationId: sanctions_entity
+      summary: Fetch ONE full normalized list record by its uid (':', from a screen match)…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uid:
+                  type: string
+              required:
+              - uid
+            example:
+              uid: ofac_sdn:35096
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sanctions/v1/sources_status:
+    post:
+      operationId: sanctions_sources_status
+      summary: List freshness + reachability of every sanctions source (the trust signal)…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/indicator:
+    post:
+      operationId: worldbank_indicator
+      summary: time-series for one+ indicators (code or shortcut) across one+ countries/all…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                indicator:
+                  type: string
+                date:
+                  type: string
+                mrv:
+                  type: string
+                mrnev:
+                  type: string
+                drop_nulls:
+                  type: string
+                rank:
+                  type: string
+                per_page:
+                  type: string
+                max_pages:
+                  type: string
+                frequency:
+                  type: string
+                gapfill:
+                  type: string
+              required:
+              - country
+              - indicator
+            example:
+              country: US
+              indicator: NY.GDP.MKTP.CD
+              date: 2015:2022
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/country:
+    post:
+      operationId: worldbank_country
+      summary: country metadata for codes/all or filtered by region/income_level/lending_type
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                region:
+                  type: string
+                income_level:
+                  type: string
+                lending_type:
+                  type: string
+                exclude_aggregates:
+                  type: string
+                all:
+                  type: string
+              required:
+              - country
+            example:
+              country: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/search_indicators:
+    post:
+      operationId: worldbank_search_indicators
+      summary: local keyword search over the indicator catalog (WDI default; full=all sources)
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                source:
+                  type: string
+                full:
+                  type: string
+                topic:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: gdp growth
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/indicator_metadata:
+    post:
+      operationId: worldbank_indicator_metadata
+      summary: definition/source/organization/topics for one+ indicator codes/aliases
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                indicator:
+                  type: string
+              required:
+              - indicator
+            example:
+              indicator: gdp
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/country_profile:
+    post:
+      operationId: worldbank_country_profile
+      summary: one-call headline snapshot (most-recent ~10 key metrics) for one+ countries
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                metrics:
+                  type: string
+              required:
+              - country
+            example:
+              country: FR
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/shortcuts:
+    post:
+      operationId: worldbank_shortcuts
+      summary: list the metric->indicator-code map, or metric=&country= to fetch directly
+      tags:
+      - Finance & Data
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                metric:
+                  type: string
+                country:
+                  type: string
+                date:
+                  type: string
+                mrv:
+                  type: string
+                mrnev:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/reference:
+    post:
+      operationId: worldbank_reference
+      summary: 'reference lists: regions | income_levels | lending_types | sources | topics'
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+              required:
+              - kind
+            example:
+              kind: income_levels
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /worldbank/v1/topic_indicators:
+    post:
+      operationId: worldbank_topic_indicators
+      summary: browse every indicator in a World Bank topic (Health, Economy, Climate, etc.)…
+      tags:
+      - Finance & Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type: string
+                query:
+                  type: string
+                limit:
+                  type: string
+                per_page:
+                  type: string
+                max_pages:
+                  type: string
+              required:
+              - topic
+            example:
+              topic: health
+              limit: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

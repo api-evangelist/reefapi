@@ -1,0 +1,2793 @@
+openapi: 3.2.0
+info:
+  title: Reef Reputation & Reviews API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Reputation & Reviews
+paths:
+  /app-store/v1/reviews:
+    post:
+      operationId: app_store_reviews
+      summary: unified Apple + Play reviews for one or more apps
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                apps:
+                  type: string
+                appleAppId:
+                  type: string
+                googlePlayPackage:
+                  type: string
+                appName:
+                  type: string
+                stores:
+                  type: string
+                countries:
+                  type: string
+                maxReviews:
+                  type: string
+            example:
+              apps:
+              - name: WhatsApp
+                apple: '310633997'
+              stores:
+              - apple
+              countries:
+              - us
+              maxReviews: 100
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/search:
+    post:
+      operationId: app_store_search
+      summary: ranked app search results
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                stores:
+                  type: string
+                country:
+                  type: string
+                count:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/topCharts:
+    post:
+      operationId: app_store_topCharts
+      summary: ranked chart/category apps
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stores:
+                  type: string
+                country:
+                  type: string
+                category:
+                  type: string
+                count:
+                  type: string
+                chart:
+                  type: string
+                device:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/listCategories:
+    post:
+      operationId: app_store_listCategories
+      summary: static genre/category list
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stores:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/appDetails:
+    post:
+      operationId: app_store_appDetails
+      summary: full app profile
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+                appleAppId:
+                  type: string
+                googlePlayPackage:
+                  type: string
+                stores:
+                  type: string
+                country:
+                  type: string
+                includeSimilarApps:
+                  type: string
+            example:
+              stores:
+              - apple
+              country: us
+              appId: '324684580'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/developerApps:
+    post:
+      operationId: app_store_developerApps
+      summary: every other app published by the same developer
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+                appleAppId:
+                  type: string
+                googlePlayPackage:
+                  type: string
+                stores:
+                  type: string
+                country:
+                  type: string
+                count:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /app-store/v1/similarApps:
+    post:
+      operationId: app_store_similarApps
+      summary: related / similar apps for an app
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+                appleAppId:
+                  type: string
+                googlePlayPackage:
+                  type: string
+                stores:
+                  type: string
+                country:
+                  type: string
+                count:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-app/v1/app_reputation:
+    post:
+      operationId: enrich_app_app_reputation
+      summary: 'name|store-URL|domain → entity-resolved app/SaaS reputation: store ratings +…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                stores:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+                trustradius_slug:
+                  type: string
+              required:
+              - query
+            example:
+              query: https://apps.apple.com/us/app/notion/id1232780281
+              include:
+              - stores
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-app/v1/app_reputation_rich:
+    post:
+      operationId: enrich_app_app_reputation_rich
+      summary: everything in app_reputation + a recent store-review sample + TrustRadius B2B…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                stores:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+                trustradius_slug:
+                  type: string
+              required:
+              - query
+            example:
+              query: https://apps.apple.com/us/app/notion/id1232780281
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-app/v1/batch:
+    post:
+      operationId: enrich_app_batch
+      summary: reputation for up to 10 apps/domains in one call (basic groups, cache-first…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                queries:
+                  type: string
+                country:
+                  type: string
+                stores:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+              required:
+              - queries
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-local/v1/business_lookup:
+    post:
+      operationId: enrich_local_business_lookup
+      summary: name+location ‖ place_query → matched place (Google Maps) + multi-source review…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+                place_query:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                country:
+                  type: string
+                yelp_enc_biz_id:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+            example:
+              name: Katz's Delicatessen
+              location: Manhattan
+              lat: 40.7223
+              lng: -73.9874
+              include:
+              - website
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-local/v1/batch:
+    post:
+      operationId: enrich_local_batch
+      summary: enrich up to 10 businesses in one call (lead-list use-case; per-item ok/error…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                businesses:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+              required:
+              - businesses
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-trust/v1/business_trust:
+    post:
+      operationId: enrich_trust_business_trust
+      summary: 'domain‖company_name → entity-resolved PUBLIC trust signals: positive_signals[]…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                company_name:
+                  type: string
+                country:
+                  type: string
+                business_type:
+                  type: string
+                depth:
+                  type: string
+            example:
+              domain: stripe.com
+              depth: basic
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-trust/v1/batch:
+    post:
+      operationId: enrich_trust_batch
+      summary: assess up to 10 domains in one call (core signals, cache-first, per-item…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domains:
+                  type: string
+                country:
+                  type: string
+                business_type:
+                  type: string
+              required:
+              - domains
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/search:
+    post:
+      operationId: google_maps_place_search
+      summary: Search places by text query with optional lat/lng geo-bias.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                altitude:
+                  type: string
+                maxResults:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+                include_contacts:
+                  type: string
+              required:
+              - query
+            example:
+              query: specialty coffee Times Square
+              lat: 40.7589
+              lng: -73.9881
+              maxResults: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/detail:
+    post:
+      operationId: google_maps_place_detail
+      summary: 'The single richest matching place: name, address, phone, website, rating, total…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+                include_contacts:
+                  type: string
+              required:
+              - query
+            example:
+              query: Katz's Delicatessen Manhattan
+              lat: 40.7223
+              lng: -73.9874
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/by-id:
+    post:
+      operationId: google_maps_place_by_id
+      summary: Fetch a place directly by its Google id — fid (0x…:0x…), place_id or numeric…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fid:
+                  type: string
+                place_id:
+                  type: string
+                cid:
+                  type: string
+                query:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+            example:
+              fid: 0x89c2598f7ff4aa09:0x313547e757cb8cea
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/nearby:
+    post:
+      operationId: google_maps_place_nearby
+      summary: Find places of a given type near coordinates (e.g.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lng:
+                  type: string
+                type:
+                  type: string
+                radius:
+                  type: string
+                maxResults:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+              required:
+              - lat
+              - lng
+              - type
+            example:
+              type: coffee shop
+              lat: 40.7589
+              lng: -73.9851
+              maxResults: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/geocode:
+    post:
+      operationId: google_maps_geocode
+      summary: 'Turn an address or place name into coordinates: returns latitude, longitude and…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+              required:
+              - address
+            example:
+              address: 350 5th Ave, New York, NY 10118
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/reviews:
+    post:
+      operationId: google_maps_place_reviews
+      summary: Public Google reviews for a place — paginated to ALL reviews.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                fid:
+                  type: string
+                cid:
+                  type: string
+                place_id:
+                  type: string
+                sort:
+                  type: string
+                max_reviews:
+                  type: string
+                cursor:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+            example:
+              query: Katz's Delicatessen Manhattan
+              lat: 40.7223
+              lng: -73.9874
+              max_reviews: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/photos:
+    post:
+      operationId: google_maps_place_photos
+      summary: Public photos for a place — the featured/hero gallery plus user-uploaded photos…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                fid:
+                  type: string
+                cid:
+                  type: string
+                place_id:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-maps/v1/place/freshness:
+    post:
+      operationId: google_maps_place_freshness
+      summary: 'Monitor a place for changes: returns the current place plus a typed diff vs the…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                lat:
+                  type: string
+                lng:
+                  type: string
+                previous:
+                  type: string
+                lang:
+                  type: string
+                region:
+                  type: string
+              required:
+              - query
+            example:
+              query: Katz's Delicatessen Manhattan
+              lat: 40.7223
+              lng: -73.9874
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/search:
+    post:
+      operationId: naver_place_search
+      summary: search restaurants & food places by query (richest food data)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: 강남 맛집
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/search-all:
+    post:
+      operationId: naver_place_search_all
+      summary: search ANY business type on Naver Place/Map (clinics, cafes, hotels, salons…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: 강남 성형외과
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/detail:
+    post:
+      operationId: naver_place_detail
+      summary: full place profile (rating, phone, hours, images)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place_id:
+                  type: string
+                query:
+                  type: string
+              required:
+              - place_id
+            example:
+              place_id: '18485191'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/reviews:
+    post:
+      operationId: naver_place_reviews
+      summary: visitor reviews (latest page, ~20 per call) with the true total
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place_id:
+                  type: string
+                limit:
+                  type: string
+                page_size:
+                  type: string
+                sort:
+                  type: string
+                query:
+                  type: string
+              required:
+              - place_id
+            example:
+              place_id: '18485191'
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/blog-reviews:
+    post:
+      operationId: naver_place_blog_reviews
+      summary: blog reviews
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                place_id:
+                  type: string
+                limit:
+                  type: string
+                page_size:
+                  type: string
+                query:
+                  type: string
+              required:
+              - place_id
+            example:
+              place_id: '18485191'
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/place/resolve:
+    post:
+      operationId: naver_place_resolve
+      summary: resolve a query → place_id (works for food AND any other business)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                place_id:
+                  type: string
+              required:
+              - query
+            example:
+              query: 강남 맛집
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /naver/v1/search/autocomplete:
+    post:
+      operationId: naver_search_autocomplete
+      summary: Naver search-box keyword suggestions for a partial term (keyword research)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: 아이폰
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/company/search:
+    post:
+      operationId: reclameaqui_company_search
+      summary: resolve a company by name/slug
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                slug:
+                  type: string
+            example:
+              query: nubank
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/company/detail:
+    post:
+      operationId: reclameaqui_company_detail
+      summary: company profile + reputation index
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                company_id:
+                  type: string
+            example:
+              slug: nubank
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/company/stats:
+    post:
+      operationId: reclameaqui_company_stats
+      summary: reputation metrics + main/performance problems
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                company_id:
+                  type: string
+            example:
+              slug: nubank
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/company/complaints:
+    post:
+      operationId: reclameaqui_company_complaints
+      summary: paginated complaints for a company
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_id:
+                  type: string
+                status:
+                  type: string
+                statuses:
+                  type: string
+                limit:
+                  type: string
+                page_size:
+                  type: string
+                date_from:
+                  type: string
+                date_to:
+                  type: string
+                company_slug:
+                  type: string
+                company_name:
+                  type: string
+              required:
+              - company_id
+            example:
+              company_id: '88850'
+              company_slug: nubank
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/complaints/search:
+    post:
+      operationId: reclameaqui_complaints_search
+      summary: search complaints by keyword
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                page_size:
+                  type: string
+                date_from:
+                  type: string
+                date_to:
+                  type: string
+              required:
+              - query
+            example:
+              query: banco
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reclameaqui/v1/complaint/detail:
+    post:
+      operationId: reclameaqui_complaint_detail
+      summary: single complaint thread (HTML timeline)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_slug:
+                  type: string
+                complaint_url_slug:
+                  type: string
+              required:
+              - company_slug
+              - complaint_url_slug
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sitejabber/v1/reviews:
+    post:
+      operationId: sitejabber_reviews
+      summary: Get a business's customer reviews from Sitejabber by domain — paginated, 20 per…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                page:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: amazon.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sitejabber/v1/aggregate:
+    post:
+      operationId: sitejabber_aggregate
+      summary: The rating summary for a business by domain (no individual reviews) — overall…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: amazon.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sitejabber/v1/detail:
+    post:
+      operationId: sitejabber_detail
+      summary: The full business profile on Sitejabber by domain — name, website, founded…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: nike.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sitejabber/v1/search:
+    post:
+      operationId: sitejabber_search
+      summary: Search Sitejabber for businesses by name or keyword — returns matching…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+              required:
+              - query
+            example:
+              query: amazon
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sitejabber/v1/category:
+    post:
+      operationId: sitejabber_category
+      summary: Browse the businesses listed in a Sitejabber category — returns each business's…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                page:
+                  type: string
+              required:
+              - category
+            example:
+              category: shopping
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tripadvisor/v1/reviews:
+    post:
+      operationId: tripadvisor_reviews
+      summary: Reviews + the full place profile (rating histogram, subratings, amenities) for…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startUrls:
+                  type: string
+                url:
+                  type: string
+                queries:
+                  type: string
+                query:
+                  type: string
+                maxReviews:
+                  type: string
+                language:
+                  type: string
+            example:
+              startUrls:
+              - url: https://www.tripadvisor.com/Hotel_Review-g45963-d91703-Reviews-Bellagio-Las_Vegas_Nevada.html
+              maxReviews: 45
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tripadvisor/v1/places/list:
+    post:
+      operationId: tripadvisor_places_list
+      summary: Discover hotels, restaurants or attractions in a city/area (name, rating…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                category:
+                  type: string
+                geo_id:
+                  type: string
+                location_slug:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - location
+            example:
+              location: Las Vegas
+              category: hotels
+              geo_id: '45963'
+              location_slug: Las_Vegas_Nevada
+              max_results: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tripadvisor/v1/detail:
+    post:
+      operationId: tripadvisor_detail
+      summary: Full profile for one Tripadvisor hotel, restaurant or attraction by page URL…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.tripadvisor.com/Hotel_Review-g45963-d91703-Reviews-Bellagio-Las_Vegas_Nevada.html
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /tripadvisor/v1/search:
+    post:
+      operationId: tripadvisor_search
+      summary: Find Tripadvisor places (hotels, restaurants, attractions) and destinations by…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Bellagio Las Vegas
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/company/reviews:
+    post:
+      operationId: trustpilot_company_reviews
+      summary: Get a company's Trustpilot reviews and its full profile from trustpilot.com…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                maxReviews:
+                  type: string
+                includeCompany:
+                  type: string
+                sort:
+                  type: string
+                date_posted:
+                  type: string
+                rating:
+                  type: string
+                verified:
+                  type: string
+                with_replies:
+                  type: string
+                query:
+                  type: string
+                languages:
+                  type: string
+                page:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - company
+            example:
+              company: amazon.com
+              maxReviews: 40
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/company/details:
+    post:
+      operationId: trustpilot_company_details
+      summary: The full Trustpilot company profile WITHOUT reviews (cheaper than…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - company
+            example:
+              company: lendingclub.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/browse:
+    post:
+      operationId: trustpilot_category_browse
+      summary: List the companies in a Trustpilot category (20/page) → each company's name…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                locale:
+                  type: string
+                sort:
+                  type: string
+                country:
+                  type: string
+                min_rating:
+                  type: string
+                claimed:
+                  type: string
+              required:
+              - categoryId
+            example:
+              categoryId: electronics_technology
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/companies:
+    post:
+      operationId: trustpilot_category_companies
+      summary: List the companies in a Trustpilot category (20/page), ranked → each company's…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                page:
+                  type: string
+                locale:
+                  type: string
+                sort:
+                  type: string
+                country:
+                  type: string
+                min_rating:
+                  type: string
+                claimed:
+                  type: string
+              required:
+              - categoryId
+            example:
+              categoryId: electronics_technology
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/recently-reviewed:
+    post:
+      operationId: trustpilot_category_recently_reviewed
+      summary: The companies in a Trustpilot category that were reviewed most recently → name…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - categoryId
+            example:
+              categoryId: electronics_technology
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/newest:
+    post:
+      operationId: trustpilot_category_newest
+      summary: The newest companies added to a Trustpilot category → name, domain, TrustScore…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - categoryId
+            example:
+              categoryId: electronics_technology
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/details:
+    post:
+      operationId: trustpilot_category_details
+      summary: Details of a Trustpilot category → its display name, the number of businesses…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - categoryId
+            example:
+              categoryId: electronics_technology
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/category/search:
+    post:
+      operationId: trustpilot_category_search
+      summary: Search Trustpilot categories by keyword → matching categories with their id and…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - query
+            example:
+              query: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/company/search:
+    post:
+      operationId: trustpilot_company_search
+      summary: Search Trustpilot for companies by name (10 matches/page) → each match's name…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                min_rating:
+                  type: string
+                min_review_count:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - query
+            example:
+              query: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/consumer/details:
+    post:
+      operationId: trustpilot_consumer_details
+      summary: A Trustpilot consumer's public profile → display name, country, number of…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consumer_id:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - consumer_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/consumer/reviews:
+    post:
+      operationId: trustpilot_consumer_reviews
+      summary: Every review a Trustpilot consumer has written across all companies → each…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consumer_id:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - consumer_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustpilot/v1/reviewer/profile:
+    post:
+      operationId: trustpilot_reviewer_profile
+      summary: 'Alias of consumer/details + consumer/reviews: a reviewer''s profile AND every…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consumer_id:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                locale:
+                  type: string
+              required:
+              - consumer_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustradius/v1/product/reviews:
+    post:
+      operationId: trustradius_product_reviews
+      summary: Fetch verified user reviews and ratings for a B2B software product from…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_slug:
+                  type: string
+                source:
+                  type: string
+                skip:
+                  type: string
+                limit:
+                  type: string
+                fetch_all:
+                  type: string
+                include_non_public:
+                  type: string
+                category_path:
+                  type: string
+              required:
+              - product_slug
+            example:
+              source: trustradius
+              product_slug: slack
+              fetch_all: true
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustradius/v1/product/detail:
+    post:
+      operationId: trustradius_product_detail
+      summary: product metadata (name, description, rating, category)
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_slug:
+                  type: string
+                source:
+                  type: string
+                category_path:
+                  type: string
+              required:
+              - product_slug
+            example:
+              source: trustradius
+              product_slug: slack
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /trustradius/v1/product/resolve:
+    post:
+      operationId: trustradius_product_resolve
+      summary: resolve a TrustRadius/GetApp/Capterra/G2 URL → source + slug
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yandex-maps/v1/search:
+    post:
+      operationId: yandex_maps_search
+      summary: Search Yandex Maps for businesses by text/category.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                city:
+                  type: string
+                region_id:
+                  type: string
+                ll:
+                  type: string
+                z:
+                  type: string
+              required:
+              - text
+            example:
+              text: kahve
+              city: istanbul
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yandex-maps/v1/detail:
+    post:
+      operationId: yandex_maps_detail
+      summary: 'Full business card for one org by org_id (or a Yandex Maps org URL): name…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                org_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              org_id: '1242233919'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yandex-maps/v1/reviews:
+    post:
+      operationId: yandex_maps_reviews
+      summary: 'Paginated public customer reviews for an org: author handle, level, star…'
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                org_id:
+                  type: string
+                page:
+                  type: string
+              required:
+              - org_id
+            example:
+              org_id: '1242233919'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yandex-maps/v1/nearby:
+    post:
+      operationId: yandex_maps_nearby
+      summary: Find businesses of a category around a coordinate.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ll:
+                  type: string
+                text:
+                  type: string
+                z:
+                  type: string
+              required:
+              - ll
+              - text
+            example:
+              ll: 28.985,41.036
+              text: eczane
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yandex-maps/v1/geocode:
+    post:
+      operationId: yandex_maps_geocode
+      summary: Geocode an address/place name to coordinates via Yandex.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+              required:
+              - address
+            example:
+              address: Taksim Meydanı
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yellowpages/v1/search:
+    post:
+      operationId: yellowpages_search
+      summary: Search the Yellow Pages business directory by category/keyword and US location.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search_terms:
+                  type: string
+                geo_location_terms:
+                  type: string
+                page:
+                  type: string
+              required:
+              - search_terms
+              - geo_location_terms
+            example:
+              search_terms: plumber
+              geo_location_terms: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yellowpages/v1/detail:
+    post:
+      operationId: yellowpages_detail
+      summary: Full business profile from a Yellow Pages detail URL (the `url` of a search…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yellowpages/v1/category:
+    post:
+      operationId: yellowpages_category
+      summary: Browse every business in a Yellow Pages category for a US city — e.g.
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                location:
+                  type: string
+                page:
+                  type: string
+              required:
+              - category
+              - location
+            example:
+              category: restaurants
+              location: Chicago, IL
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/business/reviews:
+    post:
+      operationId: yelp_business_reviews
+      summary: Fetch all reviews (with full pagination — newest, oldest, highest rated or…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                encBizIds:
+                  type: string
+                maxReviews:
+                  type: string
+                sortBy:
+                  type: string
+                ratings:
+                  type: string
+                language:
+                  type: string
+                includeDetail:
+                  type: string
+                includeNotRecommended:
+                  type: string
+                reviewsPerPage:
+                  type: string
+              required:
+              - encBizIds
+            example:
+              encBizIds:
+              - gZz9A8k8ORC_xl0aHxtY4w
+              maxReviews: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/business/details:
+    post:
+      operationId: yelp_business_details
+      summary: Get the full Yelp business profile without reviews — name, categories, star…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                encBizIds:
+                  type: string
+                includePii:
+                  type: string
+              required:
+              - encBizIds
+            example:
+              encBizIds:
+              - gZz9A8k8ORC_xl0aHxtY4w
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/search:
+    post:
+      operationId: yelp_search
+      summary: Search Yelp by keyword or category in a location — just like typing 'Pizza in…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                term:
+                  type: string
+                location:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                sort_by:
+                  type: string
+                price:
+                  type: string
+                open_now:
+                  type: string
+                min_rating:
+                  type: string
+                attributes:
+                  type: string
+              required:
+              - term
+              - location
+            example:
+              term: Pizza
+              location: San Francisco, CA
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/popular_dishes:
+    post:
+      operationId: yelp_popular_dishes
+      summary: Get a restaurant's popular dishes from Yelp — the 'Popular dishes' section…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_url:
+                  type: string
+                business_id:
+                  type: string
+                slug:
+                  type: string
+                limit:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/menus:
+    post:
+      operationId: yelp_menus
+      summary: Get a restaurant's menu from Yelp when Yelp hosts it — returning menu sections…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_url:
+                  type: string
+                business_id:
+                  type: string
+                slug:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/business/photos:
+    post:
+      operationId: yelp_business_photos
+      summary: Get a Yelp business's photos — the images shown on its Yelp page, with captions…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_url:
+                  type: string
+                business_id:
+                  type: string
+                slug:
+                  type: string
+                limit:
+                  type: string
+            example:
+              slug: tonys-pizza-napoletana-san-francisco
+              limit: 8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/review_highlights:
+    post:
+      operationId: yelp_review_highlights
+      summary: Get a Yelp business's review highlights — the recurring phrases reviewers…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_url:
+                  type: string
+                business_id:
+                  type: string
+                slug:
+                  type: string
+                limit:
+                  type: string
+            example:
+              slug: tonys-pizza-napoletana-san-francisco
+              limit: 6
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/business/url-to-id:
+    post:
+      operationId: yelp_business_url_to_id
+      summary: Convert any yelp.com/biz/… business page URL into the Yelp business ID used by…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                business_url:
+                  type: string
+              required:
+              - business_url
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /yelp/v1/business/search:
+    post:
+      operationId: yelp_business_search
+      summary: Find a Yelp business by name (plus optional location) and return its Yelp…
+      tags:
+      - Reputation & Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+                limit:
+                  type: string
+                resolveAll:
+                  type: string
+              required:
+              - name
+            example:
+              name: Blue Bottle Coffee
+              location: San Francisco
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

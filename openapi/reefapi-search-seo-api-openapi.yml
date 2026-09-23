@@ -1,0 +1,335 @@
+openapi: 3.2.0
+info:
+  title: Reef Search & SEO API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Search & SEO
+paths:
+  /bing/v1/search:
+    post:
+      operationId: bing_search
+      summary: Bing web search results — ranked organic pages with title, URL, snippet, answer…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                engine:
+                  type: string
+                depth:
+                  type: string
+                mkt:
+                  type: string
+                gl:
+                  type: string
+                hl:
+                  type: string
+                count:
+                  type: string
+                page:
+                  type: string
+                first:
+                  type: string
+                safe:
+                  type: string
+                freshness:
+                  type: string
+                device:
+                  type: string
+              required:
+              - q
+            example:
+              q: best laptop 2026
+              engine: bing
+              gl: us
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bing/v1/news:
+    post:
+      operationId: bing_news
+      summary: Bing News results for a keyword — article title, source, URL and snippet…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                mkt:
+                  type: string
+                gl:
+                  type: string
+                hl:
+                  type: string
+                count:
+                  type: string
+                freshness:
+                  type: string
+              required:
+              - q
+            example:
+              q: tesla
+              gl: us
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bing/v1/videos:
+    post:
+      operationId: bing_videos
+      summary: Bing video search results — watch-page URL, thumbnail, duration and hosting…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                mkt:
+                  type: string
+                gl:
+                  type: string
+                hl:
+                  type: string
+                page:
+                  type: string
+                first:
+                  type: string
+                safe:
+                  type: string
+              required:
+              - q
+            example:
+              q: how to make pizza
+              gl: us
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /bing/v1/autocomplete:
+    post:
+      operationId: bing_autocomplete
+      summary: Bing search autocomplete — query suggestions / typeahead from Bing's public…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                mkt:
+                  type: string
+                gl:
+                  type: string
+                hl:
+                  type: string
+              required:
+              - q
+            example:
+              q: best lap
+              gl: us
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-trends/v1/trending_now:
+    post:
+      operationId: google_trends_trending_now
+      summary: Currently trending searches for a geo (title + approx traffic + news articles)
+      tags:
+      - Search & SEO
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                geo:
+                  type: string
+            example:
+              geo: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-trends/v1/suggest:
+    post:
+      operationId: google_trends_suggest
+      summary: Keyword autocomplete — candidate topics/entities (the Google Trends suggestion…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                hl:
+                  type: string
+              required:
+              - keyword
+            example:
+              keyword: bitcoin
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-trends/v1/categories:
+    post:
+      operationId: google_trends_categories
+      summary: List the Google Trends category taxonomy (id + name, hierarchical) so you can…
+      tags:
+      - Search & SEO
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /google-trends/v1/realtime_trending:
+    post:
+      operationId: google_trends_realtime_trending
+      summary: 'Realtime trending story-clusters for a country (richer than trending_now): each…'
+      tags:
+      - Search & SEO
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                geo:
+                  type: string
+                hours:
+                  type: string
+                limit:
+                  type: string
+            example:
+              geo: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

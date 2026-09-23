@@ -1,0 +1,2552 @@
+openapi: 3.2.0
+info:
+  title: Reef Jobs & Hiring API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Jobs & Hiring
+paths:
+  /ats-jobs/v1/company_jobs:
+    post:
+      operationId: ats_jobs_company_jobs
+      summary: all open jobs for a board → {jobs[]{id,title,url,company,location,locations,...}…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ats:
+                  type: string
+                company:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+                page:
+                  type: string
+              required:
+              - ats
+              - company
+            example:
+              ats: greenhouse
+              company: gitlab
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ats-jobs/v1/job_detail:
+    post:
+      operationId: ats_jobs_job_detail
+      summary: one fully-populated job (description + requirements/benefits) by `ats` +…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ats:
+                  type: string
+                company:
+                  type: string
+                job_id:
+                  type: string
+              required:
+              - ats
+              - company
+              - job_id
+            example:
+              ats: greenhouse
+              company: gitlab
+              job_id: '8503792002'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ats-jobs/v1/search:
+    post:
+      operationId: ats_jobs_search
+      summary: cross-company job search over the Workable aggregator (170K jobs) → jobs[].
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                ats:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+                page:
+                  type: string
+              required:
+              - query
+            example:
+              query: python engineer
+              ats: workable
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ats-jobs/v1/providers:
+    post:
+      operationId: ats_jobs_providers
+      summary: the supported ATS providers + their capabilities
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-hiring/v1/hiring_signal:
+    post:
+      operationId: enrich_hiring_hiring_signal
+      summary: 'domain → company hiring snapshot: ATS provider + direct open-roles count…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                company_name:
+                  type: string
+                ats_slug:
+                  type: string
+                ats_provider:
+                  type: string
+                countries:
+                  type: string
+            example:
+              domain: stripe.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-hiring/v1/hiring_signal_rich:
+    post:
+      operationId: enrich_hiring_hiring_signal_rich
+      summary: everything in hiring_signal + employer firmographics (linkedin company /…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                company_name:
+                  type: string
+                ats_slug:
+                  type: string
+                ats_provider:
+                  type: string
+                countries:
+                  type: string
+            example:
+              domain: stripe.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-hiring/v1/batch:
+    post:
+      operationId: enrich_hiring_batch
+      summary: hiring_signal for up to 10 domains in one call (cache-first, per-item ok/error)
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domains:
+                  type: string
+              required:
+              - domains
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fiverr/v1/search:
+    post:
+      operationId: fiverr_search
+      summary: Search live Fiverr GIGS by keyword.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                include_promoted:
+                  type: string
+              required:
+              - query
+            example:
+              query: logo design
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fiverr/v1/category:
+    post:
+      operationId: fiverr_category
+      summary: Browse a Fiverr CATEGORY without a keyword — same gig rows as `search`, taken…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                include_promoted:
+                  type: string
+              required:
+              - category
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fiverr/v1/gig:
+    post:
+      operationId: fiverr_gig
+      summary: 'Full detail for ONE Fiverr gig by URL or ''/'': description, every pricing…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fiverr/v1/seller:
+    post:
+      operationId: fiverr_seller
+      summary: 'PUBLIC business profile of a Fiverr seller by handle or profile URL: display…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/search:
+    post:
+      operationId: freelancer_search
+      summary: Search live freelance PROJECTS on Freelancer.com by keyword, skills, category…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                match:
+                  type: string
+                skills:
+                  type: string
+                category:
+                  type: string
+                project_types:
+                  type: string
+                budget_min:
+                  type: string
+                budget_max:
+                  type: string
+                posted_within:
+                  type: string
+                countries:
+                  type: string
+                languages:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+            example:
+              query: python
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/project:
+    post:
+      operationId: freelancer_project
+      summary: Full detail for one Freelancer.com project by numeric id, project URL, or SEO…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: '40675266'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/user:
+    post:
+      operationId: freelancer_user
+      summary: PUBLIC business profile of a Freelancer.com freelancer or employer by…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/contests:
+    post:
+      operationId: freelancer_contests
+      summary: Browse live OPEN Freelancer.com design/creative CONTESTS (accepting entries)…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                skills:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+            example:
+              limit: 8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/skills:
+    post:
+      operationId: freelancer_skills
+      summary: Resolve a skill name to Freelancer.com skill id(s) (for search's `skills`…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+            example:
+              query: php
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /freelancer/v1/categories:
+    post:
+      operationId: freelancer_categories
+      summary: List the top-level Freelancer.com job categories (Websites/IT, Design, Writing…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/search:
+    post:
+      operationId: glassdoor_employer_search
+      summary: Resolve a company name to its Glassdoor employer_id + basic profile.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Google
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/detail:
+    post:
+      operationId: glassdoor_employer_detail
+      summary: Employer profile + ratings
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/reviews:
+    post:
+      operationId: glassdoor_employer_reviews
+      summary: One page of employer reviews (rating, pros/cons, role)
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                page_size:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+              page_size: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/reviews-harvest:
+    post:
+      operationId: glassdoor_employer_reviews_harvest
+      summary: Fetch all available Glassdoor reviews across multiple pages — returns every…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+                page_size:
+                  type: string
+                max_pages:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/interviews:
+    post:
+      operationId: glassdoor_employer_interviews
+      summary: One page of interview reports (questions, difficulty, outcome)
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                items_per_page:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/interviews-harvest:
+    post:
+      operationId: glassdoor_employer_interviews_harvest
+      summary: Fetch all available Glassdoor interview reports across multiple pages
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+                items_per_page:
+                  type: string
+                max_pages:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/jobs:
+    post:
+      operationId: glassdoor_employer_jobs
+      summary: Employer job listings (one page; cursor pagination)
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                page_size:
+                  type: string
+                page_cursor:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+              page_size: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/jobs-harvest:
+    post:
+      operationId: glassdoor_employer_jobs_harvest
+      summary: Fetch all available Glassdoor job listings across multiple pages
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                dynamic_profile_id:
+                  type: string
+                page_size:
+                  type: string
+                max_pages:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/salaries:
+    post:
+      operationId: glassdoor_employer_salaries
+      summary: Glassdoor salary estimates for this employer, broken down by job title.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                job_title:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                page_size:
+                  type: string
+                pay_period:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /glassdoor/v1/employer/salaries-harvest:
+    post:
+      operationId: glassdoor_employer_salaries_harvest
+      summary: Fetch salary estimates for all job titles at this employer across multiple…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_id:
+                  type: string
+                job_title:
+                  type: string
+                page_size:
+                  type: string
+                pay_period:
+                  type: string
+                max_pages:
+                  type: string
+              required:
+              - employer_id
+            example:
+              employer_id: 9079
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /global-jobs/v1/jobs/search:
+    post:
+      operationId: global_jobs_jobs_search
+      summary: Search live job listings on Naukri (India), Gupy and Catho (Brazil), or…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                keyword:
+                  type: string
+                query:
+                  type: string
+                location:
+                  type: string
+                max_pages:
+                  type: string
+                max_results:
+                  type: string
+                page_size:
+                  type: string
+              required:
+              - platform
+            example:
+              platform: catho
+              keyword: analista
+              max_pages: 1
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /global-jobs/v1/jobs/detail:
+    post:
+      operationId: global_jobs_jobs_detail
+      summary: Get the full details of a single job posting from Naukri, Gupy, Catho or…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                job_id:
+                  type: string
+                job_url:
+                  type: string
+                apply_url:
+                  type: string
+              required:
+              - platform
+            example:
+              platform: catho
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /guru/v1/search:
+    post:
+      operationId: guru_search
+      summary: Search live freelance JOBS across the whole Guru.com board.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                skills:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+            example:
+              limit: 8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /guru/v1/project:
+    post:
+      operationId: guru_project
+      summary: Full detail for one Guru.com job by URL, slug, or numeric id — title…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: https://www.guru.com/jobs/testing-our-cruise-control/2120425
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /guru/v1/user:
+    post:
+      operationId: guru_user
+      summary: PUBLIC business profile of a Guru.com freelancer/provider by profile URL or…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /guru/v1/categories:
+    post:
+      operationId: guru_categories
+      summary: List the top-level Guru.com freelance job categories (Programming, Design…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/jobs/search:
+    post:
+      operationId: indeed_jobs_search
+      summary: Search live job postings on Indeed by keyword and location.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                location:
+                  type: string
+                max_results:
+                  type: string
+                sort_by:
+                  type: string
+                include_detail:
+                  type: string
+                job_type:
+                  type: string
+                remote:
+                  type: string
+                hybrid:
+                  type: string
+                level:
+                  type: string
+                from_days:
+                  type: string
+                radius:
+                  type: string
+              required:
+              - query
+            example:
+              query: python developer
+              location: New York
+              country: US
+              max_results: 60
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/job:
+    post:
+      operationId: indeed_job
+      summary: Get the full detail of one or more specific jobs by their Indeed job key (or…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobkey:
+                  type: string
+                country:
+                  type: string
+              required:
+              - jobkey
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/company:
+    post:
+      operationId: indeed_company
+      summary: 'Look up a company on Indeed: profile (industry, size, revenue, HQ, founded…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                country:
+                  type: string
+                include_jobs:
+                  type: string
+                max_jobs:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/company/search:
+    post:
+      operationId: indeed_company_search
+      summary: Find companies on Indeed by name or keyword (optionally near a location).
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                location:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - query
+            example:
+              query: software
+              country: US
+              max_results: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/company/reviews:
+    post:
+      operationId: indeed_company_reviews
+      summary: Get a company's employee reviews from Indeed (review text, overall rating, the…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                max_reviews:
+                  type: string
+                start:
+                  type: string
+                sort:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/company/salaries:
+    post:
+      operationId: indeed_company_salaries
+      summary: Get a company's salary breakdown by job title from Indeed (average pay, pay…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /indeed/v1/estimated_salary:
+    post:
+      operationId: indeed_estimated_salary
+      summary: Estimate the market salary for a job title (optionally in a specific US…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_title:
+                  type: string
+                location:
+                  type: string
+              required:
+              - job_title
+            example:
+              job_title: software engineer
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /levels-fyi/v1/company/salaries:
+    post:
+      operationId: levels_fyi_company_salaries
+      summary: 'The flagship action: full Levels.fyi compensation breakdown for one company +…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                role:
+                  type: string
+                location:
+                  type: string
+              required:
+              - company
+              - role
+            example:
+              company: google
+              role: software-engineer
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /levels-fyi/v1/company/roles:
+    post:
+      operationId: levels_fyi_company_roles
+      summary: Resolve a company to its Levels.fyi profile (id, slug, website, employee count…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+              required:
+              - company
+            example:
+              company: stripe
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /levels-fyi/v1/company/search:
+    post:
+      operationId: levels_fyi_company_search
+      summary: Find companies on Levels.fyi by name.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: goldman
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /levels-fyi/v1/role/companies:
+    post:
+      operationId: levels_fyi_role_companies
+      summary: For a given role/title, list every company that reports compensation data for…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - role
+            example:
+              role: software-engineer
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /levels-fyi/v1/submissions:
+    post:
+      operationId: levels_fyi_submissions
+      summary: Paginated individual salary submissions for a company + role — the raw…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                role:
+                  type: string
+                location:
+                  type: string
+                page:
+                  type: string
+              required:
+              - company
+              - role
+            example:
+              company: google
+              role: software-engineer
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/jobs/search:
+    post:
+      operationId: linkedin_jobs_jobs_search
+      summary: Search public LinkedIn job postings by keywords, with optional location and…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keywords:
+                  type: string
+                location:
+                  type: string
+                max_results:
+                  type: string
+                date_posted:
+                  type: string
+                experience:
+                  type: string
+                job_type:
+                  type: string
+                workplace:
+                  type: string
+                industry:
+                  type: string
+                job_function:
+                  type: string
+                salary_min:
+                  type: string
+                salary_band:
+                  type: string
+                company:
+                  type: string
+                include_detail:
+                  type: string
+                include_company:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                start:
+                  type: string
+                geoId:
+                  type: string
+                filters:
+                  type: string
+                detail_concurrency:
+                  type: string
+              required:
+              - keywords
+            example:
+              keywords: python developer
+              location: United States
+              max_results: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/jobs/detail:
+    post:
+      operationId: linkedin_jobs_jobs_detail
+      summary: 'Full posting for one job: description, employment type, seniority, salary…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                include_company:
+                  type: string
+              required:
+              - job_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/company:
+    post:
+      operationId: linkedin_jobs_company
+      summary: 'Company profile: description, website, employee count, industry, HQ, founded…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/jobs/by-company:
+    post:
+      operationId: linkedin_jobs_jobs_by_company
+      summary: All public job postings at a specific company — pass a company slug, URL or…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                keywords:
+                  type: string
+                location:
+                  type: string
+                max_results:
+                  type: string
+                date_posted:
+                  type: string
+                experience:
+                  type: string
+                job_type:
+                  type: string
+                workplace:
+                  type: string
+                industry:
+                  type: string
+                job_function:
+                  type: string
+                salary_min:
+                  type: string
+                salary_band:
+                  type: string
+                include_detail:
+                  type: string
+                include_company:
+                  type: string
+                page:
+                  type: string
+                cursor:
+                  type: string
+                start:
+                  type: string
+                geoId:
+                  type: string
+                filters:
+                  type: string
+                detail_concurrency:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/locations/search:
+    post:
+      operationId: linkedin_jobs_locations_search
+      summary: Location typeahead → resolve a place name (city, region, metro area, country)…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /linkedin-jobs/v1/jobs/similar:
+    post:
+      operationId: linkedin_jobs_jobs_similar
+      summary: Related job postings for a given job_id.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                keywords:
+                  type: string
+                location:
+                  type: string
+                max_results:
+                  type: string
+                include_detail:
+                  type: string
+                include_company:
+                  type: string
+              required:
+              - job_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reed/v1/search:
+    post:
+      operationId: reed_search
+      summary: Search Reed.co.uk job postings by keyword with optional location, distance…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keywords:
+                  type: string
+                location:
+                  type: string
+                distance:
+                  type: string
+                job_type:
+                  type: string
+                full_time:
+                  type: string
+                part_time:
+                  type: string
+                graduate:
+                  type: string
+                agency:
+                  type: string
+                employer:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                remote:
+                  type: string
+                visa_sponsorship:
+                  type: string
+                easy_apply:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - keywords
+            example:
+              keywords: python developer
+              location: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reed/v1/detail:
+    post:
+      operationId: reed_detail
+      summary: 'Full posting for one Reed job by job_id (or a Reed job URL): title, company…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                url:
+                  type: string
+                include_similar:
+                  type: string
+            example:
+              job_id: '57258187'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reed/v1/company-jobs:
+    post:
+      operationId: reed_company_jobs
+      summary: All public job postings at a specific company on Reed.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                keywords:
+                  type: string
+                location:
+                  type: string
+                distance:
+                  type: string
+                job_type:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                remote:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /reed/v1/sector:
+    post:
+      operationId: reed_sector
+      summary: Browse Reed jobs by sector/category (e.g.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sector:
+                  type: string
+                location:
+                  type: string
+                distance:
+                  type: string
+                job_type:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                remote:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - sector
+            example:
+              sector: it
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /seek/v1/search:
+    post:
+      operationId: seek_search
+      summary: Search SEEK (seek.com.au) job postings by keyword with optional location…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keywords:
+                  type: string
+                location:
+                  type: string
+                job_type:
+                  type: string
+                work_arrangement:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                classification:
+                  type: string
+                subclassification:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - keywords
+            example:
+              keywords: developer
+              location: Sydney NSW
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /seek/v1/detail:
+    post:
+      operationId: seek_detail
+      summary: 'Full posting for one SEEK job by job_id (or a SEEK job URL): title, company…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              job_id: '92851167'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /seek/v1/company-jobs:
+    post:
+      operationId: seek_company_jobs
+      summary: All public job postings at a specific company on SEEK.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                keywords:
+                  type: string
+                location:
+                  type: string
+                job_type:
+                  type: string
+                work_arrangement:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /seek/v1/classification:
+    post:
+      operationId: seek_classification
+      summary: Browse SEEK jobs by classification/category — either a SEEK classification…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classification:
+                  type: string
+                location:
+                  type: string
+                job_type:
+                  type: string
+                work_arrangement:
+                  type: string
+                salary_from:
+                  type: string
+                salary_to:
+                  type: string
+                date_posted:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+              required:
+              - classification
+            example:
+              classification: '6281'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /shixian/v1/search:
+    post:
+      operationId: shixian_search
+      summary: Find remote-work briefs by keyword — the ones that mention 爬虫 (scraping), 数据采集…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                match:
+                  type: string
+                fields:
+                  type: string
+                pages:
+                  type: string
+                limit:
+                  type: string
+                city:
+                  type: string
+                category:
+                  type: string
+                type:
+                  type: string
+                sort:
+                  type: string
+              required:
+              - q
+            example:
+              q: 爬虫
+              pages: 6
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /shixian/v1/jobs:
+    post:
+      operationId: shixian_jobs
+      summary: One page of the shixian board — 20 remote-work briefs with the complete…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: string
+                limit:
+                  type: string
+                city:
+                  type: string
+                category:
+                  type: string
+                type:
+                  type: string
+                sort:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /shixian/v1/job:
+    post:
+      operationId: shixian_job
+      summary: 'One brief in full: the complete requirement text straight out of the page''s own…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: '1192790804'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /shixian/v1/filters:
+    post:
+      operationId: shixian_filters
+      summary: 'The board''s own filter taxonomy, read live off the site: every city slug, every…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /truelancer/v1/search:
+    post:
+      operationId: truelancer_search
+      summary: Search live freelance PROJECTS on Truelancer.com by keyword.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+            example:
+              query: design
+              limit: 8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /truelancer/v1/project:
+    post:
+      operationId: truelancer_project
+      summary: Full detail for one Truelancer.com project by URL or slug — everything from…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /truelancer/v1/user:
+    post:
+      operationId: truelancer_user
+      summary: PUBLIC business profile of a Truelancer.com freelancer by handle or profile…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ziprecruiter/v1/search:
+    post:
+      operationId: ziprecruiter_search
+      summary: Search live ZipRecruiter job listings by keyword and location, with pagination…
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                location:
+                  type: string
+                country:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+                remote:
+                  type: string
+              required:
+              - query
+            example:
+              query: software engineer
+              location: London
+              country: gb
+              max_results: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ziprecruiter/v1/job_detail:
+    post:
+      operationId: ziprecruiter_job_detail
+      summary: 'Full ZipRecruiter job posting by job ID (or URL): title, company, location…'
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                url:
+                  type: string
+                country:
+                  type: string
+              required:
+              - job_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ziprecruiter/v1/jobs_by_company:
+    post:
+      operationId: ziprecruiter_jobs_by_company
+      summary: List a specific employer's open jobs on ZipRecruiter.
+      tags:
+      - Jobs & Hiring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                location:
+                  type: string
+                country:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - company
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

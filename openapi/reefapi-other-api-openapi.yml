@@ -1,0 +1,2104 @@
+openapi: 3.2.0
+info:
+  title: Reef Other API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Other
+paths:
+  /alibaba/v1/search:
+    post:
+      operationId: alibaba_search
+      summary: Search alibaba.com wholesale listings by keyword — 48 supplier offers per page…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                min_price:
+                  type: string
+                max_price:
+                  type: string
+                min_order:
+                  type: string
+                max_order:
+                  type: string
+                supplier_country:
+                  type: string
+                category_id:
+                  type: string
+                verified_supplier:
+                  type: string
+                trade_assurance:
+                  type: string
+                min_review_score:
+                  type: string
+              required:
+              - query
+            example:
+              query: led strip
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /alibaba/v1/product_detail:
+    post:
+      operationId: alibaba_product_detail
+      summary: Full wholesale detail for one alibaba.com listing — the complete quantity price…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              product_id: '1600104532932'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /alibaba/v1/rfq_search:
+    post:
+      operationId: alibaba_rfq_search
+      summary: Search live buying requests (RFQs) posted by Alibaba buyers — the demand side…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                buyer_country:
+                  type: string
+                category_id:
+                  type: string
+                posted_within:
+                  type: string
+                with_attachments:
+                  type: string
+                open_only:
+                  type: string
+            example:
+              query: packaging box
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/vehicle_lookup:
+    post:
+      operationId: autodoc_vehicle_lookup
+      summary: Walk Autodoc's vehicle tree — this is where every other action starts, because…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                market:
+                  type: string
+                maker:
+                  type: string
+                model:
+                  type: string
+                generation:
+                  type: string
+                vehicle:
+                  type: string
+                vehicle_url:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/search:
+    post:
+      operationId: autodoc_search
+      summary: The parts that FIT one exact car, in one part category — the question this API…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                maker:
+                  type: string
+                model:
+                  type: string
+                generation:
+                  type: string
+                vehicle:
+                  type: string
+                market:
+                  type: string
+                vehicle_url:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - category
+            example:
+              category: brake-pad-set-10130
+              maker: bmw
+              model: 1er-reihe
+              generation: 1-coupe-e82
+              vehicle: 12272-118-d
+              max_results: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/product_detail:
+    post:
+      operationId: autodoc_product_detail
+      summary: One part in full, by Autodoc's numeric article id (or its URL).
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article_id:
+                  type: string
+                url:
+                  type: string
+                market:
+                  type: string
+                max_reviews:
+                  type: string
+            example:
+              article_id: '7999106'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/part_search:
+    post:
+      operationId: autodoc_part_search
+      summary: Autodoc's own catalogue-wide search, across roughly 6.7 million parts.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                market:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - query
+            example:
+              query: '1987474465'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/oem_lookup:
+    post:
+      operationId: autodoc_oem_lookup
+      summary: Cross-reference a vehicle manufacturer's ORIGINAL part number to everything…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oem_number:
+                  type: string
+                market:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+              required:
+              - oem_number
+            example:
+              oem_number: '34216774692'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autodoc/v1/categories:
+    post:
+      operationId: autodoc_categories
+      summary: Autodoc's part-category vocabulary — all 199 leaf categories with the slug and…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                market:
+                  type: string
+                group:
+                  type: string
+            example:
+              group: brake
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /boyner/v1/search:
+    post:
+      operationId: boyner_search
+      summary: Search Boyner by keyword (`query`), paginated (`page`, 24/page).
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - query
+            example:
+              query: erkek spor ayakkabı
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /boyner/v1/product/detail:
+    post:
+      operationId: boyner_product_detail
+      summary: 'Full Boyner product by `url` OR `product_id`: title, brand, price (current +…'
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                product_id:
+                  type: string
+                max_rotations:
+                  type: string
+            example:
+              url: https://www.boyner.com.tr/tommy-hilfiger-lacivert-erkek-sneaker-th-hi-vulc-core-low-lth-ii-ess-p-15593795
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /decathlon/v1/search:
+    post:
+      operationId: decathlon_search
+      summary: Search or browse the decathlon.com (US) catalogue.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                collection:
+                  type: string
+                mode:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                product_type:
+                  type: string
+                vendor:
+                  type: string
+                tag:
+                  type: string
+                min_price:
+                  type: string
+                max_price:
+                  type: string
+                available_only:
+                  type: string
+            example:
+              query: hiking boots
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /decathlon/v1/product_detail:
+    post:
+      operationId: decathlon_product_detail
+      summary: Get one Decathlon product in full, by handle, product id or decathlon.com URL…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                handle:
+                  type: string
+                product_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              handle: decathlon-gift-card
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /elcorteingles/v1/search:
+    post:
+      operationId: elcorteingles_search
+      summary: Search or browse elcorteingles.es.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+                sort:
+                  type: string
+            example:
+              query: zapatillas running
+              max_results: 12
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /elcorteingles/v1/product_detail:
+    post:
+      operationId: elcorteingles_product_detail
+      summary: Get one El Corte Inglés product in full, by URL, product code or EAN-13.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                product_id:
+                  type: string
+                ean:
+                  type: string
+                include_reviews:
+                  type: string
+                max_reviews:
+                  type: string
+            example:
+              ean: '8806097643135'
+              include_reviews: true
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flo/v1/search:
+    post:
+      operationId: flo_search
+      summary: Search FLO by keyword (`query`), paginated.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - query
+            example:
+              query: nike
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flo/v1/category/products:
+    post:
+      operationId: flo_category_products
+      summary: Browse a FLO category (`category` slug + optional `cinsiyet` gender), paginated…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                cinsiyet:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - category
+            example:
+              category: spor-ayakkabi
+              cinsiyet: erkek
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /flo/v1/product/detail:
+    post:
+      operationId: flo_product_detail
+      summary: 'Full FLO product by its page `url`: title, brand, price, original_price…'
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.flo.com.tr/urun/nike-court-borough-low-recraft-beyaz-unisex-sneaker-101792825
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /forum/v1/latest:
+    post:
+      operationId: forum_latest
+      summary: Newest topics from one forum, each with its creation time.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                site:
+                  type: string
+                limit:
+                  type: string
+                since_hours:
+                  type: string
+                order_by:
+                  type: string
+              required:
+              - site
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /forum/v1/sites:
+    post:
+      operationId: forum_sites
+      summary: Every forum this API can read, with its platform and market
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /forum/v1/topic:
+    post:
+      operationId: forum_topic
+      summary: 'The full text of one topic: the opening post and every reply'
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /forum/v1/search:
+    post:
+      operationId: forum_search
+      summary: Search inside one forum.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                site:
+                  type: string
+                query:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - site
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/product/detail:
+    post:
+      operationId: n11_product_detail
+      summary: 'Full n11 product by `url` or `product_id`: title, brand, price, discount…'
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                product_id:
+                  type: string
+                max_rotations:
+                  type: string
+            example:
+              url: https://www.n11.com/urun/samsung-galaxy-a07-4-gb-128-gb-samsung-turkiye-garantili-106765738
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/product/reviews:
+    post:
+      operationId: n11_product_reviews
+      summary: Customer reviews for a product by `url` or `product_id` — the review set n11…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                product_id:
+                  type: string
+                max_rotations:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/search:
+    post:
+      operationId: n11_search
+      summary: Search n11 by keyword (`query`), paginated + sortable.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - query
+            example:
+              query: telefon
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/category:
+    post:
+      operationId: n11_category
+      summary: Browse an n11 category by its `url` (…/ or …-c-), paginated + sortable
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.n11.com/urun/samsung-galaxy-a07-4-gb-128-gb-samsung-turkiye-garantili-106765738
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/seller:
+    post:
+      operationId: n11_seller
+      summary: Seller (mağaza) profile + its products by nickname or store `url`
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seller:
+                  type: string
+                page:
+                  type: string
+                max_rotations:
+                  type: string
+              required:
+              - seller
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /n11/v1/resolve:
+    post:
+      operationId: n11_resolve
+      summary: Resolve an n11 short-link (`token` or `url`, e.g.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                url:
+                  type: string
+                include_detail:
+                  type: string
+                max_rotations:
+                  type: string
+            example:
+              token: vnETLtk
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sephora/v1/search:
+    post:
+      operationId: sephora_search
+      summary: Search the Sephora catalog.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                brand:
+                  type: string
+              required:
+              - query
+            example:
+              query: mascara
+              max_results: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sephora/v1/price:
+    post:
+      operationId: sephora_price
+      summary: Re-check ONE shade's price and stock, cheaply.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sku_id:
+                  type: string
+                product_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              sku_id: '2837375'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sephora/v1/product_detail:
+    post:
+      operationId: sephora_product_detail
+      summary: Get one Sephora product in full, by its product id (or its sephora.com URL).
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                url:
+                  type: string
+                sku_id:
+                  type: string
+                include_reviews:
+                  type: string
+                reviews_limit:
+                  type: string
+                reviews_sort:
+                  type: string
+                reviews_offset:
+                  type: string
+                include_variant_images:
+                  type: string
+              required:
+              - product_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /swappa/v1/search:
+    post:
+      operationId: swappa_search
+      summary: Search Swappa for live listings.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                model:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                condition:
+                  type: string
+                carrier:
+                  type: string
+                color:
+                  type: string
+                storage:
+                  type: string
+                memory:
+                  type: string
+                processor:
+                  type: string
+                model_number:
+                  type: string
+                edition:
+                  type: string
+                with_warranty:
+                  type: string
+                accepts_stripe:
+                  type: string
+                exclude_businesses:
+                  type: string
+                phone_check_certified:
+                  type: string
+                international:
+                  type: string
+            example:
+              model: apple-iphone-15
+              max_results: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /swappa/v1/price:
+    post:
+      operationId: swappa_price
+      summary: Re-check ONE listing's price, availability and condition, cheaply.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              listing_id: LAGY58046
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /swappa/v1/product_detail:
+    post:
+      operationId: swappa_product_detail
+      summary: Get one Swappa listing in full, by its listing code or its swappa.com URL — the…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                url:
+                  type: string
+                include_reviews:
+                  type: string
+                max_reviews:
+                  type: string
+            example:
+              listing_id: LAGY58046
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /target/v1/search:
+    post:
+      operationId: target_search
+      summary: Find products on target.com (US).
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+                sort:
+                  type: string
+                min_price:
+                  type: string
+                max_price:
+                  type: string
+            example:
+              query: coffee maker
+              max_results: 24
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /target/v1/product_detail:
+    post:
+      operationId: target_product_detail
+      summary: Get one Target product in full, by Target's own id or by its target.com URL.
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tcin:
+                  type: string
+                url:
+                  type: string
+                reviews:
+                  type: string
+                include_price:
+                  type: string
+            example:
+              tcin: '87328557'
+              reviews: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/profile:
+    post:
+      operationId: twitter_profile
+      summary: User profile by @username — name, bio, followers, following, tweet/like counts…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/user_by_id:
+    post:
+      operationId: twitter_user_by_id
+      summary: User profile by numeric user_id (same fields as profile)
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+              required:
+              - user_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/user_tweets:
+    post:
+      operationId: twitter_user_tweets
+      summary: A user's tweets — full text, engagement (likes/retweets/replies/quotes/views)…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/user_replies:
+    post:
+      operationId: twitter_user_replies
+      summary: A user's tweets AND replies (timeline incl.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/user_media:
+    post:
+      operationId: twitter_user_media
+      summary: A user's media tweets — photos & videos (with video_url + duration)…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/user_likes:
+    post:
+      operationId: twitter_user_likes
+      summary: Tweets a user has liked (if the account exposes likes)
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/tweet:
+    post:
+      operationId: twitter_tweet
+      summary: A single tweet by id — full text, engagement, media, quoted/retweeted, author
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+              required:
+              - tweet_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/tweet_replies:
+    post:
+      operationId: twitter_tweet_replies
+      summary: A tweet PLUS its replies/comments (threaded conversation) with DEEP cursor…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - tweet_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/search:
+    post:
+      operationId: twitter_search
+      summary: Search tweets or people.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                product:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/followers:
+    post:
+      operationId: twitter_followers
+      summary: A user's followers (each a full user object), paginated
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/following:
+    post:
+      operationId: twitter_following
+      summary: Accounts a user follows (each a full user object), paginated
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                user_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - username
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/list_tweets:
+    post:
+      operationId: twitter_list_tweets
+      summary: Latest tweets from a Twitter List by id, paginated
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list_id:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - list_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/trends:
+    post:
+      operationId: twitter_trends
+      summary: Current trending topics on X / Twitter (the Explore feed) — each with its name…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /twitter/v1/community_search:
+    post:
+      operationId: twitter_community_search
+      summary: Search posts across X Communities by keyword — returns matching community…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                product:
+                  type: string
+                limit:
+                  type: string
+                cursor:
+                  type: string
+              required:
+              - query
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ulta/v1/search:
+    post:
+      operationId: ulta_search
+      summary: Find products on ulta.com (US).
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                page:
+                  type: string
+                max_results:
+                  type: string
+                sort:
+                  type: string
+                brand:
+                  type: string
+                min_rating:
+                  type: string
+                filters:
+                  type: string
+            example:
+              category: /shop/makeup/face/foundation
+              max_results: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ulta/v1/price:
+    post:
+      operationId: ulta_price
+      summary: Re-check ONE variant's price and stock, cheaply.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                sku_id:
+                  type: string
+                url:
+                  type: string
+              required:
+              - product_id
+              - sku_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ulta/v1/product_detail:
+    post:
+      operationId: ulta_product_detail
+      summary: Get one Ulta Beauty product in full, by Ulta's product id or by its ulta.com…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                sku_id:
+                  type: string
+                url:
+                  type: string
+                reviews:
+                  type: string
+                variant_prices:
+                  type: string
+            example:
+              product_id: pimprod2057355
+              reviews: 5
+              variant_prices: none
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zappos/v1/search:
+    post:
+      operationId: zappos_search
+      summary: Search the Zappos catalog.
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                brand:
+                  type: string
+                color:
+                  type: string
+                gender:
+                  type: string
+                size:
+                  type: string
+                width:
+                  type: string
+                category:
+                  type: string
+                department:
+                  type: string
+                material:
+                  type: string
+                style:
+                  type: string
+                feature:
+                  type: string
+                occasion:
+                  type: string
+                pattern:
+                  type: string
+                theme:
+                  type: string
+                price_range:
+                  type: string
+                on_sale:
+                  type: string
+              required:
+              - query
+            example:
+              query: running shoes
+              max_results: 40
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zappos/v1/product_detail:
+    post:
+      operationId: zappos_product_detail
+      summary: Get one Zappos product in full, by its product id (or its zappos.com URL)…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                color_id:
+                  type: string
+                style_id:
+                  type: string
+                url:
+                  type: string
+                include_all_color_variants:
+                  type: string
+              required:
+              - product_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zara/v1/search:
+    post:
+      operationId: zara_search
+      summary: Search the Zara catalogue and get back the products on sale right now — each…
+      tags:
+      - Other
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                market:
+                  type: string
+                section:
+                  type: string
+                brand:
+                  type: string
+                color:
+                  type: string
+                category:
+                  type: string
+                sort:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+              required:
+              - query
+            example:
+              query: dress
+              max_results: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zara/v1/product_detail:
+    post:
+      operationId: zara_product_detail
+      summary: Get one Zara product in full, by its product id or its zara.com URL — the name…
+      tags:
+      - Other
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                url:
+                  type: string
+                market:
+                  type: string
+                include_composition:
+                  type: string
+                find_market:
+                  type: string
+            example:
+              product_id: '545422590'
+              market: us
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

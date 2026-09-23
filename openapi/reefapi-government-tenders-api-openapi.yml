@@ -1,0 +1,230 @@
+openapi: 3.2.0
+info:
+  title: Reef Government & Tenders API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Government & Tenders
+paths:
+  /sam-gov/v1/search:
+    post:
+      operationId: sam_gov_search
+      summary: Search every US federal contract opportunity by phrase — the demand side of a…
+      tags:
+      - Government & Tenders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                phrase:
+                  type: string
+                active_only:
+                  type: string
+                notice_types:
+                  type: string
+                published_within_days:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+              required:
+              - q
+            example:
+              q: web scraping
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sam-gov/v1/opportunity:
+    post:
+      operationId: sam_gov_opportunity
+      summary: 'One notice in full: the COMPLETE solicitation text (search only ever returns…'
+      tags:
+      - Government & Tenders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: ffabe21b876649d2a1669edb4858cd48
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /sam-gov/v1/attachments:
+    post:
+      operationId: sam_gov_attachments
+      summary: The documents attached to a notice — the statement of work, the pricing sheet…
+      tags:
+      - Government & Tenders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: ffabe21b876649d2a1669edb4858cd48
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /uk-tenders/v1/search:
+    post:
+      operationId: uk_tenders_search
+      summary: Search UK public-sector contract notices by phrase, status, value, deadline…
+      tags:
+      - Government & Tenders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                phrase:
+                  type: string
+                statuses:
+                  type: string
+                notice_types:
+                  type: string
+                published_from:
+                  type: string
+                published_to:
+                  type: string
+                published_within_days:
+                  type: string
+                deadline_from:
+                  type: string
+                min_value:
+                  type: string
+                cpv_codes:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - q
+            example:
+              q: web scraping
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /uk-tenders/v1/notice:
+    post:
+      operationId: uk_tenders_notice
+      summary: 'One notice in full by id: the buyer''s published contact details (name, e-mail…'
+      tags:
+      - Government & Tenders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+              - id
+            example:
+              id: ec641d32-1f15-48f3-9458-bc4cd94b04c5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

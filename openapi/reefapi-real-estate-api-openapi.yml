@@ -1,0 +1,2275 @@
+openapi: 3.2.0
+info:
+  title: Reef Real Estate API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Real Estate
+paths:
+  /enrich-property/v1/snapshot:
+    post:
+      operationId: enrich_property_snapshot
+      summary: 'address OR listing_url → one normalized property snapshot: status, price…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                listing_url:
+                  type: string
+                country:
+                  type: string
+                mode:
+                  type: string
+            example:
+              listing_url: https://www.zillow.com/homedetails/x/117892026_zpid/
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-property/v1/resolve:
+    post:
+      operationId: enrich_property_resolve
+      summary: address → ranked candidate listings[] (id + source + match_confidence) so the…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                country:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - address
+            example:
+              address: 137 Mellison Road, Tooting, London, SW17
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-property/v1/batch:
+    post:
+      operationId: enrich_property_batch
+      summary: snapshot up to 10 addresses/listing-URLs in one call (standard mode…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: string
+                country:
+                  type: string
+              required:
+              - items
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-property/v1/coverage:
+    post:
+      operationId: enrich_property_coverage
+      summary: 'Static capability map: which countries/sources are supported, per-country…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /funda/v1/search:
+    post:
+      operationId: funda_search
+      summary: Search Funda.nl property listings by area (for sale or for rent), with…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                area:
+                  type: string
+                contract:
+                  type: string
+                home_type:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                rooms_min:
+                  type: string
+                rooms_max:
+                  type: string
+                surface_min:
+                  type: string
+                surface_max:
+                  type: string
+                plot_min:
+                  type: string
+                plot_max:
+                  type: string
+              required:
+              - area
+            example:
+              area: amsterdam
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /funda/v1/detail:
+    post:
+      operationId: funda_detail
+      summary: Full record for a single listing by its Funda detail URL or path…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.funda.nl/detail/koop/amsterdam/appartement-albert-cuypstraat-94-3/44570149/
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /funda/v1/area:
+    post:
+      operationId: funda_area
+      summary: Area resolver — map a free-text Dutch place name to Funda's search area-slug…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Den Haag
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /hemnet/v1/search:
+    post:
+      operationId: hemnet_search
+      summary: Search Hemnet.se for-sale property listings by location, with structured…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                home_type:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                rooms_min:
+                  type: string
+                rooms_max:
+                  type: string
+                living_area_min:
+                  type: string
+                living_area_max:
+                  type: string
+                land_area_min:
+                  type: string
+                land_area_max:
+                  type: string
+                price_per_m2_min:
+                  type: string
+                price_per_m2_max:
+                  type: string
+                year_min:
+                  type: string
+                year_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - location
+            example:
+              location: Stockholm
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /hemnet/v1/sold:
+    post:
+      operationId: hemnet_sold
+      summary: Recently-SOLD property prices (slutpriser) by location, with the same filters…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                home_type:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                rooms_min:
+                  type: string
+                rooms_max:
+                  type: string
+                living_area_min:
+                  type: string
+                living_area_max:
+                  type: string
+                land_area_min:
+                  type: string
+                land_area_max:
+                  type: string
+                price_per_m2_min:
+                  type: string
+                price_per_m2_max:
+                  type: string
+                year_min:
+                  type: string
+                year_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - location
+            example:
+              location: Malmö
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /hemnet/v1/detail:
+    post:
+      operationId: hemnet_detail
+      summary: Full record for a single listing by its Hemnet listing URL, slug or id…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.hemnet.se/bostad/lagenhet-3rum-segevang-malmo-kommun-kronetorpsgatan-52a-21744904
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /hemnet/v1/location:
+    post:
+      operationId: hemnet_location
+      summary: Location resolver / autocomplete — map a free-text Swedish place name to Hemnet…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Göteborg
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /idealista/v1/search:
+    post:
+      operationId: idealista_search
+      summary: Search Idealista property listings by location (Spain, Italy or Portugal; for…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                country:
+                  type: string
+                contract:
+                  type: string
+                sort:
+                  type: string
+                home_type:
+                  type: string
+                page:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                rooms_min:
+                  type: string
+                surface_min:
+                  type: string
+              required:
+              - location
+            example:
+              location: Madrid
+              country: es
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /idealista/v1/detail:
+    post:
+      operationId: idealista_detail
+      summary: Full record for a single listing by its Idealista id (the number in an…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                country:
+                  type: string
+              required:
+              - id
+            example:
+              id: '109592362'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /idealista/v1/geography:
+    post:
+      operationId: idealista_geography
+      summary: Resolve a free-text place name to the Idealista location slug + a ready-to-use…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                contract:
+                  type: string
+              required:
+              - query
+            example:
+              query: Madrid
+              country: es
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /immobiliare/v1/search:
+    post:
+      operationId: immobiliare_search
+      summary: Search Immobiliare.it property listings by location (for sale or for rent)…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                contract:
+                  type: string
+                category:
+                  type: string
+                sort:
+                  type: string
+                home_type:
+                  type: string
+                page:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                rooms_min:
+                  type: string
+                rooms_max:
+                  type: string
+                surface_min:
+                  type: string
+                surface_max:
+                  type: string
+                baths_min:
+                  type: string
+              required:
+              - location
+            example:
+              location: Roma
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /immobiliare/v1/detail:
+    post:
+      operationId: immobiliare_detail
+      summary: Full record for a single listing by its Immobiliare id (from a search result's…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                location:
+                  type: string
+              required:
+              - id
+            example:
+              id: '130988676'
+              location: Roma
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /immobiliare/v1/geography:
+    post:
+      operationId: immobiliare_geography
+      summary: Location autocomplete — resolve a free-text Italian place name to Immobiliare's…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Roma
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /japan-re/v1/search:
+    post:
+      operationId: japan_re_search
+      summary: Search SUUMO property listings in any of Japan's 47 prefectures — rentals or…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefecture:
+                  type: string
+                listing_type:
+                  type: string
+                page:
+                  type: string
+                max_pages:
+                  type: string
+                max_price_man:
+                  type: string
+                min_area_m2:
+                  type: string
+                max_walk_minutes:
+                  type: string
+                building_age:
+                  type: string
+                keyword:
+                  type: string
+              required:
+              - prefecture
+            example:
+              prefecture: tokyo
+              listing_type: rent
+              max_pages: 1
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /japan-re/v1/detail:
+    post:
+      operationId: japan_re_detail
+      summary: Full detail for one SUUMO listing — rent/deposit/key-money or sale price…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                url:
+                  type: string
+                listing_type:
+                  type: string
+            example:
+              listing_id: 000109252250
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /japan-re/v1/areas:
+    post:
+      operationId: japan_re_areas
+      summary: List Japan's 47 prefectures with their romaji slug, kanji name and SUUMO…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /japan-re/v1/listings/search:
+    post:
+      operationId: japan_re_listings_search
+      summary: Legacy name for `search`, kept so older integrations keep working.
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefecture:
+                  type: string
+                listing_type:
+                  type: string
+                page:
+                  type: string
+                max_pages:
+                  type: string
+                max_price_man:
+                  type: string
+                min_area_m2:
+                  type: string
+                max_walk_minutes:
+                  type: string
+                building_age:
+                  type: string
+                keyword:
+                  type: string
+              required:
+              - prefecture
+            example:
+              prefecture: tokyo
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /japan-re/v1/listings/detail:
+    post:
+      operationId: japan_re_listings_detail
+      summary: Legacy name for `detail`, kept so older integrations keep working.
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listing_id:
+                  type: string
+                url:
+                  type: string
+                listing_type:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /onthemarket/v1/location_search:
+    post:
+      operationId: onthemarket_location_search
+      summary: Resolve a text location (town, postcode, borough, area) to OnTheMarket location…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                channel:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - query
+            example:
+              query: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /onthemarket/v1/search:
+    post:
+      operationId: onthemarket_search
+      summary: Search UK property listings by location (for sale / to rent) with structured…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                location_id:
+                  type: string
+                channel:
+                  type: string
+                for_rent:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                beds_max:
+                  type: string
+                property_type:
+                  type: string
+                radius:
+                  type: string
+                added_within_days:
+                  type: string
+                sort:
+                  type: string
+                keywords:
+                  type: string
+                retirement_only:
+                  type: string
+                shared_ownership_only:
+                  type: string
+                auction_only:
+                  type: string
+                new_homes_only:
+                  type: string
+                include_under_offer:
+                  type: string
+                include_sponsored:
+                  type: string
+                page:
+                  type: string
+                max_pages:
+                  type: string
+                filters:
+                  type: string
+            example:
+              location: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /onthemarket/v1/property_detail:
+    post:
+      operationId: onthemarket_property_detail
+      summary: 'Full property record: price (+qualifier), beds/baths, description, key…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+                url:
+                  type: string
+            example:
+              property_id: '19555795'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/search:
+    post:
+      operationId: realtor_search
+      summary: Search Realtor.com listings by location (for sale / for rent / recently sold)…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                status:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                map_bounds:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                beds_max:
+                  type: string
+                baths_min:
+                  type: string
+                home_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                lot_min:
+                  type: string
+                lot_max:
+                  type: string
+                year_built_min:
+                  type: string
+                year_built_max:
+                  type: string
+                max_hoa:
+                  type: string
+                days_on_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/detail:
+    post:
+      operationId: realtor_detail
+      summary: 'Full property record by property_id: RealEstimate value (+ range), price…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '7211899596'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/estimates:
+    post:
+      operationId: realtor_estimates
+      summary: Multi-source home-value estimates (AVMs) for a property — Realtor.com surfaces…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '7211899596'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/sold:
+    post:
+      operationId: realtor_sold
+      summary: Recently-sold homes by location (or map bounds), with the same structured…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                map_bounds:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                beds_max:
+                  type: string
+                baths_min:
+                  type: string
+                home_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                lot_min:
+                  type: string
+                lot_max:
+                  type: string
+                year_built_min:
+                  type: string
+                year_built_max:
+                  type: string
+                max_hoa:
+                  type: string
+                days_on_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/market_trends:
+    post:
+      operationId: realtor_market_trends
+      summary: Local housing-market intelligence for a US city or ZIP — median listing price…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/comps:
+    post:
+      operationId: realtor_comps
+      summary: Comparable homes near a property — synthesized from recently-sold and active…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+                radius_miles:
+                  type: string
+                max_comps:
+                  type: string
+                include_active:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '7211899596'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /realtor/v1/autocomplete:
+    post:
+      operationId: realtor_autocomplete
+      summary: Location autocomplete — suggest Realtor.com cities, ZIPs, neighborhoods…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Austin
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /redfin/v1/search:
+    post:
+      operationId: redfin_search
+      summary: Search Redfin listings by location (for sale / recently sold / for rent) with…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                url:
+                  type: string
+                status:
+                  type: string
+                sort:
+                  type: string
+                max_results:
+                  type: string
+                sold_within_days:
+                  type: string
+                min_price:
+                  type: string
+                max_price:
+                  type: string
+                min_beds:
+                  type: string
+                max_beds:
+                  type: string
+                min_baths:
+                  type: string
+                max_baths:
+                  type: string
+                min_sqft:
+                  type: string
+                max_sqft:
+                  type: string
+                min_lot_sqft:
+                  type: string
+                max_lot_sqft:
+                  type: string
+                min_year_built:
+                  type: string
+                max_year_built:
+                  type: string
+                max_hoa:
+                  type: string
+                max_days_on_market:
+                  type: string
+                property_types:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+              max_results: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /redfin/v1/listing_detail:
+    post:
+      operationId: redfin_listing_detail
+      summary: 'Everything Redfin holds on one address: the live listing when the home is on…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+                listing_id:
+                  type: string
+                url:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '31287179'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /redfin/v1/similar:
+    post:
+      operationId: redfin_similar
+      summary: Comparable/similar listings near a property, with the comp price band
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+                listing_id:
+                  type: string
+                url:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '31287179'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /redfin/v1/autocomplete:
+    post:
+      operationId: redfin_autocomplete
+      summary: Resolve free text to Redfin places / agents / schools / buildings (ids + types)
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Seattle
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /redfin/v1/market_stats:
+    post:
+      operationId: redfin_market_stats
+      summary: 'Derived market snapshot for an area: median list price, $/sqft, days on market…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                url:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/location_search:
+    post:
+      operationId: rightmove_location_search
+      summary: resolve a text location to a Rightmove locationIdentifier (LOS typeahead)
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/search:
+    post:
+      operationId: rightmove_search
+      summary: Search UK property listings by location (for sale / to rent / commercial /…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                location_identifier:
+                  type: string
+                channel:
+                  type: string
+                for_rent:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                beds_max:
+                  type: string
+                baths_min:
+                  type: string
+                property_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                radius:
+                  type: string
+                added_within_days:
+                  type: string
+                sort:
+                  type: string
+                furnished:
+                  type: string
+                let_type:
+                  type: string
+                must_have:
+                  type: string
+                dont_show:
+                  type: string
+                include_sstc:
+                  type: string
+                max_pages:
+                  type: string
+                fetch_all:
+                  type: string
+                index:
+                  type: string
+                filters:
+                  type: string
+            example:
+              location: London
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/property_detail:
+    post:
+      operationId: rightmove_property_detail
+      summary: 'Full property record: price (+£/sqft), description, key features, tenure &…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '148711631'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/agent:
+    post:
+      operationId: rightmove_agent
+      summary: estate-agent branch profile (+ that branch's live listings via BRANCH^id)
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch_url:
+                  type: string
+                branch_id:
+                  type: string
+                max_pages:
+                  type: string
+            example:
+              branch_url: /estate-agents/agent/Aspire/Clapham-45021.html
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/similar:
+    post:
+      operationId: rightmove_similar
+      summary: listings similar to a property (same area + price/bedroom band)
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                property_id:
+                  type: string
+              required:
+              - property_id
+            example:
+              property_id: '148711631'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /rightmove/v1/sold_prices:
+    post:
+      operationId: rightmove_sold_prices
+      summary: 'sold/transaction history: by location (search) or per-property…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                detail_url:
+                  type: string
+                uuid:
+                  type: string
+                page:
+                  type: string
+            example:
+              location: SW9
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/new_listings:
+    post:
+      operationId: zillow_new_listings
+      summary: New US inventory straight from Zillow's own published feed — the listings that…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                region:
+                  type: string
+                country:
+                  type: string
+                postal_prefix:
+                  type: string
+                changed_after:
+                  type: string
+                max_results:
+                  type: string
+                page:
+                  type: string
+            example:
+              category: for_sale
+              max_results: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/search:
+    post:
+      operationId: zillow_search
+      summary: Search listings by location (for sale / for rent / recently sold), with…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                status:
+                  type: string
+                max_pages:
+                  type: string
+                fetch_all:
+                  type: string
+                max_results:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                baths_min:
+                  type: string
+                home_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                lot_min:
+                  type: string
+                lot_max:
+                  type: string
+                year_built_min:
+                  type: string
+                year_built_max:
+                  type: string
+                max_hoa:
+                  type: string
+                days_on_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/search_by_coordinates:
+    post:
+      operationId: zillow_search_by_coordinates
+      summary: Search listings inside exact map bounds (returns more than the standard…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                map_bounds:
+                  type: string
+                status:
+                  type: string
+                max_pages:
+                  type: string
+                fetch_all:
+                  type: string
+                max_results:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                baths_min:
+                  type: string
+                home_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                lot_min:
+                  type: string
+                lot_max:
+                  type: string
+                year_built_min:
+                  type: string
+                year_built_max:
+                  type: string
+                max_hoa:
+                  type: string
+                days_on_max:
+                  type: string
+                keywords:
+                  type: string
+              required:
+              - map_bounds
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/search_by_url:
+    post:
+      operationId: zillow_search_by_url
+      summary: 'Run any copied Zillow URL: a search URL replays that exact search (with its…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/property_detail:
+    post:
+      operationId: zillow_property_detail
+      summary: 'Full property record: Zestimate (+history), price & tax history, schools…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zpid:
+                  type: string
+                zpids:
+                  type: string
+                url:
+                  type: string
+            example:
+              zpid: '29377187'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/comps:
+    post:
+      operationId: zillow_comps
+      summary: Comparable homes near a property (synthesized similar-listing search, scored by…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zpid:
+                  type: string
+                url:
+                  type: string
+                radius_deg:
+                  type: string
+                max_comps:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/sold:
+    post:
+      operationId: zillow_sold
+      summary: Recently-sold listings (last 12 months) by location or map bounds, with the…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                map_bounds:
+                  type: string
+                max_pages:
+                  type: string
+                fetch_all:
+                  type: string
+                max_results:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                beds_min:
+                  type: string
+                baths_min:
+                  type: string
+                home_type:
+                  type: string
+                sqft_min:
+                  type: string
+                sqft_max:
+                  type: string
+                lot_min:
+                  type: string
+                lot_max:
+                  type: string
+                year_built_min:
+                  type: string
+                year_built_max:
+                  type: string
+                max_hoa:
+                  type: string
+                days_on_max:
+                  type: string
+                keywords:
+                  type: string
+            example:
+              location: Seattle, WA
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/agent:
+    post:
+      operationId: zillow_agent
+      summary: Listing agent + broker attribution for one property (agentInfo)
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zpid:
+                  type: string
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/agent_profile:
+    post:
+      operationId: zillow_agent_profile
+      summary: 'An agent''s full portfolio: profile info + their for-sale/sold listings + reviews'
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                profile_url:
+                  type: string
+                zuid:
+                  type: string
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/agents_by_location:
+    post:
+      operationId: zillow_agents_by_location
+      summary: Real-estate agent directory for a location, with review summaries
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/autocomplete:
+    post:
+      operationId: zillow_autocomplete
+      summary: Location autocomplete — suggest Zillow regions and addresses for a free-text…
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Austin
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/market_trends:
+    post:
+      operationId: zillow_market_trends
+      summary: 'Region market metrics: ZHVI home-value index, median sale/list price…'
+      tags:
+      - Real Estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+              required:
+              - location
+            example:
+              location: Austin, TX
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/walk_transit_bike:
+    post:
+      operationId: zillow_walk_transit_bike
+      summary: Zillow Walk Score, Transit Score and Bike Score for a property — walkability…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zpid:
+                  type: string
+                url:
+                  type: string
+            example:
+              zpid: '29377187'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /zillow/v1/home_value_chart:
+    post:
+      operationId: zillow_home_value_chart
+      summary: Zillow home-value history — the Zestimate value-over-time series for a property…
+      tags:
+      - Real Estate
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zpid:
+                  type: string
+                url:
+                  type: string
+                time_period:
+                  type: string
+            example:
+              zpid: '29377187'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

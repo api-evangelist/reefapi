@@ -1,0 +1,1068 @@
+openapi: 3.2.0
+info:
+  title: Reef Classifieds & Second-hand API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Classifieds & Second-hand
+paths:
+  /autoscout24/v1/search:
+    post:
+      operationId: autoscout24_search
+      summary: Paginated car search by make (+ model/filters) across EU TLDs; deal signals…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                model:
+                  type: string
+                model_group:
+                  type: string
+                country:
+                  type: string
+                page:
+                  type: string
+                sort:
+                  type: string
+                desc:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                year_min:
+                  type: string
+                year_max:
+                  type: string
+                mileage_min:
+                  type: string
+                mileage_max:
+                  type: string
+                fuel:
+                  type: string
+                transmission:
+                  type: string
+                body_type:
+                  type: string
+                zip:
+                  type: string
+                radius:
+                  type: string
+                power_min:
+                  type: string
+                power_max:
+                  type: string
+                super_deal:
+                  type: string
+                seller_type:
+                  type: string
+                offer_type:
+                  type: string
+            example:
+              make: bmw
+              country: de
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/listing:
+    post:
+      operationId: autoscout24_listing
+      summary: Full listing detail by url/path or id (description, prices, vehicle, images…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                path:
+                  type: string
+                id:
+                  type: string
+                country:
+                  type: string
+            example:
+              url: /angebote/bmw-318-318i-touring-attiva-benzin-cat_ma13mo1640-fb7acb22-cce5-4ab1-8340-7dbe9160bca9
+              country: de
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/makes:
+    post:
+      operationId: autoscout24_makes
+      summary: Vehicle makes taxonomy from search hub page
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/models:
+    post:
+      operationId: autoscout24_models
+      summary: Models taxonomy for a make (query-param filters — path-segment /lst/make/model…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                country:
+                  type: string
+              required:
+              - make
+            example:
+              make: bmw
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/filter_options:
+    post:
+      operationId: autoscout24_filter_options
+      summary: Available filter dimensions (fuel, body, transmission, etc.) from taxonomy blob
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                country:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/seller_listings:
+    post:
+      operationId: autoscout24_seller_listings
+      summary: Listings for a dealer/private seller by customer id (cid)
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cid:
+                  type: string
+                country:
+                  type: string
+                page:
+                  type: string
+                seller_id:
+                  type: string
+              required:
+              - cid
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /autoscout24/v1/browse_links:
+    post:
+      operationId: autoscout24_browse_links
+      summary: 'SEO browse graph: cities, body types, model lines, top models (interlinking…'
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                country:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/search:
+    post:
+      operationId: kleinanzeigen_search
+      summary: Search Kleinanzeigen classifieds by keyword and/or category with price…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category_id:
+                  type: string
+                category_slug:
+                  type: string
+                location_id:
+                  type: string
+                radius:
+                  type: string
+                location:
+                  type: string
+                price_min:
+                  type: string
+                price_max:
+                  type: string
+                seller_type:
+                  type: string
+                sort:
+                  type: string
+                page:
+                  type: string
+            example:
+              query: iphone
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/listing:
+    post:
+      operationId: kleinanzeigen_listing
+      summary: 'Full listing detail by url, slug or adid: title, price, description, all…'
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                slug:
+                  type: string
+                adid:
+                  type: string
+            example:
+              url: https://www.kleinanzeigen.de/s-anzeige/.../3372412834-173-1563
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/similar:
+    post:
+      operationId: kleinanzeigen_similar
+      summary: Related/similar listings shown on an ad's detail page ("Das könnte dich auch…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                slug:
+                  type: string
+                adid:
+                  type: string
+            example:
+              adid: 308066172
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/categories:
+    post:
+      operationId: kleinanzeigen_categories
+      summary: Full Kleinanzeigen category tree (id, name, nested children) for discovering…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/filters:
+    post:
+      operationId: kleinanzeigen_filters
+      summary: 'Live filter facets for a query/category from the search filter tree: category…'
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category_id:
+                  type: string
+            example:
+              query: iphone
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/location_suggestions:
+    post:
+      operationId: kleinanzeigen_location_suggestions
+      summary: Autocomplete location names + ids for a partial query — use the returned…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required:
+              - query
+            example:
+              query: Berlin
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/user_listings:
+    post:
+      operationId: kleinanzeigen_user_listings
+      summary: All active listings for a seller (by user/seller id), with page pagination
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                page:
+                  type: string
+              required:
+              - user_id
+            example:
+              user_id: 92546099
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /kleinanzeigen/v1/seller:
+    post:
+      operationId: kleinanzeigen_seller
+      summary: 'Public seller profile by user/seller id: display name (redacted by default)…'
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+              required:
+              - user_id
+            example:
+              user_id: 92546099
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /marktplaats/v1/search:
+    post:
+      operationId: marktplaats_search
+      summary: Keyword or category search with filters, sort, location, offset pagination…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                site:
+                  type: string
+                l1_category_id:
+                  type: string
+                l2_category_id:
+                  type: string
+                sort_by:
+                  type: string
+                sort_order:
+                  type: string
+                price_from:
+                  type: string
+                price_to:
+                  type: string
+                postcode:
+                  type: string
+                distance_meters:
+                  type: string
+                offset:
+                  type: string
+            example:
+              query: iphone
+              site: nl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /marktplaats/v1/listing:
+    post:
+      operationId: marktplaats_listing
+      summary: Listing detail by item_id and/or vip_url; enriched with full product details…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item_id:
+                  type: string
+                vip_url:
+                  type: string
+                site:
+                  type: string
+            example:
+              vip_url: /v/telecommunicatie/mobiele-telefoons-apple-iphone/a1517165634-apple-iphone-14-128gb-4-gratis-accessoires-accu-tot-100
+              site: nl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /marktplaats/v1/categories:
+    post:
+      operationId: marktplaats_categories
+      summary: Category tree from search facets, or browse a category (l1/l2) with listings
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                site:
+                  type: string
+                l1_category_id:
+                  type: string
+                l2_category_id:
+                  type: string
+                offset:
+                  type: string
+            example:
+              site: nl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /marktplaats/v1/seller_listings:
+    post:
+      operationId: marktplaats_seller_listings
+      summary: Active listings for a seller; offset pagination via seller-name LRP search…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seller_id:
+                  type: string
+                seller_name:
+                  type: string
+                site:
+                  type: string
+                offset:
+                  type: string
+              required:
+              - seller_id
+            example:
+              seller_id: 57429132
+              seller_name: Mobisite.nl
+              site: nl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/search:
+    post:
+      operationId: olx_search
+      summary: Search OLX classifieds by keyword and/or category with sort, condition, price…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                category_id:
+                  type: string
+                sort_by:
+                  type: string
+                condition:
+                  type: string
+                with_photos:
+                  type: string
+                courier:
+                  type: string
+                region_id:
+                  type: string
+                city_id:
+                  type: string
+                district_id:
+                  type: string
+                price_from:
+                  type: string
+                price_to:
+                  type: string
+                filters:
+                  type: string
+                offset:
+                  type: string
+                limit:
+                  type: string
+            example:
+              query: iphone
+              country: pl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/count:
+    post:
+      operationId: olx_count
+      summary: Lightweight result count for a query/category/filter combination — total…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                category_id:
+                  type: string
+                condition:
+                  type: string
+                region_id:
+                  type: string
+                city_id:
+                  type: string
+                district_id:
+                  type: string
+                price_from:
+                  type: string
+                price_to:
+                  type: string
+                filters:
+                  type: string
+            example:
+              query: iphone
+              country: pl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/locations:
+    post:
+      operationId: olx_locations
+      summary: 'GEO resolver: turn a place name into OLX region/city/district ids for the…'
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                query:
+                  type: string
+                region_id:
+                  type: string
+                city_id:
+                  type: string
+            example:
+              country: pl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/offer:
+    post:
+      operationId: olx_offer
+      summary: Offer detail by numeric id (no trailing slash on upstream path)
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                country:
+                  type: string
+              required:
+              - id
+            example:
+              id: 1027143072
+              country: pl
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/categories:
+    post:
+      operationId: olx_categories
+      summary: Category facets + filter suggestions from search metadata, plus global filter…
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                country:
+                  type: string
+                category_id:
+                  type: string
+            example:
+              country: pl
+              category_id: 99
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/user_offers:
+    post:
+      operationId: olx_user_offers
+      summary: Active offers for a seller user_id with offset pagination
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                country:
+                  type: string
+                offset:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - user_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/suggested:
+    post:
+      operationId: olx_suggested
+      summary: Related/suggested offers for a given offer id
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                country:
+                  type: string
+              required:
+              - id
+            example:
+              id: 1027143072
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/breadcrumbs:
+    post:
+      operationId: olx_breadcrumbs
+      summary: Category or offer breadcrumb trail
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                category_id:
+                  type: string
+                id:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/user:
+    post:
+      operationId: olx_user
+      summary: Public seller profile by user id
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                country:
+                  type: string
+              required:
+              - user_id
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /olx/v1/filters:
+    post:
+      operationId: olx_filters
+      summary: Global filter attribute definitions keyed by filter_enum/filter_float names
+      tags:
+      - Classifieds & Second-hand
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

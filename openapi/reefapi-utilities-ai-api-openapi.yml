@@ -1,0 +1,5473 @@
+openapi: 3.2.0
+info:
+  title: Reef Utilities & AI API
+  version: 1.0.0
+  description: Unified data-API gateway. Call POST /{engine}/v1/{action} with an x-api-key header; every response is the { ok, data, meta, error } envelope.
+servers:
+- url: https://api.reefapi.com
+security:
+- ApiKeyAuth: []
+tags:
+- name: Utilities & AI
+paths:
+  /agent-source/v1/source_url:
+    post:
+      operationId: agent_source_source_url
+      summary: 'Inspect a public URL for source-reliability: reachability, canonical + full…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                check_archive:
+                  type: string
+                official_for:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://openai.com/api/pricing/
+              official_for: openai
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agent-source/v1/official_source:
+    post:
+      operationId: agent_source_official_source
+      summary: Resolve the OFFICIAL URL a curated provider publishes for a given need…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entity:
+                  type: string
+                need_type:
+                  type: string
+                verify:
+                  type: string
+              required:
+              - entity
+            example:
+              entity: OpenAI
+              need_type: pricing
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agent-source/v1/verify_claim:
+    post:
+      operationId: agent_source_verify_claim
+      summary: Check whether one or more public source URLs support a factual claim — returns…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                claim:
+                  type: string
+                url:
+                  type: string
+                urls:
+                  type: string
+              required:
+              - claim
+              - url
+            example:
+              claim: Claude Opus 4.5 costs $5 per million input tokens
+              url: https://docs.claude.com/en/docs/about-claude/pricing
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agent-source/v1/pricing_lookup:
+    post:
+      operationId: agent_source_pricing_lookup
+      summary: Current developer/LLM pricing for a curated provider, parsed live from the…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                model:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - provider
+            example:
+              provider: openrouter
+              model: claude
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agent-source/v1/pricing_compare:
+    post:
+      operationId: agent_source_pricing_compare
+      summary: Compare current pricing across several curated providers (optionally filtered…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providers:
+                  type: string
+                model:
+                  type: string
+              required:
+              - providers
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /agent-source/v1/providers:
+    post:
+      operationId: agent_source_providers
+      summary: List the curated provider whitelist + each provider's capabilities (which…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/lookup:
+    post:
+      operationId: barcode_lookup
+      summary: 'Barcode → one merged product: title/brand/category/image/description +…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: string
+                source:
+                  type: string
+                off_db:
+                  type: string
+                deep_weight:
+                  type: string
+              required:
+              - barcode
+            example:
+              barcode: '5449000000996'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/batch:
+    post:
+      operationId: barcode_batch
+      summary: Up to 20 barcodes in one call → array of merged products (input order…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcodes:
+                  type: string
+                source:
+                  type: string
+                off_db:
+                  type: string
+                deep_weight:
+                  type: string
+              required:
+              - barcodes
+            example:
+              barcodes: 5449000000996,0885909950805
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/search:
+    post:
+      operationId: barcode_search
+      summary: Free-text product-name search across the open databases → product cards with…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                off_db:
+                  type: string
+                source:
+                  type: string
+                page:
+                  type: string
+                page_size:
+                  type: string
+              required:
+              - query
+            example:
+              query: nutella
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/by_brand:
+    post:
+      operationId: barcode_by_brand
+      summary: All products for a brand/manufacturer → product cards with pagination.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brand:
+                  type: string
+                category:
+                  type: string
+                off_db:
+                  type: string
+                page:
+                  type: string
+                page_size:
+                  type: string
+              required:
+              - brand
+            example:
+              brand: coca-cola
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/by_prefix:
+    post:
+      operationId: barcode_by_prefix
+      summary: GS1 company-prefix (partial-barcode) search → products whose barcode starts…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefix:
+                  type: string
+                off_db:
+                  type: string
+                page:
+                  type: string
+                page_size:
+                  type: string
+              required:
+              - prefix
+            example:
+              prefix: '5449000'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/by_mpn:
+    post:
+      operationId: barcode_by_mpn
+      summary: Manufacturer-Part-Number / model lookup → products with that MPN/model…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mpn:
+                  type: string
+                page:
+                  type: string
+                page_size:
+                  type: string
+              required:
+              - mpn
+            example:
+              mpn: 910-005565
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /barcode/v1/validate:
+    post:
+      operationId: barcode_validate
+      summary: 'Validate + decode a barcode WITHOUT a network call: mod-10 check digit, GTIN…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: string
+              required:
+              - barcode
+            example:
+              barcode: '40123455'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-availability/v1/check:
+    post:
+      operationId: domain_availability_check
+      summary: Is one domain available?
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                name:
+                  type: string
+                tld:
+                  type: string
+                signal:
+                  type: string
+                whois:
+                  type: string
+                include_pii:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: google.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-availability/v1/bulk_check:
+    post:
+      operationId: domain_availability_bulk_check
+      summary: One NAME across many TLDs → availability map (which of name.com/.io/.ai/… are…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                tlds:
+                  type: string
+                signal:
+                  type: string
+              required:
+              - name
+            example:
+              name: google
+              tlds: com,net,org
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-availability/v1/rdap:
+    post:
+      operationId: domain_availability_rdap
+      summary: Full WHOIS via RDAP for a registered domain (registrar, created/expires…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                raw:
+                  type: string
+                include_pii:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-availability/v1/suggest:
+    post:
+      operationId: domain_availability_suggest
+      summary: Name variations (prefix/suffix/TLD permutations, deterministic — no LLM) each…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                tlds:
+                  type: string
+                signal:
+                  type: string
+              required:
+              - name
+            example:
+              name: reefapi
+              tlds: com,io,ai
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-availability/v1/batch:
+    post:
+      operationId: domain_availability_batch
+      summary: Many DIFFERENT full domains in one call → availability for each (bulk check)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domains:
+                  type: string
+                signal:
+                  type: string
+              required:
+              - domains
+            example:
+              domains: google.com,this-name-is-surely-free-9z8x7q.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/whois:
+    post:
+      operationId: domain_intel_whois
+      summary: 'Domain registration (WHOIS) via RDAP: registrar (+ IANA id), reseller, status…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                raw:
+                  type: string
+                include_pii:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/dns:
+    post:
+      operationId: domain_intel_dns
+      summary: 'DNS records over DNS-over-HTTPS: A/AAAA/MX/TXT/NS/CNAME/SOA/CAA by default…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                types:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/reverse_dns:
+    post:
+      operationId: domain_intel_reverse_dns
+      summary: 'Reverse DNS (PTR): the hostname each of the domain''s A/AAAA IPs resolves back…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/hosting:
+    post:
+      operationId: domain_intel_hosting
+      summary: 'Hosting / ASN / IP-owner: resolves the domain''s A+AAAA IPs and looks up each…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/dnssec:
+    post:
+      operationId: domain_intel_dnssec
+      summary: 'DNSSEC signing status: the DoH AD (Authenticated-Data) flag (the resolver…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: cloudflare.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/ssl_certs:
+    post:
+      operationId: domain_intel_ssl_certs
+      summary: SSL/TLS certificates from Certificate Transparency (CT) logs (certspotter…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                limit:
+                  type: string
+                deep:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/subdomains:
+    post:
+      operationId: domain_intel_subdomains
+      summary: Subdomain discovery via Certificate-Transparency-log cert SANs (the standard…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                deep:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/availability:
+    post:
+      operationId: domain_intel_availability
+      summary: Domain registration availability via RDAP (registered ⇔ an RDAP record exists).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/tld_list:
+    post:
+      operationId: domain_intel_tld_list
+      summary: The IANA list of all delegated top-level domains (optionally substring-filtered)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                limit:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/tld_detail:
+    post:
+      operationId: domain_intel_tld_detail
+      summary: 'Per-TLD metadata: ccTLD vs gTLD and its IANA RDAP server(s) (or a note that it…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tld:
+                  type: string
+              required:
+              - tld
+            example:
+              tld: com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/tech_detect:
+    post:
+      operationId: domain_intel_tech_detect
+      summary: 'Tech-stack fingerprint from the homepage response headers + HTML: web server…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /domain-intel/v1/full_report:
+    post:
+      operationId: domain_intel_full_report
+      summary: 'One-call merge: whois + dns + dnssec + ssl_certs + subdomains (and optionally…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                include_tech:
+                  type: string
+                include_hosting:
+                  type: string
+                include_pii:
+                  type: string
+                deep:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-company/v1/company_domain:
+    post:
+      operationId: enrich_company_company_domain
+      summary: domain → entity-resolved company profile (core groups) with per-field provenance
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+              include:
+              - domain
+              - presence
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-company/v1/company_domain_rich:
+    post:
+      operationId: enrich_company_company_domain_rich
+      summary: everything in company_domain + firmographics (LinkedIn/Indeed/Glassdoor)…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domain:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+              required:
+              - domain
+            example:
+              domain: github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-company/v1/batch:
+    post:
+      operationId: enrich_company_batch
+      summary: enrich up to 10 domains in one call (core groups, cache-first, per-domain…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                domains:
+                  type: string
+                include:
+                  type: string
+                exclude:
+                  type: string
+              required:
+              - domains
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-url/v1/classify:
+    post:
+      operationId: enrich_url_classify
+      summary: Any URL → final_url, cleaned_url (tracking stripped), domain…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                deep:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.amazon.com/dp/B08N5WRWNW?tag=aff-20&utm_source=x
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-url/v1/extract_entity:
+    post:
+      operationId: enrich_url_extract_entity
+      summary: Any URL → a lightweight entity card with title, image, description, price…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://github.com/torvalds/linux
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-url/v1/batch:
+    post:
+      operationId: enrich_url_batch
+      summary: Classify up to 20 URLs in one call (the link-list cleanup + routing use-case)…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                urls:
+                  type: string
+              required:
+              - urls
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /enrich-url/v1/catalog_resolve:
+    post:
+      operationId: enrich_url_catalog_resolve
+      summary: 'META (no network): given a known platform name OR a URL''s host, return which…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                url:
+                  type: string
+            example:
+              platform: instagram
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_extract_text:
+    post:
+      operationId: file_convert_pdf_extract_text
+      summary: Extract text from a PDF (per page).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_metadata:
+    post:
+      operationId: file_convert_pdf_metadata
+      summary: 'PDF document properties: title/author/dates/producer, page count & size…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_merge:
+    post:
+      operationId: file_convert_pdf_merge
+      summary: Merge 2-20 PDFs into one (input order preserved).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              files_b64:
+              - JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              - JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_split:
+    post:
+      operationId: file_convert_pdf_split
+      summary: 'Split a PDF: pages=''2-5,8'' extracts those pages into one PDF; chunk_size=N…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              chunk_size: 1
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_rotate:
+    post:
+      operationId: file_convert_pdf_rotate
+      summary: Rotate pages clockwise by 90/180/270° (all pages or a range).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              angle: 90
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_to_images:
+    post:
+      operationId: file_convert_pdf_to_images
+      summary: Render PDF pages to PNG/JPG/WebP (pypdfium2).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              dpi: 72
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/images_to_pdf:
+    post:
+      operationId: file_convert_images_to_pdf
+      summary: Combine 1-20 images into a single PDF (one page per image; page_size=a4/letter…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              files_b64:
+              - iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_watermark:
+    post:
+      operationId: file_convert_pdf_watermark
+      summary: Stamp a text or image watermark over pages (true alpha overlay; diagonal or…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              text: CANARY
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_fill_form:
+    post:
+      operationId: file_convert_pdf_fill_form
+      summary: AcroForm filling.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUi9BY3JvRm9ybTw8L0ZpZWxkc1s2IDAgUiA3IDAgUl0vREEoL0hlbHYgMCBUZiAwIGcpL0RSPDwvRm9udDw8L0hlbHYgNSAwIFIvWmFEYiA4IDAgUj4+Pj4vTmVlZEFwcGVhcmFuY2VzIHRydWU+Pj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0hlbHYgNSAwIFIvWmFEYiA4IDAgUj4+Pj4vQW5ub3RzWzYgMCBSIDcgMCBSXT4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNjU+PnN0cmVhbQpCVCAvSGVsdiAxNCBUZiA3MiA3NDAgVGQgKFJlZWZBUEkgZ29sZGVuIEFjcm9Gb3JtIHRlc3QgUERGKSBUaiBFVAplbmRzdHJlYW1lbmRvYmoKNSAwIG9iajw8L1R5cGUvRm9udC9TdWJ0eXBlL1R5cGUxL0Jhc2VGb250L0hlbHZldGljYS9FbmNvZGluZy9XaW5BbnNpRW5jb2Rpbmc+PmVuZG9iago2IDAgb2JqPDwvVHlwZS9Bbm5vdC9TdWJ0eXBlL1dpZGdldC9GVC9UeC9UKG5hbWUpL1RVKEZ1bGwgbmFtZSkvRmYgMC9WKCkvUmVjdFs3MiA2NjAgMzcyIDY5MF0vREEoL0hlbHYgMTIgVGYgMCBnKS9GIDQvUCAzIDAgUi9NSzw8L0JDWzAgMCAwXS9CR1sxIDEgMV0+Pj4+ZW5kb2JqCjcgMCBvYmo8PC9UeXBlL0Fubm90L1N1YnR5cGUvV2lkZ2V0L0ZUL0J0bi9UKGFncmVlKS9UVShJIGFncmVlKS9WL09mZi9BUy9PZmYvUmVjdFs3MiA2MjAgOTIgNjQwXS9EQSgvWmFEYiAwIFRmIDAgZykvRiA0L1AgMyAwIFIvTUs8PC9CQ1swIDAgMF0vQkdbMSAxIDFdL0NBKDQpPj4vQVA8PC9OPDwvWWVzIDkgMCBSL09mZiAxMCAwIFI+Pj4+Pj5lbmRvYmoKOCAwIG9iajw8L1R5cGUvRm9udC9TdWJ0eXBlL1R5cGUxL0Jhc2VGb250L1phcGZEaW5nYmF0cz4+ZW5kb2JqCjkgMCBvYmo8PC9UeXBlL1hPYmplY3QvU3VidHlwZS9Gb3JtL0JCb3hbMCAwIDIwIDIwXS9SZXNvdXJjZXM8PC9Gb250PDwvWmFEYiA4IDAgUj4+Pj4vTGVuZ3RoIDQ2Pj5zdHJlYW0KcSBCVCAvWmFEYiAxNCBUZiAwIGcgNCA0IFRkICg0KSBUaiBFVCBRCmVuZHN0cmVhbWVuZG9iagoxMCAwIG9iajw8L1R5cGUvWE9iamVjdC9TdWJ0eXBlL0Zvcm0vQkJveFswIDAgMjAgMjBdL1Jlc291cmNlczw8Pj4vTGVuZ3RoIDg+PnN0cmVhbQpxICBRCmVuZHN0cmVhbWVuZG9iagp4cmVmCjAgMTEKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAxNjMgMDAwMDAgbiAKMDAwMDAwMDIxMiAwMDAwMCBuIAowMDAwMDAwMzU1IDAwMDAwIG4gCjAwMDAwMDA0NjUgMDAwMDAgbiAKMDAwMDAwMDU1MSAwMDAwMCBuIAowMDAwMDAwNzEyIDAwMDAwIG4gCjAwMDAwMDA5MTUgMDAwMDAgbiAKMDAwMDAwMDk3OSAwMDAwMCBuIAowMDAwMDAxMTM5IDAwMDAwIG4gCnRyYWlsZXI8PC9TaXplIDExL1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMTI0NAolJUVPRgo=
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_redact:
+    post:
+      operationId: file_convert_pdf_redact
+      summary: 'TRUE redaction: target pages are re-rendered with the matches blacked out and…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              terms:
+              - golden
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_compress:
+    post:
+      operationId: file_convert_pdf_compress
+      summary: 'Shrink a PDF: stream recompression + embedded-image re-encode…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_protect:
+    post:
+      operationId: file_convert_pdf_protect
+      summary: Encrypt a PDF with AES-256 (user password to open; optional owner password).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_password:
+                  type: string
+              required:
+              - user_password
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              user_password: canary123
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_unlock:
+    post:
+      operationId: file_convert_pdf_unlock
+      summary: Remove encryption from a PDF — REQUIRES the correct password (we never crack or…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+              - password
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNjQ+PnN0cmVhbQrpKGDFfcWpNJhwgBvsFFzVQL9DwsFTy36zcGXftL4ci6vYoPE1iyw1XypQVtobWFkJn8eA0q4g8jlAQouAqf7mCmVuZHN0cmVhbWVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKNiAwIG9iajw8L0ZpbHRlci9TdGFuZGFyZC9WIDEvUiAyL088MjRlODI1ODljYTJhMzBiMWM4MTczZmZjY2Y0YTRmYTc2YWYyZThkMWVjZThiODJmMzY1MzBjYTllNmJmNmZiOT4vVTxhZmM4MTZlZmExYzJhYjAyMGQ4ZGYwYmZjOGY5MmM4YTM4OGIyNjZlNzk5Mzc1MTY4NmQwZjliMjIxZDQxZDI4Pi9QIC0xPj5lbmRvYmoKeHJlZgowIDcKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTIgMDAwMDAgbiAKMDAwMDAwMDEwMSAwMDAwMCBuIAowMDAwMDAwMjExIDAwMDAwIG4gCjAwMDAwMDAzMjAgMDAwMDAgbiAKMDAwMDAwMDM4MSAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA3L1Jvb3QgMSAwIFIvRW5jcnlwdCA2IDAgUi9JRFs8NTI2NTY1NjY0MTUwNDk2NzZmNmM2NDY1NmUzMDMwMzAzMT48NTI2NTY1NjY0MTUwNDk2NzZmNmM2NDY1NmUzMDMwMzAzMT5dPj4Kc3RhcnR4cmVmCjU2NAolJUVPRgo=
+              password: reefapi
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/pdf_repair:
+    post:
+      operationId: file_convert_pdf_repair
+      summary: Best-effort structural repair (broken xref/trailer/stream lengths) via a…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_convert:
+    post:
+      operationId: file_convert_image_convert
+      summary: Convert between raster formats (jpg/png/webp/tiff/bmp/gif/avif; animated…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+              required:
+              - to
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+              to: webp
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_resize:
+    post:
+      operationId: file_convert_image_resize
+      summary: Resize with fit=contain (aspect kept, fits inside box) / cover (fills+crops) /…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+              width: 64
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_optimize:
+    post:
+      operationId: file_convert_image_optimize
+      summary: 'Smart perceptual compression (TinyPNG-style): binary-searches the lowest…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_thumbnail:
+    post:
+      operationId: file_convert_image_thumbnail
+      summary: Fast thumbnail (16-2048px box; square=true centre-crops to a square).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+              size: 64
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_metadata:
+    post:
+      operationId: file_convert_image_metadata
+      summary: Read image facts + EXIF (+GPS) — and with strip=true return a copy with ALL…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_rotate:
+    post:
+      operationId: file_convert_image_rotate
+      summary: Rotate (90/180/270 clockwise) and/or flip (horizontal/vertical).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+              angle: 90
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/image_crop:
+    post:
+      operationId: file_convert_image_crop
+      summary: Crop a pixel box (x, y from top-left + width × height).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                width:
+                  type: string
+                height:
+                  type: string
+              required:
+              - width
+              - height
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+              width: 8
+              height: 8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/doc_to_markdown:
+    post:
+      operationId: file_convert_doc_to_markdown
+      summary: Document → clean markdown for RAG/agents.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0ndXRmLTgnPjx0aXRsZT5Hb2xkZW48L3RpdGxlPjwvaGVhZD48Ym9keT48aDE+UmVlZkFQSSBnb2xkZW4gdGVzdCBwYWdlPC9oMT48cD5BIHRpbnkgZG9jdW1lbnQgZm9yIGNhbmFyeSBydW5zLjwvcD48dGFibGU+PHRyPjx0aD5lbmdpbmU8L3RoPjx0aD50aWVyPC90aD48L3RyPjx0cj48dGQ+ZmlsZS1jb252ZXJ0PC90ZD48dGQ+dXRpbGl0aWVzPC90ZD48L3RyPjx0cj48dGQ+d2ViLWV4dHJhY3Q8L3RkPjx0ZD5kYXRhPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/extract_tables:
+    post:
+      operationId: file_convert_extract_tables
+      summary: Pull every table out of a PDF / xlsx / docx / html as JSON rows (+optional CSV…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0ndXRmLTgnPjx0aXRsZT5Hb2xkZW48L3RpdGxlPjwvaGVhZD48Ym9keT48aDE+UmVlZkFQSSBnb2xkZW4gdGVzdCBwYWdlPC9oMT48cD5BIHRpbnkgZG9jdW1lbnQgZm9yIGNhbmFyeSBydW5zLjwvcD48dGFibGU+PHRyPjx0aD5lbmdpbmU8L3RoPjx0aD50aWVyPC90aD48L3RyPjx0cj48dGQ+ZmlsZS1jb252ZXJ0PC90ZD48dGQ+dXRpbGl0aWVzPC90ZD48L3RyPjx0cj48dGQ+d2ViLWV4dHJhY3Q8L3RkPjx0ZD5kYXRhPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/ocr_image:
+    post:
+      operationId: file_convert_ocr_image
+      summary: OCR an image → text + word count + confidence (tesseract 5, printed text…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mN4l+VFFcQwatCoQaMGjRo0atCoQQNvEAB6hKyuf+L5NQAAAABJRU5ErkJggg==
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/ocr_pdf:
+    post:
+      operationId: file_convert_ocr_pdf
+      summary: 'OCR a scanned PDF: output=text → per-page text+confidence…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNTQ+PnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChSZWVmQVBJIGdvbGRlbiB0ZXN0IFBERikgVGogRVQKZW5kc3RyZWFtZW5kb2JqCjUgMCBvYmo8PC9UeXBlL0ZvbnQvU3VidHlwZS9UeXBlMS9CYXNlRm9udC9IZWx2ZXRpY2E+PmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1MiAwMDAwMCBuIAowMDAwMDAwMTAxIDAwMDAwIG4gCjAwMDAwMDAyMTEgMDAwMDAgbiAKMDAwMDAwMDMxMCAwMDAwMCBuIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMzcxCiUlRU9GCg==
+              pages: '1'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/office_convert:
+    post:
+      operationId: file_convert_office_convert
+      summary: Office → PDF (and html/txt; spreadsheets also → csv; text docs also → docx) via…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: PCFET0NUWVBFIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0ndXRmLTgnPjx0aXRsZT5Hb2xkZW48L3RpdGxlPjwvaGVhZD48Ym9keT48aDE+UmVlZkFQSSBnb2xkZW4gdGVzdCBwYWdlPC9oMT48cD5BIHRpbnkgZG9jdW1lbnQgZm9yIGNhbmFyeSBydW5zLjwvcD48dGFibGU+PHRyPjx0aD5lbmdpbmU8L3RoPjx0aD50aWVyPC90aD48L3RyPjx0cj48dGQ+ZmlsZS1jb252ZXJ0PC90ZD48dGQ+dXRpbGl0aWVzPC90ZD48L3RyPjx0cj48dGQ+d2ViLWV4dHJhY3Q8L3RkPjx0ZD5kYXRhPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=
+              to: pdf
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/audio_extract:
+    post:
+      operationId: file_convert_audio_extract
+      summary: Extract the audio track from a video (mp4/webm/mkv/avi) → mp3 (default) / m4a /…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/audio_convert:
+    post:
+      operationId: file_convert_audio_convert
+      summary: Convert between audio formats (mp3/wav/flac/ogg/m4a in →…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+              required:
+              - to
+            example:
+              file_b64: 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
+              to: mp3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/media_probe:
+    post:
+      operationId: file_convert_media_probe
+      summary: 'ffprobe metadata for any audio/video file: container, duration, bitrate…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              file_b64: 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
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/data_convert:
+    post:
+      operationId: file_convert_data_convert
+      summary: 'Deterministic data-format conversion: CSV ↔ JSON ↔ XML ↔ YAML ↔ Excel(xlsx)…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                to:
+                  type: string
+              required:
+              - to
+            example:
+              file_b64: bmFtZSxjcmVkaXRzLGNhdGVnb3J5CnBkZl9tZXJnZSwxLHBkZgppbWFnZV9vcHRpbWl6ZSwyLGltYWdlCm9jcl9wZGYsMixvY3IK
+              to: json
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /file-convert/v1/formats:
+    post:
+      operationId: file_convert_formats
+      summary: 'Capability matrix: every action with its accepted input formats, targets and…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/exercises:
+    post:
+      operationId: fitness_exercises
+      summary: Browse or search the full exercise library (800+ exercises from wger.de).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                term:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                language:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/by_bodypart:
+    post:
+      operationId: fitness_by_bodypart
+      summary: All exercises targeting a specific body part — e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bodypart:
+                  type: string
+                bodyPart:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                language:
+                  type: string
+              required:
+              - bodypart
+            example:
+              bodypart: chest
+              limit: 5
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/by_equipment:
+    post:
+      operationId: fitness_by_equipment
+      summary: All exercises that use a specific piece of equipment — e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                equipment:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                language:
+                  type: string
+              required:
+              - equipment
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/by_target:
+    post:
+      operationId: fitness_by_target
+      summary: All exercises that target a specific muscle — e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: string
+                limit:
+                  type: string
+                offset:
+                  type: string
+                language:
+                  type: string
+              required:
+              - target
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/exercise_detail:
+    post:
+      operationId: fitness_exercise_detail
+      summary: Full detail for a single exercise by its id — name, body part, primary and…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                exercise_id:
+                  type: string
+                language:
+                  type: string
+              required:
+              - id
+            example:
+              id: 1962
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/bodypart_list:
+    post:
+      operationId: fitness_bodypart_list
+      summary: List all available body part categories (e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/equipment_list:
+    post:
+      operationId: fitness_equipment_list
+      summary: List all available equipment types (e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /fitness/v1/target_list:
+    post:
+      operationId: fitness_target_list
+      summary: List all available target muscles (e.g.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/check:
+    post:
+      operationId: geo_intel_check
+      summary: 'Full AI-readiness report for a URL: AI-crawler access map + llms.txt + schema +…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                path:
+                  type: string
+                bots:
+                  type: string
+                follow_redirects:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://docs.anthropic.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/crawlers:
+    post:
+      operationId: geo_intel_crawlers
+      summary: 'AI-crawler access map from robots.txt: per-bot allow/block (Google…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                path:
+                  type: string
+                bots:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.nytimes.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/llms_txt:
+    post:
+      operationId: geo_intel_llms_txt
+      summary: Detect + parse + validate /llms.txt (and /llms-full.txt) — the emerging…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://stripe.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/schema:
+    post:
+      operationId: geo_intel_schema
+      summary: Extract and classify schema.org structured data (JSON-LD and @graph) for AI…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                follow_redirects:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.nytimes.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/score:
+    post:
+      operationId: geo_intel_score
+      summary: Composite AI-readiness score (0-100) + transparent per-pillar breakdown…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                path:
+                  type: string
+                follow_redirects:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-intel/v1/batch:
+    post:
+      operationId: geo_intel_batch
+      summary: Score up to 20 sites concurrently in one call (each independently SSRF-guarded).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                urls:
+                  type: string
+              required:
+              - urls
+            example:
+              urls:
+              - https://stripe.com
+              - https://github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/eu_regions:
+    post:
+      operationId: geo_postal_eu_regions
+      summary: 'Coordinates OR postal code → EU/EFTA/candidate statistical regions: country…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                include_geometry:
+                  type: string
+            example:
+              lat: 52.52
+              lon: 13.405
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/tr_regions:
+    post:
+      operationId: geo_postal_tr_regions
+      summary: 'Türkiye: koordinat, posta kodu VEYA il/ilçe/mahalle adı → resmî idari hiyerarşi…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                postal_code:
+                  type: string
+                province:
+                  type: string
+                district:
+                  type: string
+                neighborhood:
+                  type: string
+                include_geometry:
+                  type: string
+            example:
+              lat: 41.0082
+              lon: 28.9784
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/in_postal:
+    post:
+      operationId: geo_postal_in_postal
+      summary: 'India: PIN code OR post-office name → post offices, district, state, lat/lon…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pincode:
+                  type: string
+                office:
+                  type: string
+                state:
+                  type: string
+                district:
+                  type: string
+            example:
+              pincode: '400001'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/us_regions:
+    post:
+      operationId: geo_postal_us_regions
+      summary: 'United States: ZIP code OR coordinates → state, county + 5-digit county FIPS…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postal_code:
+                  type: string
+                lat:
+                  type: string
+                lon:
+                  type: string
+                include_geometry:
+                  type: string
+            example:
+              postal_code: '10001'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/us_census:
+    post:
+      operationId: geo_postal_us_census
+      summary: 'United States census-grade geocode: street ADDRESS, ZIP, or coordinates →…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                postal_code:
+                  type: string
+                lat:
+                  type: string
+                lon:
+                  type: string
+                include_geometry:
+                  type: string
+                live:
+                  type: string
+            example:
+              lat: 40.7505
+              lon: -73.9967
+              live: true
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/admin_boundary:
+    post:
+      operationId: geo_postal_admin_boundary
+      summary: GLOBAL coordinates → administrative boundary hierarchy ADM0/ADM1/ADM2…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                levels:
+                  type: string
+                include_geometry:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 35.6762
+              lon: 139.6503
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/postal_lookup:
+    post:
+      operationId: geo_postal_postal_lookup
+      summary: country + postal code → region metadata for ~100 countries (GeoNames postal…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                postal_code:
+                  type: string
+              required:
+              - country
+              - postal_code
+            example:
+              country: FR
+              postal_code: '75001'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/postal_search:
+    post:
+      operationId: geo_postal_postal_search
+      summary: country + city/place → its postal codes (zip-by-city); country + admin1 only →…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                place:
+                  type: string
+                admin1:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - country
+            example:
+              country: DE
+              place: München
+              limit: 10
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/postal_distance:
+    post:
+      operationId: geo_postal_postal_distance
+      summary: Great-circle distance between two postal codes (same or different countries)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                from:
+                  type: string
+                to:
+                  type: string
+                to_country:
+                  type: string
+                unit:
+                  type: string
+              required:
+              - country
+              - from
+              - to
+            example:
+              country: US
+              from: '10001'
+              to: '90210'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/postal_radius:
+    post:
+      operationId: geo_postal_postal_radius
+      summary: All postal codes within a radius of a postal code (centroid-based)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                postal_code:
+                  type: string
+                radius_km:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - country
+              - postal_code
+              - radius_km
+            example:
+              country: DE
+              postal_code: '10115'
+              radius_km: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /geo-postal/v1/batch:
+    post:
+      operationId: geo_postal_batch
+      summary: Resolve up to 50 mixed lookups in one call (cheap local queries)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: string
+              required:
+              - items
+            example:
+              items:
+              - action: eu_regions
+                lat: 48.8566
+                lon: 2.3522
+              - action: postal_lookup
+                country: TR
+                postal_code: '34710'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/holidays:
+    post:
+      operationId: holidays_holidays
+      summary: public holidays for a country + year (full Nager fields + derived…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                year:
+                  type: string
+              required:
+              - country
+              - year
+            example:
+              country: US
+              year: 2026
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/is_workday:
+    post:
+      operationId: holidays_is_workday
+      summary: is a given date a working day for a country?
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                date:
+                  type: string
+                weekend:
+                  type: string
+                types:
+                  type: string
+                subdivision:
+                  type: string
+              required:
+              - country
+              - date
+            example:
+              country: US
+              date: '2026-01-01'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/workday_count:
+    post:
+      operationId: holidays_workday_count
+      summary: 'business-day count over a date range: workdays/weekend_days/holiday_days + the…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                start:
+                  type: string
+                end:
+                  type: string
+                weekend:
+                  type: string
+                types:
+                  type: string
+                subdivision:
+                  type: string
+              required:
+              - country
+              - start
+              - end
+            example:
+              country: US
+              start: '2026-01-01'
+              end: '2026-01-31'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/next_holidays:
+    post:
+      operationId: holidays_next_holidays
+      summary: upcoming public holidays (next ~365 days) with daysUntil
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                today:
+                  type: string
+              required:
+              - country
+            example:
+              country: US
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/long_weekends:
+    post:
+      operationId: holidays_long_weekends
+      summary: long-weekend windows for a country + year (+ bridge-day suggestions)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                year:
+                  type: string
+              required:
+              - country
+              - year
+            example:
+              country: US
+              year: 2026
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /holidays/v1/countries:
+    post:
+      operationId: holidays_countries
+      summary: the supported country set (code → name)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ip-geolocation/v1/lookup:
+    post:
+      operationId: ip_geolocation_lookup
+      summary: geolocate ONE IPv4/IPv6 → country/region/city/lat-lon/timezone/ASN/ISP/org +…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ip:
+                  type: string
+                lang:
+                  type: string
+              required:
+              - ip
+            example:
+              ip: 8.8.8.8
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /ip-geolocation/v1/batch:
+    post:
+      operationId: ip_geolocation_batch
+      summary: geolocate up to 100 IPs in one call
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ips:
+                  type: string
+                lang:
+                  type: string
+              required:
+              - ips
+            example:
+              ips:
+              - 8.8.8.8
+              - 1.1.1.1
+              - 192.168.0.1
+              - nonsense
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /phone-validate/v1/validate:
+    post:
+      operationId: phone_validate_validate
+      summary: validate ONE number → validity + format/region/line-type/carrier/timezone/locati…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: string
+                region:
+                  type: string
+                default_region:
+                  type: string
+                lang:
+                  type: string
+              required:
+              - number
+            example:
+              number: +90 532 123 4567
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /phone-validate/v1/batch:
+    post:
+      operationId: phone_validate_batch
+      summary: validate up to 100 numbers in one call (shared default region)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numbers:
+                  type: string
+                region:
+                  type: string
+                default_region:
+                  type: string
+                lang:
+                  type: string
+              required:
+              - numbers
+            example:
+              numbers:
+              - +90 532 123 4567
+              - +90 212 245 5555
+              - nonsense
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/search:
+    post:
+      operationId: recall_search
+      summary: Search FDA recalls by keyword, category, classification, status, company, and…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                classification:
+                  type: string
+                status:
+                  type: string
+                company:
+                  type: string
+                date_from:
+                  type: string
+                date_to:
+                  type: string
+                sort:
+                  type: string
+                limit:
+                  type: string
+                skip:
+                  type: string
+                include_severity:
+                  type: string
+            example:
+              query: listeria
+              category: food
+              limit: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/recall_detail:
+    post:
+      operationId: recall_recall_detail
+      summary: Full detail for one recall by its FDA recall_number (category auto-detected…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recall_number:
+                  type: string
+                category:
+                  type: string
+              required:
+              - recall_number
+            example:
+              recall_number: F-1397-2012
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/by_company:
+    post:
+      operationId: recall_by_company
+      summary: All recalls for a recalling firm / manufacturer, newest first, paginated
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company:
+                  type: string
+                category:
+                  type: string
+                classification:
+                  type: string
+                status:
+                  type: string
+                date_from:
+                  type: string
+                date_to:
+                  type: string
+                limit:
+                  type: string
+                skip:
+                  type: string
+                include_severity:
+                  type: string
+              required:
+              - company
+            example:
+              company: Pfizer
+              category: drug
+              limit: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/latest:
+    post:
+      operationId: recall_latest
+      summary: Most recent recalls across all categories (or one), within the last N days
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                classification:
+                  type: string
+                days:
+                  type: string
+                limit:
+                  type: string
+                skip:
+                  type: string
+                include_severity:
+                  type: string
+            example:
+              days: 120
+              limit: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/batch:
+    post:
+      operationId: recall_batch
+      summary: Run multiple keyword searches in one call (compliance-watch over a product list)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                queries:
+                  type: string
+                category:
+                  type: string
+                classification:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - queries
+            example:
+              queries:
+              - listeria
+              - salmonella
+              category: food
+              limit: 2
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/stats:
+    post:
+      operationId: recall_stats
+      summary: Aggregate recall counts grouped by a field…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                field:
+                  type: string
+                query:
+                  type: string
+                date_from:
+                  type: string
+                date_to:
+                  type: string
+            example:
+              category: food
+              field: classification
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/categories:
+    post:
+      operationId: recall_categories
+      summary: 'The recall taxonomy: FDA categories + EU Safety Gate product-category &…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/eu_recall:
+    post:
+      operationId: recall_eu_recall
+      summary: One EU Safety Gate (RAPEX) recall/alert by notification id — product, risk…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                language:
+                  type: string
+              required:
+              - id
+            example:
+              id: 10000308
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/eu_recalls:
+    post:
+      operationId: recall_eu_recalls
+      summary: 'Search/list EU Safety Gate alerts (the EU analogue of `search`): pages over…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                category:
+                  type: string
+                country:
+                  type: string
+                risk_type:
+                  type: string
+                weeks:
+                  type: string
+                limit:
+                  type: string
+                skip:
+                  type: string
+            example:
+              category: Toys
+              weeks: 2
+              limit: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /recall/v1/eu_latest:
+    post:
+      operationId: recall_eu_latest
+      summary: The newest EU Safety Gate weekly report fully expanded into its ~80-100 product…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: string
+            example:
+              limit: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/translate:
+    post:
+      operationId: translate_translate
+      summary: Translate text into a single target language.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                target:
+                  type: string
+                source:
+                  type: string
+              required:
+              - text
+              - target
+            example:
+              text: Hello, how are you?
+              target: es
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/translate_multi:
+    post:
+      operationId: translate_translate_multi
+      summary: Translate the SAME text into MANY target languages in a single call — the…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                targets:
+                  type: string
+                source:
+                  type: string
+              required:
+              - text
+              - targets
+            example:
+              text: The weather is beautiful today.
+              targets:
+              - es
+              - fr
+              - de
+              - ja
+              - ar
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/translate_batch:
+    post:
+      operationId: translate_translate_batch
+      summary: Translate MANY strings into ONE target language in a single call — built for…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                texts:
+                  type: string
+                target:
+                  type: string
+                source:
+                  type: string
+              required:
+              - texts
+              - target
+            example:
+              texts:
+              - Wireless Bluetooth Headphones
+              - Stainless Steel Water Bottle 1L
+              - Men's Running Shoes, Size 42
+              - Organic Green Tea, 100 bags
+              - 4K Ultra HD Smart TV 55 inch
+              target: es
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/detect:
+    post:
+      operationId: translate_detect
+      summary: Detect the language of a piece of text.
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+              required:
+              - text
+            example:
+              text: Привет мир
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/dictionary:
+    post:
+      operationId: translate_dictionary
+      summary: 'Word-level dictionary lookup: translate a word/short phrase and get its…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                target:
+                  type: string
+                source:
+                  type: string
+              required:
+              - text
+              - target
+            example:
+              text: run
+              target: es
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/languages:
+    post:
+      operationId: translate_languages
+      summary: List all supported languages (code → English name).
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /translate/v1/speak:
+    post:
+      operationId: translate_speak
+      summary: 'Text-to-speech: turn text into spoken audio (MP3).'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                lang:
+                  type: string
+                slow:
+                  type: string
+              required:
+              - text
+              - lang
+            example:
+              text: Hello, how are you today?
+              lang: en
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/resolve:
+    post:
+      operationId: url_resolver_resolve
+      summary: Follow the redirect chain to the final URL (hop-by-hop, every status observable)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                max_hops:
+                  type: string
+              required:
+              - url
+            example:
+              url: http://github.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/normalize:
+    post:
+      operationId: url_resolver_normalize
+      summary: Resolve then strip tracking params (utm_*/fbclid/gclid…) → canonical URL
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                follow:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.example.com/?utm_source=a&fbclid=b&id=42
+              follow: false
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/detect_affiliate:
+    post:
+      operationId: url_resolver_detect_affiliate
+      summary: Detect the affiliate network/params/merchant across the whole redirect chain…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                follow:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.amazon.com/dp/B08N5WRWNW?tag=myaff-20
+              follow: false
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/product_hint:
+    post:
+      operationId: url_resolver_product_hint
+      summary: Identify marketplace + product-id + the ReefAPI engine that can fetch the…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                follow:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.amazon.com/dp/B08N5WRWNW
+              follow: false
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/preview:
+    post:
+      operationId: url_resolver_preview
+      summary: 'Link unfurl: OpenGraph + Twitter-card title/description/image/favicon…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.example.com/
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/safety:
+    post:
+      operationId: url_resolver_safety
+      summary: Heuristic URL-risk flags (ip-host, non-https, punycode, userinfo, high-abuse…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.amazon.com/dp/B08N5WRWNW
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/full:
+    post:
+      operationId: url_resolver_full
+      summary: 'One call: resolve + normalize + detect_affiliate + product_hint + preview +…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                max_hops:
+                  type: string
+              required:
+              - url
+            example:
+              url: https://www.amazon.com/dp/B08N5WRWNW?tag=aff-20&utm_source=x
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /url-resolver/v1/batch:
+    post:
+      operationId: url_resolver_batch
+      summary: Resolve up to 50 URLs concurrently in one call — each URL is validated and…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                urls:
+                  type: string
+              required:
+              - urls
+            example:
+              urls:
+              - http://github.com
+              - https://www.example.com/?utm_source=z
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /validate/v1/vat:
+    post:
+      operationId: validate_vat
+      summary: Validate an EU VAT number via VIES → validity + registered company name &…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vat_number:
+                  type: string
+                country:
+                  type: string
+              required:
+              - vat_number
+            example:
+              vat_number: IE6388047V
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /validate/v1/iban:
+    post:
+      operationId: validate_iban
+      summary: Validate + parse an IBAN offline (ISO 13616 mod-97) → country, BBAN…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iban:
+                  type: string
+                enrich:
+                  type: string
+              required:
+              - iban
+            example:
+              iban: DE89 3704 0044 0532 0130 00
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /validate/v1/email:
+    post:
+      operationId: validate_email
+      summary: 'Validate an email: syntax + live MX + disposable-domain + role-account flags'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                check_mx:
+                  type: string
+              required:
+              - email
+            example:
+              email: jane.doe@google.com
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /validate/v1/batch:
+    post:
+      operationId: validate_batch
+      summary: Validate up to 100 mixed items ({type:vat|iban|email,value}) in one call
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: string
+                check_mx:
+                  type: string
+              required:
+              - items
+            example:
+              items:
+              - type: iban
+                value: DE89370400440532013000
+              - type: email
+                value: test@mailinator.com
+                check_mx: false
+              - type: iban
+                value: bad
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/vin_decode:
+    post:
+      operationId: vehicle_vin_decode
+      summary: decode a VIN → make/model/year/trim/engine/specs (vPIC)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vin:
+                  type: string
+                modelyear:
+                  type: string
+                raw:
+                  type: string
+              required:
+              - vin
+            example:
+              vin: 1HGCM82633A004352
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/vin_decode_batch:
+    post:
+      operationId: vehicle_vin_decode_batch
+      summary: decode up to 50 VINs in one call (vPIC batch)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vins:
+                  type: string
+                raw:
+                  type: string
+              required:
+              - vins
+            example:
+              vins: 1HGCM82633A004352,2003;5UXWX7C5*BA,2011
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/vin_decode_flat:
+    post:
+      operationId: vehicle_vin_decode_flat
+      summary: per-variable VIN decode — one row per NHTSA variable with its label (the…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vin:
+                  type: string
+                modelyear:
+                  type: string
+              required:
+              - vin
+            example:
+              vin: 1HGCM82633A004352
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/fuel_economy:
+    post:
+      operationId: vehicle_fuel_economy
+      summary: EPA fuel economy — MPG/MPGe (city/highway/combined), CO2, annual fuel cost, EV…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                year:
+                  type: string
+                make:
+                  type: string
+                model:
+                  type: string
+            example:
+              year: '2021'
+              make: Toyota
+              model: Camry
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/fuel_economy_options:
+    post:
+      operationId: vehicle_fuel_economy_options
+      summary: list EPA trims (each → an id for fuel_economy) for a year+make+model
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                year:
+                  type: string
+                make:
+                  type: string
+                model:
+                  type: string
+              required:
+              - year
+              - make
+              - model
+            example:
+              year: '2021'
+              make: Toyota
+              model: RAV4
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/fuel_prices:
+    post:
+      operationId: vehicle_fuel_prices
+      summary: current US national average fuel prices (regular/midgrade/premium/diesel/e85/ele…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/canadian_specs:
+    post:
+      operationId: vehicle_canadian_specs
+      summary: dimensional & weight specs (length, width, height, wheelbase, curb weight…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                year:
+                  type: string
+                make:
+                  type: string
+                model:
+                  type: string
+              required:
+              - year
+            example:
+              year: '2011'
+              make: Acura
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/recalls:
+    post:
+      operationId: vehicle_recalls
+      summary: safety recalls by make+model+modelYear, or by campaignNumber
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                model:
+                  type: string
+                modelYear:
+                  type: string
+                campaignNumber:
+                  type: string
+            example:
+              make: acura
+              model: rdx
+              modelYear: '2012'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/safety_ratings:
+    post:
+      operationId: vehicle_safety_ratings
+      summary: NCAP star ratings + crash-test media; by vehicleId, or year+make+model…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicleId:
+                  type: string
+                modelYear:
+                  type: string
+                make:
+                  type: string
+                model:
+                  type: string
+            example:
+              vehicleId: '7523'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/complaints:
+    post:
+      operationId: vehicle_complaints
+      summary: consumer complaints by make+model+modelYear
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                model:
+                  type: string
+                modelYear:
+                  type: string
+              required:
+              - make
+              - model
+              - modelYear
+            example:
+              make: acura
+              model: rdx
+              modelYear: '2012'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/models:
+    post:
+      operationId: vehicle_models
+      summary: models for a make (optionally a modelYear / vehicleType)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+                modelYear:
+                  type: string
+                vehicleType:
+                  type: string
+              required:
+              - make
+            example:
+              make: honda
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/makes:
+    post:
+      operationId: vehicle_makes
+      summary: all makes, or makes for a vehicleType (car/truck/mpv/motorcycle/...)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicleType:
+                  type: string
+            example:
+              vehicleType: car
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/manufacturers:
+    post:
+      operationId: vehicle_manufacturers
+      summary: all manufacturers (paged) or details for one
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                manufacturer:
+                  type: string
+                page:
+                  type: string
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/wmi_decode:
+    post:
+      operationId: vehicle_wmi_decode
+      summary: decode a 3-char WMI to its manufacturer
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wmi:
+                  type: string
+              required:
+              - wmi
+            example:
+              wmi: 1HG
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/manufacturer_wmis:
+    post:
+      operationId: vehicle_manufacturer_wmis
+      summary: all WMIs registered to a manufacturer
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                manufacturer:
+                  type: string
+              required:
+              - manufacturer
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/vehicle_types:
+    post:
+      operationId: vehicle_vehicle_types
+      summary: vehicle types produced by a make
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make:
+                  type: string
+              required:
+              - make
+            example:
+              make: honda
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/product_options:
+    post:
+      operationId: vehicle_product_options
+      summary: recall/complaint enumeration tree (modelYears → makes → models; issueType=r|c)
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issueType:
+                  type: string
+                modelYear:
+                  type: string
+                make:
+                  type: string
+            example:
+              issueType: r
+              modelYear: '2012'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /vehicle/v1/plant_codes:
+    post:
+      operationId: vehicle_plant_codes
+      summary: equipment (tire) plant codes for a year
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                year:
+                  type: string
+                equipmentType:
+                  type: string
+                reportType:
+                  type: string
+              required:
+              - year
+            example:
+              year: '2021'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/environment_current:
+    post:
+      operationId: weather_intel_environment_current
+      summary: 'premium combined snapshot: current weather + AQ + active alerts + nearby…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                units:
+                  type: string
+                include:
+                  type: string
+                radius_km:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 52.52
+              lon: 13.405
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/forecast:
+    post:
+      operationId: weather_intel_forecast
+      summary: 'global point forecast (MET Norway, ~9 days): hourly steps + daily aggregates…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                units:
+                  type: string
+                hours:
+                  type: string
+                days:
+                  type: string
+                source:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 41.0082
+              lon: 28.9784
+              days: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/air_quality:
+    post:
+      operationId: weather_intel_air_quality
+      summary: 'nearest-station air quality (OpenAQ v3): pollutants + computed AQI-US/EAQI-EU +…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                radius_km:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 51.5072
+              lon: -0.1276
+              radius_km: 25
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/alerts:
+    post:
+      operationId: weather_intel_alerts
+      summary: 'official severe-weather warnings by country/US-state or coordinate: EU…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                country:
+                  type: string
+                lat:
+                  type: string
+                lon:
+                  type: string
+                severity_min:
+                  type: string
+                active_only:
+                  type: string
+                limit:
+                  type: string
+            example:
+              country: germany
+              active_only: false
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/hazards_nearby:
+    post:
+      operationId: weather_intel_hazards_nearby
+      summary: GDACS multi-hazard events (earthquake/cyclone/flood/volcano/wildfire/drought)…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                radius_km:
+                  type: string
+                days:
+                  type: string
+                types:
+                  type: string
+                min_alert_level:
+                  type: string
+                limit:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 36.2
+              lon: 140.5
+              radius_km: 2000
+              days: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/disasters:
+    post:
+      operationId: weather_intel_disasters
+      summary: global GDACS disaster events with type/alert-level/date/bbox filters, or a…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                types:
+                  type: string
+                min_alert_level:
+                  type: string
+                days:
+                  type: string
+                bbox:
+                  type: string
+                country:
+                  type: string
+                limit:
+                  type: string
+                event_id:
+                  type: string
+                event_type:
+                  type: string
+            example:
+              days: 30
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/earthquakes:
+    post:
+      operationId: weather_intel_earthquakes
+      summary: 'USGS earthquake catalog (earthquake.usgs.gov, public domain): filter by…'
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                radius_km:
+                  type: string
+                min_magnitude:
+                  type: string
+                max_magnitude:
+                  type: string
+                days:
+                  type: string
+                start:
+                  type: string
+                end:
+                  type: string
+                min_depth_km:
+                  type: string
+                max_depth_km:
+                  type: string
+                order:
+                  type: string
+                pager_alert:
+                  type: string
+                limit:
+                  type: string
+                event_id:
+                  type: string
+            example:
+              min_magnitude: 5.0
+              days: 30
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/natural_events:
+    post:
+      operationId: weather_intel_natural_events
+      summary: NASA EONET natural-event catalog (eonet.gsfc.nasa.gov, NASA open data)…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                status:
+                  type: string
+                days:
+                  type: string
+                bbox:
+                  type: string
+                limit:
+                  type: string
+                list_categories:
+                  type: string
+            example:
+              status: open
+              limit: 20
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/fires:
+    post:
+      operationId: weather_intel_fires
+      summary: Live wildfire and thermal-anomaly hotspots from NASA FIRMS…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                radius_km:
+                  type: string
+                bbox:
+                  type: string
+                sensor:
+                  type: string
+                days:
+                  type: string
+                min_confidence:
+                  type: string
+                min_frp:
+                  type: string
+                limit:
+                  type: string
+            example:
+              bbox: -20,-35,55,20
+              days: 1
+              limit: 50
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/geocode:
+    post:
+      operationId: weather_intel_geocode
+      summary: Place name → coordinates (Open-Meteo Geocoding, GeoNames-backed, free/keyless)…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                id:
+                  type: string
+                language:
+                  type: string
+                count:
+                  type: string
+            example:
+              name: Istanbul
+              count: 3
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/historical:
+    post:
+      operationId: weather_intel_historical
+      summary: Historical weather (Open-Meteo Archive / ERA5 reanalysis, 1940→present…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                units:
+                  type: string
+                daily:
+                  type: string
+                hourly:
+                  type: string
+              required:
+              - lat
+              - lon
+              - start_date
+              - end_date
+            example:
+              lat: 41.0082
+              lon: 28.9784
+              start_date: '2024-01-01'
+              end_date: '2024-01-07'
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/marine:
+    post:
+      operationId: weather_intel_marine
+      summary: Marine / ocean-wave forecast (Open-Meteo Marine, free/keyless) for a…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                units:
+                  type: string
+                forecast_days:
+                  type: string
+                hourly:
+                  type: string
+                daily:
+                  type: string
+                current:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 54.544
+              lon: 10.402
+              forecast_days: 2
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+  /weather-intel/v1/air_quality_forecast:
+    post:
+      operationId: weather_intel_air_quality_forecast
+      summary: Air-quality FORECAST + pollen (Open-Meteo Air-Quality, CAMS-backed…
+      tags:
+      - Utilities & AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lon:
+                  type: string
+                forecast_days:
+                  type: string
+                hourly:
+                  type: string
+                current:
+                  type: string
+              required:
+              - lat
+              - lon
+            example:
+              lat: 52.52
+              lon: 13.405
+              forecast_days: 2
+      responses:
+        '200':
+          description: Result envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Envelope'
+        '401':
+          description: Missing or invalid x-api-key
+        '429':
+          description: Rate limited or quota exhausted
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        data:
+          description: Action result (shape varies per action)
+        meta:
+          type: object
+          description: api, endpoint, mode, latency_ms, record_count, completeness_pct, cache_hit
+        error:
+          type:
+          - object
+          - 'null'
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            retryable:
+              type: boolean
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

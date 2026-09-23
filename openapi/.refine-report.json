@@ -1,0 +1,47 @@
+{
+  "provider": "reefapi",
+  "sources": [
+    "_original/reefapi-openapi.json"
+  ],
+  "outputs": [
+    "reefapi-classifieds-second-hand-api-openapi.yml",
+    "reefapi-developer-tools-api-openapi.yml",
+    "reefapi-e-commerce-marketplaces-api-openapi.yml",
+    "reefapi-finance-data-api-openapi.yml",
+    "reefapi-government-tenders-api-openapi.yml",
+    "reefapi-jobs-hiring-api-openapi.yml",
+    "reefapi-media-film-knowledge-api-openapi.yml",
+    "reefapi-other-api-openapi.yml",
+    "reefapi-real-estate-api-openapi.yml",
+    "reefapi-reputation-reviews-api-openapi.yml",
+    "reefapi-search-seo-api-openapi.yml",
+    "reefapi-social-media-api-openapi.yml",
+    "reefapi-travel-lodging-api-openapi.yml",
+    "reefapi-utilities-ai-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "reefapi-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "reefapi-openapi.json: declared missing tag: Other",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "reefapi-classifieds-second-hand-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-developer-tools-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-e-commerce-marketplaces-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-finance-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-government-tenders-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-jobs-hiring-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-media-film-knowledge-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-other-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-real-estate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-reputation-reviews-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-search-seo-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-social-media-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-travel-lodging-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "reefapi-utilities-ai-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
