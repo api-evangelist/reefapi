@@ -37,8 +37,8 @@ tags:
 - Web Scraping
 - SERP
 - E-Commerce
-- Social-Media
-- Real-Estate
+- Social Media
+- Real Estate
 - Job
 - Travel
 - News
@@ -46,7 +46,7 @@ tags:
 - Reviews
 - Company Intelligence
 - MCP
-- agent-native
+- Agent-Native
 - REST
 - OpenAPI
 - llms-txt
@@ -77,6 +77,8 @@ tags_raw:
 - free-tier
 - credits
 - gateway
+- Social-Media
+- Real-Estate
 apis:
 - name: ReefAPI MCP Server
   description: >-
@@ -90,8 +92,8 @@ apis:
   - Data Aggregation
   - Web Scraping
   - E-Commerce
-  - Social-Media
-  - Real-Estate
+  - Social Media
+  - Real Estate
   - Job
   - Travel
   - News
@@ -99,7 +101,7 @@ apis:
   - Reviews
   - Company Intelligence
   - MCP
-  - agent-native
+  - Agent-Native
   - REST
   - OpenAPI
   - Free Tier
@@ -121,6 +123,8 @@ apis:
   - rest
   - openapi
   - free-tier
+  - Social-Media
+  - Real-Estate
   properties:
   - type: MCPServer
     url: https://api.reefapi.com/mcp
@@ -340,9 +344,10 @@ apis:
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
   tags:
-  - Real-Estate
+  - Real Estate
   tags_raw:
   - Real Estate
+  - Real-Estate
   properties:
   - type: OpenAPI
     url: openapi/reefapi-real-estate-api-openapi.yml
@@ -414,9 +419,10 @@ apis:
   humanURL: https://reefapi.com/docs
   baseURL: https://api.reefapi.com
   tags:
-  - Social-Media
+  - Social Media
   tags_raw:
   - Social Media
+  - Social-Media
   properties:
   - type: OpenAPI
     url: openapi/reefapi-social-media-api-openapi.yml
