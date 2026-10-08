@@ -93,3 +93,52 @@ per_call_pricing:
   heavier: "Image rendering, AI and large result sets cost more; the per-endpoint credit price is published on each API's docs page and returned by the MCP get_action_schema tool."
   failed_calls: 0 credits
 refunds_policy: https://reefapi.com/refunds
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods:
+    - one-time
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Ultra
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Mega
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Custom
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
