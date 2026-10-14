@@ -1,5 +1,5 @@
 generated: '2026-10-12'
-method: none
+method: searched
 source:
 - https://zapier.com/apps/reefapi/integrations
 - https://n8n.io/integrations/reefapi/
@@ -9,8 +9,40 @@ checked:
 - https://composio.dev/toolkits/reefapi
 - https://monid.ai/tools/reefapi
 - https://n8n.io/integrations/reefapi/
+- https://registry.modelcontextprotocol.io/v0/servers
 - https://zapier.com/apps/reefapi/integrations
 summary: null
 marketplace_apps: []
-edges: []
+edges:
+- partner_name: MCP Registry
+  partner: mcp
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://registry.modelcontextprotocol.io/v0/servers?search=io.github.reefapi
+  contract_reference:
+    register: registry.modelcontextprotocol.io
+    spec_file: null
+    role: mcp-server-listing
+    registered_name: io.github.reefapi/reefapi-mcp
+    register_id: io.github.reefapi/reefapi-mcp
+    detected_by: sweep-agent-tools.py
+    detected: '2026-10-14'
+  mcp_registry:
+    servers:
+    - io.github.reefapi/reefapi-mcp
+    hosted_remote: 1
+    local_package: 0
+    transports:
+      streamable-http: 1
+    auth_declared: 1
+    catalog_declared: true
+    namespace_domains:
+    - reefapi.com
+  matched_by:
+  - remote-domain
+  detected_by: sweep-agent-tools.py
+  first_seen: '2026-10-14'
 templates: []
